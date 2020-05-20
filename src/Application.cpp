@@ -2,10 +2,21 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <string>
+#include <sstream>
+#include <fstream>
+
+struct ShaderProgramSource 
+{
+    std::string VertexSource;
+    std::string FragmentSource;
+};
 
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void shaderErrorInfo(GLuint shader);
+std::string shaderParser(const std::string& path);
+ShaderProgramSource parseShader(const std::string& path);
 
 GLuint VBO, VAO;
 GLuint vertexShader, fragmentShader, shaderProgram;
@@ -17,20 +28,7 @@ float vertices[] = {
      0.0f,  0.5f, 0.0f
 };
 
-const char* vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
 
-
-const char* fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\0";
 
 int main(void)
 {
@@ -66,12 +64,15 @@ int main(void)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    ShaderProgramSource shaderSource = parseShader("res/Shaders/basic.shader");
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    const char* vertexShaderSource = shaderSource.VertexSource.c_str();
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
     shaderErrorInfo(vertexShader);
 
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    const char* fragmentShaderSource = shaderSource.FragmentSource.c_str();
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
     shaderErrorInfo(fragmentShader);
@@ -80,10 +81,11 @@ int main(void)
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
-    //glUseProgram(shaderProgram);
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
+ 
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -133,4 +135,34 @@ void shaderErrorInfo(GLuint shader)
         glGetShaderInfoLog(shader, 512, NULL, infoLog);
         std::cout << "ERROR: Shader Compilation Error. " << infoLog << std::endl;
     }
+}
+
+
+
+ShaderProgramSource parseShader(const std::string& path)
+{
+    enum class ShaderMode {
+        NONE = -1, VERTEX_MODE = 0, FRAGMENT_MODE = 1
+    };
+    std::fstream stream(path);
+    std::string line;
+
+    std::stringstream ss[2];
+    ShaderMode currentMode = ShaderMode::NONE;
+
+    while (getline(stream, line))
+    {
+        if (line.find("#shader") != std::string::npos)
+        {
+            if (line.find("vertex") != std::string::npos)
+                currentMode = ShaderMode::VERTEX_MODE;
+            else if (line.find("fragment") != std::string::npos)
+                currentMode = ShaderMode::FRAGMENT_MODE;
+        }
+        else
+        {
+            ss[(int)currentMode] << line << '\n';
+        }
+    }
+    return { ss[0].str(), ss[1].str() };
 }
