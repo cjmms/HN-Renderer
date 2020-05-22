@@ -73,6 +73,7 @@ int main(void)
 
 
     Shader shader("res/Shaders/basic.shader");
+    int location = shader.getUniformLocation("uniColor");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -85,10 +86,13 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.Bind();
+
+        glUniform4f(location, 0.3f, 0.2f, 0.1f, 1.0f);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
+        /*
         unsigned int vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -104,7 +108,7 @@ int main(void)
 
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
+        */
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

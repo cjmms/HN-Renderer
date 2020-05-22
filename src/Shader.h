@@ -26,6 +26,7 @@ public:
 	~Shader();
 	void Bind();
 	void unBind();
+	int getUniformLocation(const char* name);
 	
 private:
 	// path: res/Shaders/basic.shader

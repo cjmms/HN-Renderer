@@ -100,3 +100,9 @@ void Shader::unBind()
 {
     glUseProgram(0);
 }
+
+
+int Shader::getUniformLocation(const char* name)
+{
+    return glGetUniformLocation(rendererID, name);
+}
