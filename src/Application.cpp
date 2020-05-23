@@ -13,16 +13,10 @@ GLuint VBO, VAO, EBO;
 
 
 float vertices[] = {
-     0.5f,  0.5f, 0.0f,  // top right
-     0.5f, -0.5f, 0.0f,  // bottom right
-    -0.5f, -0.5f, 0.0f,  // bottom left
-    -0.5f,  0.5f, 0.0f   // top left 
-};
-
-float triV[] = {
-    0.5f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    1.0f, -0.5f, 0.0f
+    // positions         // colors
+     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
 };
 
 unsigned int indices[] = {  // note that we start from 0!
@@ -68,13 +62,16 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // VAO
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     Shader shader("res/Shaders/basic.shader");
-    int location = shader.getUniformLocation("uniColor");
-
+    //int location = shader.getUniformLocation("uniColor");
+    //float time;
+    //float green;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -87,28 +84,13 @@ int main(void)
 
         shader.Bind();
 
-        glUniform4f(location, 0.3f, 0.2f, 0.1f, 1.0f);
+        //time = glfwGetTime();
+        //green = (sin(time) / 2.0f ) + 0.5f;
+        //glUniform4f(location, 0.0f, green, 0.0f, 1.0f);
+
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-
-        /*
-        unsigned int vao;
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
-
-        unsigned int vbo;
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(triV), triV, GL_STATIC_DRAW);
-
-        // VAO
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        */
+        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
