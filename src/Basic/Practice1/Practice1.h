@@ -1,5 +1,7 @@
+// This practice draws a triangle
+
 #pragma once
-#include "Shader.h"
+#include "../../Shader.h"
 
 
 class Practice1 {
