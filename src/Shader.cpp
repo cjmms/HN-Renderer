@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+
+
 Shader::Shader(const std::string& path)
 	:rendererID(0), shaderFilePath(path)
 {

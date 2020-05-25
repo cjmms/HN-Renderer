@@ -1,14 +1,13 @@
+#pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "Shader.h"
 
-#include <iostream>
-#include <string>
+#include "Practice1.h"
 
 
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
+/*
 GLuint VBO, VAO, EBO;
 
 
@@ -23,6 +22,8 @@ unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,   // first triangle
     1, 2, 3    // second triangle
 };
+*/
+
 
 int main(void)
 {
@@ -48,27 +49,37 @@ int main(void)
     if (glewInit() != GLEW_OK)
         std::cout << "init error" << std::endl;
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    Practice1 renderer = Practice1();
+
+    //int width, height, nrChannels;
+    //unsigned char* data = stbi_load("res/Textures/container.png", &width, &height, &nrChannels, 0);
+
+
+    
+    //glGenVertexArrays(1, &VAO);
+    //glBindVertexArray(VAO);
 
     // EBO
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    //glGenBuffers(1, &EBO);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // VBO
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //glGenBuffers(1, &VBO);
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // VAO
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    //glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    //glEnableVertexAttribArray(1);
 
     Shader shader("res/Shaders/basic.shader");
+    
+
+
     //int location = shader.getUniformLocation("uniColor");
     //float time;
     //float green;
@@ -82,15 +93,17 @@ int main(void)
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader.Bind();
+        //shader.Bind();
 
         //time = glfwGetTime();
         //green = (sin(time) / 2.0f ) + 0.5f;
         //glUniform4f(location, 0.0f, green, 0.0f, 1.0f);
 
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glBindVertexArray(VAO);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        renderer.render();
+
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
