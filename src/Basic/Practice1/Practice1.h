@@ -7,7 +7,7 @@
 class Practice1 {
 
 private:
-    GLuint VBO, VAO, EBO;
+    GLuint VBO, VAO;
 
 public:
     Practice1();

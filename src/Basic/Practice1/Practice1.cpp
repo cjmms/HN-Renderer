@@ -3,15 +3,12 @@
 
 Practice1::Practice1() 
 {
-
     float vertices[] = {
         // positions         
          0.5f, -0.5f, 0.0f,    // bottom right
         -0.5f, -0.5f, 0.0f,   // bottom left
          0.0f,  0.5f, 0.0f   // top
     };
-
-    //shader = Shader("res/Shaders/basic.shader");
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -25,15 +22,13 @@ Practice1::Practice1()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    Shader shader("res/Shaders/basic.shader");
+    Shader shader("res/Shaders/Practice1.shader");
     shader.Bind();
 }
 
 void Practice1::render()
 {
-
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-
 }
     
