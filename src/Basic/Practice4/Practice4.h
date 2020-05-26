@@ -1,7 +1,5 @@
 #pragma once
 #include "../../Shader.h"
-#include <iostream>
-#include <fstream>
 #include "../../stb_image.h"
 
 class Practice4
