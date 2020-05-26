@@ -4,10 +4,10 @@ Practice4::Practice4()
 {
     float vertices[] = {
         // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f,   // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f    // top left 
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
     };
 
     unsigned int indices[] = {
@@ -44,6 +44,7 @@ Practice4::Practice4()
   
     unsigned int texture;
     glGenTextures(1, &texture);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -52,6 +53,9 @@ Practice4::Practice4()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int width, height, nrChannels;
+
+    stbi_set_flip_vertically_on_load(true);
+
     // does not work for png, works for jpg, but image is flipped.
     //unsigned char* data = stbi_load("res/Textures/container.png", &width, &height, &nrChannels, 0);
     unsigned char* data = stbi_load("res/Textures/Hanon.jpg", &width, &height, &nrChannels, 0);
@@ -69,6 +73,46 @@ Practice4::Practice4()
     // free image memory
     stbi_image_free(data);
     glBindTexture(GL_TEXTURE_2D, texture);
+
+
+    unsigned int texture2;
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width2, height2, nrChannels2;
+
+    stbi_set_flip_vertically_on_load(true);
+
+    // does not work for png, works for jpg, but image is flipped.
+    //unsigned char* data = stbi_load("res/Textures/container.png", &width, &height, &nrChannels, 0);
+    unsigned char* data2 = stbi_load("res/Textures/container.jpg", &width2, &height2, &nrChannels2, 0);
+
+
+    if (data2) {
+        // 2nd arg is mipmap level, 3rd arg is the format of output data, 6th arg should always be 0.
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Image source is not properly loaded." << std::endl;
+    }
+    // free image memory
+    stbi_image_free(data2);
+
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    glUniform1i(shader.getUniformLocation("hanon"), 0);
+    glUniform1i(shader.getUniformLocation("container"), 1);
 
 }
 

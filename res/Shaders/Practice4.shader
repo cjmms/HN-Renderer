@@ -26,9 +26,11 @@ in vec2 textureCood;
 
 out vec4 FragColor;
 
-uniform sampler2D ourTexture;
+uniform sampler2D hanon;
+uniform sampler2D container;
 
 void main() 
 {
-	FragColor = texture(ourTexture, textureCood) * color;
+	//FragColor = texture(container, textureCood);
+	FragColor = mix (texture(hanon, textureCood), texture(container, textureCood), 0.2) ;
 }
