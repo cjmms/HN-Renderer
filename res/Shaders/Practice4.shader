@@ -20,5 +20,6 @@ out vec4 FragColor;
 void main() 
 {
 	// TODO: implement texture color
-	FragColor = vec4(0.4, 0.6, 0.8, 1.0);
+	//FragColor = vec4(0.4, 0.6, 0.8, 1.0);
+	FragColor = color;
 }
