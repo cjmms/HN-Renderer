@@ -41,12 +41,21 @@ Practice4::Practice4()
     Shader shader("res/Shaders/Practice4.shader");
     shader.Bind();
 
-    int width, height, nrChannels;
-    unsigned char* data = stbi_load("res/Textures/container.png", &width, &height, &nrChannels, 0);
-
+  
     unsigned int texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(
+        "res/Textures/container.png",
+        &width, &height, &nrChannels, 0);
+
 
     if (data) {
         // 2nd arg is mipmap level, 3rd arg is the format of output data, 6th arg should always be 0.
@@ -59,7 +68,7 @@ Practice4::Practice4()
     }
     // free image memory
     stbi_image_free(data);
-
+    glBindTexture(GL_TEXTURE_2D, texture);
 
 }
 
