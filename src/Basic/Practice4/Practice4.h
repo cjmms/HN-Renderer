@@ -1,6 +1,8 @@
 #pragma once
 #include "../../Shader.h"
 
+#include "../../stb_image.h"
+
 class Practice4
 {
 private:

@@ -40,6 +40,27 @@ Practice4::Practice4()
 
     Shader shader("res/Shaders/Practice4.shader");
     shader.Bind();
+
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load("res/Textures/container.png", &width, &height, &nrChannels, 0);
+
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    if (data) {
+        // 2nd arg is mipmap level, 3rd arg is the format of output data, 6th arg should always be 0.
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Image source is not properly loaded." << std::endl;
+    }
+    // free image memory
+    stbi_image_free(data);
+
+
 }
 
 void Practice4::render() 
