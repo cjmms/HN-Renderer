@@ -14,6 +14,8 @@ Shader::~Shader()
 	glDeleteProgram(rendererID);
 }
 
+
+
 ShaderProgramSource Shader::parseShader(const std::string& path) 
 {
     enum class ShaderMode {
@@ -107,4 +109,9 @@ void Shader::unBind()
 int Shader::getUniformLocation(const char* name)
 {
     return glGetUniformLocation(rendererID, name);
+}
+
+unsigned int Shader::getRendererID() 
+{
+    return rendererID;
 }

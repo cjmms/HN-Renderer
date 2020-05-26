@@ -35,15 +35,21 @@ Practice3::Practice3 ()
 	Shader shader("res/Shaders/Practice3.shader");
 	shader.Bind();
 
-	int uniformLocation = shader.getUniformLocation("updatedColor");
-	glUniform3f(uniformLocation, 0.5f, 0.5f, 0.5f);
+	uniformLocation = shader.getUniformLocation("updatedColor");
+	//glUniform3f(uniformLocation, 0.5f, 0.5f, 0.5f);
 }
 
 void Practice3::render() 
 {
+	float timeValue = glfwGetTime();
+	float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+
+	glUniform3f(uniformLocation, 0.0f, greenValue, 0.0f);
 	glBindVertexArray(VAO);
 
 	// The last arg is 0 since we do provide an EBO
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
+
+
 

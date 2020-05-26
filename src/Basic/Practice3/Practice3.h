@@ -9,6 +9,7 @@ class Practice3
 {
 private:
 	unsigned int VAO, VBO, EBO;
+	int uniformLocation;
 
 public:
 	Practice3();

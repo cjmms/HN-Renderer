@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -28,6 +29,7 @@ public:
 	void Bind();
 	void unBind();
 	int getUniformLocation(const char* name);
+	unsigned int getRendererID();
 	
 private:
 	// path: res/Shaders/basic.shader
