@@ -1,6 +1,6 @@
 #pragma once
 #include "../../Shader.h"
-#include "../../stb_image.h"
+#include "../../Texture.h"
 
 class Practice4
 {

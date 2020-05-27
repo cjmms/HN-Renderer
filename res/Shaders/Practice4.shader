@@ -31,6 +31,5 @@ uniform sampler2D container;
 
 void main() 
 {
-	//FragColor = texture(container, textureCood);
 	FragColor = mix (texture(hanon, textureCood), texture(container, textureCood), 0.2) ;
 }
