@@ -51,10 +51,20 @@ Practice5::Practice5()
 
     glUniform1i(shader.getUniformLocation("hanon"), 0);
     glUniform1i(shader.getUniformLocation("container"), 1);
+
+    location = shader.getUniformLocation("transform");
 }
 
 void Practice5::render() 
 {
+    // create identity matrix
+    trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+
+    // rotate along time
+    trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(trans));
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
