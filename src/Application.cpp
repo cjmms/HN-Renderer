@@ -34,7 +34,7 @@ int main(void)
     if (glewInit() != GLEW_OK)
         std::cout << "init error" << std::endl;
 
-    Practice4 renderer;
+    Practice5 renderer;
 
 
     /* Loop until the user closes the window */
