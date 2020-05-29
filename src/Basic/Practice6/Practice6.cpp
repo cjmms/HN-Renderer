@@ -27,6 +27,9 @@ Practice6::Practice6()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
     // EBO
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -34,6 +37,15 @@ Practice6::Practice6()
 
     Shader shader("res/Shaders/Practice6.shader");
     shader.Bind();
+
+    Texture texture0("res/Textures/Hanon.jpg", JPG);
+    Texture texture1("res/Textures/container.jpg", JPG);
+
+    texture0.bindTexture(GL_TEXTURE0);
+    texture1.bindTexture(GL_TEXTURE1);
+
+    glUniform1i(shader.getUniformLocation("hanon"), 0);
+    glUniform1i(shader.getUniformLocation("container"), 1);
 }
 
 void Practice6::render() 
