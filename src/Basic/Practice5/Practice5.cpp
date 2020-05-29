@@ -68,4 +68,15 @@ void Practice5::render()
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+
+
+    trans = glm::mat4(1.0f);
+
+    trans = glm::translate(trans,  glm::vec3(-0.5f, 0.5f, 0.0f));
+    float s = sinf((float)glfwGetTime());
+    trans = glm::scale(trans, glm::vec3(s, s, s));
+
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(trans));
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
