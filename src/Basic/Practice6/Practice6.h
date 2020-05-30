@@ -8,6 +8,7 @@
 
 class Practice6
 {
+
 private:
 	unsigned int VAO, VBO, EBO;
 	unsigned int location;
