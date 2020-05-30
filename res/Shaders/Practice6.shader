@@ -1,16 +1,24 @@
 #shader vertex
+#version 330 core
+
 layout(Location = 0) in vec3 aPos;
 layout(Location = 1) in vec2 aTexture;
 out vec2 textureCoord;
 
+uniform mat4 mvp;
+
 void main() 
 {
-	gl_Position = vec4(aPos, 1.0f);
+
+	gl_Position = mvp * vec4(aPos, 1.0f);
 	textureCoord = aTexture;
 }
 
 
+
+
 #shader fragment
+#version 330 core
 in vec2 textureCoord;
 out vec4 FragColor;
 

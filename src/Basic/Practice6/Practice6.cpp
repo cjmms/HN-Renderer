@@ -46,6 +46,20 @@ Practice6::Practice6()
 
     glUniform1i(shader.getUniformLocation("hanon"), 0);
     glUniform1i(shader.getUniformLocation("container"), 1);
+
+    glm::mat4 model(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    glm::mat4 view(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+    glm::mat4 mvp(1.0f);
+    mvp = mvp * projection * view * model;
+
+    glUniformMatrix4fv(shader.getUniformLocation("mvp"), 1, GL_FALSE, glm::value_ptr(mvp));
 }
 
 void Practice6::render() 
