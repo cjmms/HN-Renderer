@@ -13,5 +13,6 @@ private:
 public:
 	Practice7();
 	void render();
+	int getUniformLocation();
 };
 

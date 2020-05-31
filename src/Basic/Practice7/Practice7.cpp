@@ -79,8 +79,14 @@ Practice7::Practice7()
     location = shader.getUniformLocation("mvp");
 }
 
+int Practice7::getUniformLocation() 
+{
+    return location;
+}
+
 void Practice7::render()
 {
+    /*
     glm::vec3 cubePositions[] = {
     glm::vec3(0.0f,  0.0f,  0.0f),
     glm::vec3(2.0f,  5.0f, -15.0f),
@@ -119,10 +125,9 @@ void Practice7::render()
         mvp = mvp * projection * view * model;
 
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mvp));
-
-
+    }
+        */
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
-
+    
 }
