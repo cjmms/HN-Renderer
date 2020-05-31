@@ -37,7 +37,7 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
-    Practice6 renderer;
+    Practice7 renderer;
 
 
     /* Loop until the user closes the window */

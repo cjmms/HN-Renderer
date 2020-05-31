@@ -1,8 +1,8 @@
-#include "Practice6.h"
+#include "Practice7.h"
 
-Practice6::Practice6() 
+Practice7::Practice7()
 {
-  
+
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -56,7 +56,7 @@ Practice6::Practice6()
     // VAO
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -64,7 +64,7 @@ Practice6::Practice6()
     glEnableVertexAttribArray(1);
 
 
-    Shader shader("res/Shaders/Practice6.shader");
+    Shader shader("res/Shaders/Practice7.shader");
     shader.Bind();
 
     Texture texture0("res/Textures/Hanon.jpg", JPG);
@@ -79,7 +79,7 @@ Practice6::Practice6()
     location = shader.getUniformLocation("mvp");
 }
 
-void Practice6::render() 
+void Practice7::render()
 {
     glm::vec3 cubePositions[] = {
     glm::vec3(0.0f,  0.0f,  0.0f),
@@ -95,7 +95,7 @@ void Practice6::render()
     };
 
     glBindVertexArray(VAO);
-    for (unsigned int i = 0; i < 10; i++) 
+    for (unsigned int i = 0; i < 10; i++)
     {
         glm::mat4 model(1.0f);
         model = glm::translate(model, cubePositions[i]);
@@ -116,5 +116,5 @@ void Practice6::render()
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
- 
+
 }
