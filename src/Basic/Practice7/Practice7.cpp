@@ -104,6 +104,14 @@ void Practice7::render()
         glm::mat4 view(1.0f);
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
+        float degree = glfwGetTime() * 1.0f;
+        float x = sin(degree) * 7.0f;
+        float z = cos(degree) * 7.0f;
+
+        view = glm::lookAt( glm::vec3(x,    0.0f, z),    // position
+                            glm::vec3(0.0f, 0.0f, 0.0f),    // direction
+                            glm::vec3(0.0f, 1.0f, 0.0f));   // up
+
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
