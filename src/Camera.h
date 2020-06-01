@@ -21,15 +21,39 @@ private:
 	float sensitivity;
 	float cameraSpeed;
 
+	// flag, test if it's the first time detects mouse input 
+	bool firstMouse;
+
+
 public:
 	Camera();
 	float getSensitivity();
 	void setSensitivity(float sensitivity);
-	void changeCameraDirection(float currentX, float currentY);
 	void setCameraSpeed(float speed);
 	float getCameraSpeed();
+
+	// update cameraFrontS base on current x and y
+	void updateCameraDirection(float currentX, float currentY);
+
+	// WASD 
+	// W: forward
+	// S: backward
+	// A: move left
+	// D: move right
 	void setCameraKey(GLFWwindow* window);
+
+	// update delta time and last frame
 	void cameraUpdateFrameTime();
+
+	// using lookat() to calculate view matrix
 	glm::mat4 getViewMatrix();
+
+private:
+	// calculate and normalize camera front vector base on yaw and pitch
+	void calculateCameraFront();
+
+	// update yaw and pitch base on x, y difference
+	// pitch value can't be 90 degree
+	void calculateCameraAngle(float currentX, float currentY);
 };
 
