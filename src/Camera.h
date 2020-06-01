@@ -24,6 +24,8 @@ private:
 	// flag, test if it's the first time detects mouse input 
 	bool firstMouse;
 
+	float fov;
+
 
 public:
 	Camera();
@@ -47,6 +49,13 @@ public:
 
 	// using lookat() to calculate view matrix
 	glm::mat4 getViewMatrix();
+
+	// zoom in camera base on scroller offset
+	void zoomIn(float yoffset);
+
+	// using perspective() to calculate projection matrix
+	glm::mat4 getProjectionMatrix();
+
 
 private:
 	// calculate and normalize camera front vector base on yaw and pitch

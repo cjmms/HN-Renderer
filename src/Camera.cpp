@@ -2,7 +2,7 @@
 
 
 Camera::Camera()
-	: sensitivity(0.1f), deltaTime(0.0f), lastFrame(0.0f), firstMouse(true)
+	: sensitivity(0.1f), deltaTime(0.0f), lastFrame(0.0f), firstMouse(true), fov(45.0f)
 {
 	cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -125,4 +125,21 @@ void Camera::calculateCameraAngle(float currentX, float currentY)
 		pitch = 89.0f;
 	if (pitch < -89.0f)
 		pitch = -89.0f;
+}
+
+
+void Camera::zoomIn(float yoffset)
+{
+	fov -= yoffset;
+	if (fov < 1.0f)
+		fov = 1.0f;
+	if (fov > 45.0f)
+		fov = 45.0f;
+}
+
+
+
+glm::mat4 Camera::getProjectionMatrix() 
+{
+	return glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
 }
