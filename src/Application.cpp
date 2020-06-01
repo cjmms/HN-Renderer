@@ -5,11 +5,13 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "Practice.h"
+#include "Camera.h"
 
 
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+/*
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -22,10 +24,14 @@ float lastY = 300;
 
 float yaw = -90.0f;
 float pitch = 0.0f;
+*/
 
+Camera camera;
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+    camera.changeCameraDirection(xpos, ypos);
+    /*
     float offset_x = xpos - lastX;
     float offset_y = lastY - ypos;
     lastX = xpos;
@@ -43,6 +49,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     direction.y = sin(glm::radians(pitch));
     direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(direction);
+    */
 }
 
 
@@ -113,16 +120,17 @@ int main(void)
             float x = sin(degree) * 7.0f;
             float z = cos(degree) * 7.0f;
 
-            view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+            //view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+            view = camera.getViewMatrix();
 
             glm::mat4 projection(1.0f);
             projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
 
-            float currentFrame = glfwGetTime();
-            deltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
-
+            //float currentFrame = glfwGetTime();
+            //deltaTime = currentFrame - lastFrame;
+            //lastFrame = currentFrame;
+            camera.cameraUpdateFrameTime();
 
             for (unsigned int i = 0; i < 10; i++)
             {
@@ -153,10 +161,11 @@ int main(void)
 
 void processInput(GLFWwindow* window) 
 {
-    float cameraSpeed = 2.5f * deltaTime;
+    //float cameraSpeed = 2.5f * deltaTime;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    /*
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -165,7 +174,8 @@ void processInput(GLFWwindow* window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-
+        */
+    camera.setCameraKey(window);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) 
