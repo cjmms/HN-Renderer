@@ -9,7 +9,7 @@ class Color
 private:
 	unsigned int VBO;
 	unsigned int container_VAO, lighting_VAO;
-	unsigned int location;
+	unsigned int lighting_location, container_location;
 
 public:
 	Color();
