@@ -8,22 +8,22 @@
 #include "Camera.h"
 
 
-void processInput(GLFWwindow* window);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
 Camera camera;
-glm::vec3 cubePositions[] = {
-                glm::vec3(0.0f,  0.0f,  0.0f),
-                glm::vec3(2.0f,  5.0f, -15.0f),
-                glm::vec3(-1.5f, -2.2f, -2.5f),
-                glm::vec3(-3.8f, -2.0f, -12.3f),
-                glm::vec3(2.4f, -0.4f, -3.5f),
-                glm::vec3(-1.7f,  3.0f, -7.5f),
-                glm::vec3(1.3f, -2.0f, -2.5f),
-                glm::vec3(1.5f,  2.0f, -2.5f),
-                glm::vec3(1.5f,  0.2f, -1.5f),
-                glm::vec3(-1.3f,  1.0f, -1.5f)
-};
+
+
+void processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    camera.setCameraKey(window);
+}
+
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
@@ -32,12 +32,10 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 
-
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     camera.updateCameraDirection(xpos, ypos);
 }
-
 
 
 int main(void)
@@ -84,27 +82,9 @@ int main(void)
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            int location = renderer.getUniformLocation();
-
-            glm::mat4 view = camera.getViewMatrix();
-            glm::mat4 projection = camera.getProjectionMatrix();
-
-
-            camera.cameraUpdateFrameTime();
-
-            for (unsigned int i = 0; i < 10; i++)
-            {
-                glm::mat4 model(1.0f);
-                model = glm::translate(model, cubePositions[i]);
-                model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-
-                glm::mat4 mvp = projection * view * model;
-
-                glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mvp));
-
-                renderer.render();
-            }
-
+        camera.cameraUpdateFrameTime();
+  
+        renderer.render(camera.getViewMatrix(), camera.getProjectionMatrix());
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -116,17 +96,3 @@ int main(void)
     glfwTerminate();
     return 0;
 }
-
-void processInput(GLFWwindow* window) 
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-
-    camera.setCameraKey(window);
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) 
-{
-    glViewport(0, 0, width, height);
-}
-
