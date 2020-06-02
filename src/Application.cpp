@@ -69,7 +69,7 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
-    Practice7 renderer;
+    Color renderer;
 
 
     /* Loop until the user closes the window */

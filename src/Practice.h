@@ -7,3 +7,5 @@
 #include "Basic/Practice5/Practice5.h"
 #include "Basic/Practice6/Practice6.h"
 #include "Basic/Practice7/Practice7.h"
+
+#include "Lighting/Color/Color.h"

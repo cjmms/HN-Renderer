@@ -64,7 +64,7 @@ Practice7::Practice7()
     glEnableVertexAttribArray(1);
 
 
-    Shader shader("res/Shaders/Practice7.shader");
+    Shader shader("res/Shaders/Basics/Practice7.shader");
     shader.Bind();
 
     Texture texture0("res/Textures/Hanon.jpg", JPG);
