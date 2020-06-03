@@ -72,10 +72,10 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader lightSourceShader("res/Shaders/Lighting/Color/LightSource.shader");
-    Shader containerShader("res/Shaders/Lighting/Color/Container.shader");
+    Shader lightSourceShader("res/Shaders/Lighting/BasicLighting/LightSource.shader");
+    Shader containerShader("res/Shaders/Lighting/BasicLighting/Cube.shader");
 
-    Color renderer;
+    BasicLighting renderer;
 
 
     // Loop until the user closes the window 
@@ -91,8 +91,8 @@ int main(void)
         camera.cameraUpdateFrameTime();
   
         containerShader.Bind();
-        containerShader.setVec3("containerColor", glm::vec3(1.0f, 0.5f, 0.31f));
-        containerShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        containerShader.setVec3("CubeColor", glm::vec3(1.0f, 0.5f, 0.31f));
+        containerShader.setVec3("LightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
         renderer.renderContainer(
             camera.getViewMatrix(), 

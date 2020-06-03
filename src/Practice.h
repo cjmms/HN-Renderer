@@ -9,3 +9,4 @@
 #include "Basic/Practice7/Practice7.h"
 
 #include "Lighting/Color/Color.h"
+#include "Lighting/BasicLighting/BasicLighting.h"
