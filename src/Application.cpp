@@ -1,3 +1,4 @@
+
 #pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -6,6 +7,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "Practice.h"
 #include "Camera.h"
+#include "Shader.h"
 
 
 Camera camera;
@@ -38,15 +40,16 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 }
 
 
+
 int main(void)
 {
     GLFWwindow* window;
 
-    /* Initialize the library */
+    // Initialize the library 
     if (!glfwInit())
         return -1;
 
-    /* Create a windowed mode window and its OpenGL context */
+    // Create a windowed mode window and its OpenGL context 
     window = glfwCreateWindow(800, 600, "Hello World", NULL, NULL);
     if (!window)
     {
@@ -56,7 +59,7 @@ int main(void)
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    /* Make the window's context current */
+    // Make the window's context current 
     glfwMakeContextCurrent(window);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -69,30 +72,49 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
+    Shader lightSourceShader("res/Shaders/Lighting/Color/LightSource.shader");
+    Shader containerShader("res/Shaders/Lighting/Color/Container.shader");
+
     Color renderer;
 
 
-    /* Loop until the user closes the window */
+    // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
     {
         // input
         processInput(window);
 
-        /* Render here */
+        // Render here 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         camera.cameraUpdateFrameTime();
   
-        renderer.render(camera.getViewMatrix(), camera.getProjectionMatrix());
+        containerShader.Bind();
+        containerShader.setVec3("containerColor", glm::vec3(1.0f, 0.5f, 0.31f));
+        containerShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
-        /* Swap front and back buffers */
+        renderer.renderContainer(
+            camera.getViewMatrix(), 
+            camera.getProjectionMatrix(), 
+            containerShader.getUniformLocation("mvp") );
+
+
+        lightSourceShader.Bind();
+        renderer.renderLightSource(
+            camera.getViewMatrix(),
+            camera.getProjectionMatrix(),
+            lightSourceShader.getUniformLocation("mvp")
+        );
+
+        // Swap front and back buffers 
         glfwSwapBuffers(window);
 
-        /* Poll for and process events */
+        // Poll for and process events 
         glfwPollEvents();
     }
 
     glfwTerminate();
     return 0;
 }
+

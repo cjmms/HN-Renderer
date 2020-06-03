@@ -115,3 +115,17 @@ unsigned int Shader::getRendererID()
 {
     return rendererID;
 }
+
+
+void Shader::setMat4(const char* name, glm::mat4 matrix)
+{
+    unsigned int location = getUniformLocation(name);
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+
+void Shader::setVec3(const char* name, glm::vec3 vec)
+{
+    unsigned int location = getUniformLocation(name);
+    glUniform3fv(location, 1, glm::value_ptr(vec));
+}
