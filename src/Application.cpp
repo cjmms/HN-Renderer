@@ -89,23 +89,19 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         camera.cameraUpdateFrameTime();
+
+        glm::mat4 projection = camera.getProjectionMatrix();
+        glm::mat4 view = camera.getViewMatrix();
   
         containerShader.Bind();
         containerShader.setVec3("CubeColor", glm::vec3(1.0f, 0.5f, 0.31f));
         containerShader.setVec3("LightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
-        renderer.renderContainer(
-            camera.getViewMatrix(), 
-            camera.getProjectionMatrix(), 
-            containerShader.getUniformLocation("mvp") );
+        renderer.renderContainer(view, projection, containerShader);
 
 
         lightSourceShader.Bind();
-        renderer.renderLightSource(
-            camera.getViewMatrix(),
-            camera.getProjectionMatrix(),
-            lightSourceShader.getUniformLocation("mvp")
-        );
+        renderer.renderLightSource(view, projection, lightSourceShader);
 
         // Swap front and back buffers 
         glfwSwapBuffers(window);

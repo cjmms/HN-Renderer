@@ -13,7 +13,7 @@ private:
 
 public:
 	BasicLighting();
-	void renderLightSource(glm::mat4 view, glm::mat4 projection, unsigned int mvp_location);
-	void renderContainer(glm::mat4 view, glm::mat4 projection, unsigned int mvp_location);
+	void renderLightSource(glm::mat4 view, glm::mat4 projection, Shader& shader);
+	void renderContainer(glm::mat4 view, glm::mat4 projection, Shader& shader);
 };
 
