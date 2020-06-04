@@ -10,3 +10,4 @@
 
 #include "Lighting/Color/Color.h"
 #include "Lighting/BasicLighting/BasicLighting.h"
+#include "Lighting/MaterialPractice/MaterialPractice.h"
