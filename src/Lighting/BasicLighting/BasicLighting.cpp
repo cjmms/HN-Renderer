@@ -47,6 +47,7 @@ BasicLighting::BasicLighting()
     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     };
 
+    lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -72,12 +73,14 @@ BasicLighting::BasicLighting()
 
 void BasicLighting::renderLightSource(glm::mat4 view, glm::mat4 projection, Shader& shader)
 {
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPos);
     model = glm::scale(model, glm::vec3(0.2f));
 
     glm::mat4 mvp = projection * view * model;
     glUniformMatrix4fv(shader.getUniformLocation("mvp"), 1, GL_FALSE, glm::value_ptr(mvp));
+
+    //lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+    //lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
 
     glBindVertexArray(Lighting_VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -87,8 +90,9 @@ void BasicLighting::renderLightSource(glm::mat4 view, glm::mat4 projection, Shad
 
 void BasicLighting::renderContainer(glm::mat4 view, glm::mat4 projection, Shader& shader)
 {
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     glm::mat4 model(1.0f);
+    model = glm::scale(model, glm::vec3(0.7f, 1.2f, 1.0f));
+    model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
     glm::mat4 mvp = projection * view * model;
 
     glUniformMatrix4fv(shader.getUniformLocation("mvp"), 1, GL_FALSE, glm::value_ptr(mvp));

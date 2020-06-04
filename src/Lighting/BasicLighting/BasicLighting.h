@@ -10,6 +10,7 @@ class BasicLighting
 private:
 	unsigned int VBO;
 	unsigned int Cube_VAO, Lighting_VAO;
+	glm::vec3 lightPos;
 
 public:
 	BasicLighting();

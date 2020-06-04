@@ -4,12 +4,12 @@
 Camera::Camera()
 	: sensitivity(0.1f), deltaTime(0.0f), lastFrame(0.0f), firstMouse(true), fov(45.0f)
 {
-	cameraPos = glm::vec3(0.0f, 1.5f, 5.0f);
+	cameraPos = glm::vec3(0.0f, 1.0f, 5.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	lastX = 400;
-	lastY = 300;
+	lastX = 600;
+	lastY = 500;
 
 	yaw = -90.0f;
 	pitch = 0.0f;

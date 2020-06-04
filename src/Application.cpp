@@ -50,7 +50,7 @@ int main(void)
         return -1;
 
     // Create a windowed mode window and its OpenGL context 
-    window = glfwCreateWindow(800, 600, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1200, 1000, "Vanilla", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -62,7 +62,7 @@ int main(void)
     // Make the window's context current 
     glfwMakeContextCurrent(window);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
