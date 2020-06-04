@@ -12,7 +12,7 @@ out vec3 FragPos;
 void main()
 {
 	gl_Position = mvp * vec4(aPos, 1.0f);
-	Normal = aNormal;
+	Normal = mat3(transpose(inverse(model))) * aNormal;
 	FragPos = vec3(model * vec4(aPos, 1.0f));
 }
 
@@ -23,6 +23,7 @@ void main()
 uniform vec3 CubeColor;
 uniform vec3 LightColor;
 uniform vec3 LightPos;
+uniform vec3 CameraPos;
 
 in vec3 Normal;
 in vec3 FragPos;
@@ -34,11 +35,19 @@ void main()
 	vec3 normal = normalize(Normal);
 	vec3 ray = normalize(LightPos - FragPos);
 
+	vec3 viewDir = normalize(CameraPos - FragPos);
+	vec3 reflectDir = reflect(-ray, normal);
+
+	float specModifier = 0.5f;
+
+	float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
+	vec3 specular = LightColor * specularStrength * specModifier;
+
 	float diffuseStrength = max(dot(normal, ray), 0);
 	vec3 diffuse = LightColor * diffuseStrength;
 
 	float ambientStrength = 0.1f;
 	vec3 ambient = LightColor * ambientStrength;
 
-	FragColor = vec4(CubeColor * (ambient + diffuse), 1.0f);
+	FragColor = vec4(CubeColor * (ambient + diffuse + specular), 1.0f);
 }

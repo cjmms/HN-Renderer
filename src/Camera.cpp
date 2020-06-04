@@ -4,7 +4,7 @@
 Camera::Camera()
 	: sensitivity(0.1f), deltaTime(0.0f), lastFrame(0.0f), firstMouse(true), fov(45.0f)
 {
-	cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
+	cameraPos = glm::vec3(0.0f, 1.5f, 5.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -142,4 +142,16 @@ void Camera::zoomIn(float yoffset)
 glm::mat4 Camera::getProjectionMatrix() 
 {
 	return glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+}
+
+
+
+glm::vec3 Camera::getCameraPos() 
+{
+	/*std::cout << "camera pos: " << 
+		"x: " << cameraPos.x <<
+		"y: " << cameraPos.y <<
+		"z: " << cameraPos.z <<
+		std::endl; */
+	return cameraPos;
 }
