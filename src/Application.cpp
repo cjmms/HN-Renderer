@@ -72,11 +72,11 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader lightSourceShader("res/Shaders/Lighting/BasicLighting/LightSource.shader");
-    Shader containerShader("res/Shaders/Lighting/BasicLighting/Cube.shader");
+    Shader lightSourceShader("res/Shaders/Lighting/MaterialPractice/LightSource.shader");
+    Shader containerShader("res/Shaders/Lighting/MaterialPractice/Cube.shader");
 
-    BasicLighting renderer;
-
+    //BasicLighting renderer;
+    MaterialPractice renderer;
 
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
@@ -94,9 +94,9 @@ int main(void)
         glm::mat4 view = camera.getViewMatrix();
   
         containerShader.Bind();
-        containerShader.setVec3("CubeColor", glm::vec3(1.0f, 0.5f, 0.31f));
-        containerShader.setVec3("LightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-        containerShader.setVec3("CameraPos", camera.getCameraPos());
+        //containerShader.setVec3("CubeColor", glm::vec3(1.0f, 0.5f, 0.31f));
+        //containerShader.setVec3("LightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        //containerShader.setVec3("CameraPos", camera.getCameraPos());
 
         renderer.renderContainer(view, projection, containerShader);
 

@@ -1,4 +1,4 @@
-#vertex shader
+#shader vertex
 #version 330 core
 layout(Location = 0) in vec3 aPos;
 
@@ -11,7 +11,7 @@ void main()
 
 
 
-#fragment shader
+#shader fragment
 #version 330 core
 
 out vec4 FragColor;
