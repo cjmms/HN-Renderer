@@ -19,13 +19,30 @@ void main()
 
 
 
+
+
 #shader fragment
 #version 330 core
 
-uniform vec3 LightColor;
+struct Material {
+	vec3 ambient;
+	vec3 specular;
+	vec3 diffuse;
+	float shininess;
+};
+uniform Material material;
+
+struct Light {
+	vec3 LightPos;
+
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+uniform Light light;
+
 uniform vec3 CubeColor;
 uniform vec3 CameraPos;
-uniform vec3 LightPos;
 
 in vec3 Normal;
 in vec3 FragPos;
@@ -36,18 +53,18 @@ void main()
 {
 	vec3 normal = normalize(Normal);
 	// ambient
-	vec3 ambient = LightColor * vec3(0.1f); 
+	vec3 ambient = material.ambient * light.ambient; 
 
 	// diffuse
-	vec3 ray = normalize(LightPos - FragPos);
+	vec3 ray = normalize(light.LightPos - FragPos);
 	float diff = max(dot(ray, Normal), 0.0f);
-	vec3 diffuse = LightColor * diff;
+	vec3 diffuse = diff * material.diffuse * light.diffuse;
 
 	// specular
 	vec3 reflectRay = reflect(-ray, Normal);
 	vec3 eye = normalize(CameraPos - FragPos);
-	float spec = pow(max(dot(reflectRay, eye), 0.0f), 32);
-	vec3 specular = LightColor * spec * 0.5f;
+	float spec = pow(max(dot(reflectRay, eye), 0.0f), material.shininess);
+	vec3 specular = spec * material.specular * light.specular;
 
 	FragColor = vec4(CubeColor * (ambient + diffuse + specular), 1.0f);
 }

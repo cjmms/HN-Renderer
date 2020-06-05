@@ -129,3 +129,9 @@ void Shader::setVec3(const char* name, glm::vec3 vec)
     unsigned int location = getUniformLocation(name);
     glUniform3fv(location, 1, glm::value_ptr(vec));
 }
+
+void Shader::setFloat(const char* name, float value)
+{
+    unsigned int location = getUniformLocation(name);
+    glUniform1f(location, value);
+}

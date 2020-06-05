@@ -95,7 +95,6 @@ int main(void)
   
         containerShader.Bind();
         containerShader.setVec3("CubeColor", glm::vec3(1.0f, 0.5f, 0.31f));
-        containerShader.setVec3("LightColor", glm::vec3(1.0f, 1.0f, 1.0f));
         containerShader.setVec3("CameraPos", camera.getCameraPos());
 
         renderer.renderContainer(view, projection, containerShader);

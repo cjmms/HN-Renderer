@@ -79,7 +79,17 @@ void MaterialPractice::renderContainer(glm::mat4 view, glm::mat4 projection, Sha
 
     shader.setMat4("mvp", mvp);
     shader.setMat4("model", model);
-    shader.setVec3("LightPos", LightPos);
+
+    shader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+    shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+    shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    shader.setFloat("material.shininess", 32.0f);
+
+    shader.setVec3("light.LightPos", LightPos);
+    shader.setVec3("light.ambient", glm::vec3(0.2f));
+    shader.setVec3("light.diffuse", glm::vec3(0.5f));
+    shader.setVec3("light.specular", glm::vec3(1.0f));
+
 
     glBindVertexArray(cube_VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
