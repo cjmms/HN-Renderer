@@ -62,7 +62,7 @@ int main(void)
     // Make the window's context current 
     glfwMakeContextCurrent(window);
 
-    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -94,9 +94,9 @@ int main(void)
         glm::mat4 view = camera.getViewMatrix();
   
         containerShader.Bind();
-        //containerShader.setVec3("CubeColor", glm::vec3(1.0f, 0.5f, 0.31f));
-        //containerShader.setVec3("LightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-        //containerShader.setVec3("CameraPos", camera.getCameraPos());
+        containerShader.setVec3("CubeColor", glm::vec3(1.0f, 0.5f, 0.31f));
+        containerShader.setVec3("LightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        containerShader.setVec3("CameraPos", camera.getCameraPos());
 
         renderer.renderContainer(view, projection, containerShader);
 

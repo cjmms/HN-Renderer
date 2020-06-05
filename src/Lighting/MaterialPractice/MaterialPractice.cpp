@@ -79,6 +79,7 @@ void MaterialPractice::renderContainer(glm::mat4 view, glm::mat4 projection, Sha
 
     shader.setMat4("mvp", mvp);
     shader.setMat4("model", model);
+    shader.setVec3("LightPos", LightPos);
 
     glBindVertexArray(cube_VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
