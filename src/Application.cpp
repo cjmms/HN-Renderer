@@ -72,11 +72,11 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader lightSourceShader("res/Shaders/Lighting/LightingMap/LightSource.shader");
-    Shader containerShader("res/Shaders/Lighting/LightingMap/Cube.shader");
+    //Shader lightSourceShader("res/Shaders/Lighting/LightingMap/LightSource.shader");
+    Shader containerShader("res/Shaders/Lighting/DirectionalLight/Cube.shader");
 
 
-    LightingMap renderer;
+    DirectionalLight renderer;
 
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
@@ -94,14 +94,14 @@ int main(void)
         glm::mat4 view = camera.getViewMatrix();
   
         containerShader.Bind();
-        containerShader.setVec3("CubeColor", glm::vec3(1.0f, 0.5f, 0.31f));
+        //containerShader.setVec3("CubeColor", glm::vec3(1.0f, 0.5f, 0.31f));
         containerShader.setVec3("CameraPos", camera.getCameraPos());
 
         renderer.renderContainer(view, projection, containerShader);
 
 
-        lightSourceShader.Bind();
-        renderer.renderLightSource(view, projection, lightSourceShader);
+        //lightSourceShader.Bind();
+        //renderer.renderLightSource(view, projection, lightSourceShader);
 
         // Swap front and back buffers 
         glfwSwapBuffers(window);

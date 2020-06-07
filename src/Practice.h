@@ -12,3 +12,4 @@
 #include "Lighting/BasicLighting/BasicLighting.h"
 #include "Lighting/MaterialPractice/MaterialPractice.h"
 #include "Lighting/LightingMap/LightingMap.h"
+#include "Lighting/DirectionalLight/DirectionalLight.h"
