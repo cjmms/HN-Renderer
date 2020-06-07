@@ -26,8 +26,7 @@ void main()
 #version 330 core
 
 struct Material {
-	vec3 ambient;
-	vec3 diffuse;
+	sampler2D diffuse;
 	vec3 specular;
 	float shininess;
 };
@@ -60,17 +59,17 @@ void main()
 	vec3 eye = normalize(CameraPos - FragPos);
 
 	// ambient
-	vec3 ambient = light.ambient * material.ambient;
+	vec3 ambient = light.ambient * vec3(texture(material.diffuse, Texture));
 
 	// diffuse
 	float diff = max(dot(ray, normal), 0);
-	vec3 diffuse = light.diffuse * diff * material.diffuse;
+	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, Texture));
 
 	// specular
 	float spec = pow(max(dot(reflectRay, eye), 0), material.shininess);
 	vec3 specular = light.specular * spec * material.specular;
 
-	vec3 result = CubeColor * (ambient + diffuse + specular);
+	vec3 result = ambient + diffuse + specular;
 	FragColor = vec4(result, 1.0f);
 }
 
