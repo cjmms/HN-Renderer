@@ -72,14 +72,11 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
-    //Shader lightSourceShader("res/Shaders/Lighting/MaterialPractice/LightSource.shader");
     Shader lightSourceShader("res/Shaders/Lighting/LightingMap/LightSource.shader");
     Shader containerShader("res/Shaders/Lighting/LightingMap/Cube.shader");
-    //Shader containerShader("res/Shaders/Lighting/MaterialPractice/Cube.shader");
 
 
     LightingMap renderer;
-    //MaterialPractice renderer;
 
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
