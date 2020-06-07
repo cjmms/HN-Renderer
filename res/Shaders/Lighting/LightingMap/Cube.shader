@@ -70,7 +70,7 @@ void main()
 	vec3 specular = light.specular * spec * vec3(texture(material.specular, Texture));
 
 	vec3 emission =  vec3(texture(material.emission, Texture));
-	if (specular != vec3(0.0)) { emission = vec3(0.0f); }
+	if (vec3(texture(material.specular, Texture)) != vec3(0.0)) { emission = vec3(0.0f); }
 
 	FragColor = vec4(ambient + diffuse + specular + emission, 1.0f);
 }
