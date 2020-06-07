@@ -78,6 +78,10 @@ LightingMap::LightingMap()
 
 void LightingMap::renderContainer(glm::mat4 view, glm::mat4 projection, Shader& shader) 
 {
+    Texture texture_diffuse("res/Textures/wood_container.png", PNG);
+    Texture texture_specular("res/Textures/steel_frame.png", PNG);
+    texture_diffuse.bindTexture(GL_TEXTURE0);
+    texture_specular.bindTexture(GL_TEXTURE1);
     
     glm::mat4 model(1.0f);
     glm::mat4 mvp = projection * view * model;
@@ -85,9 +89,8 @@ void LightingMap::renderContainer(glm::mat4 view, glm::mat4 projection, Shader& 
     shader.setMat4("mvp", mvp);
     shader.setMat4("model", model);
 
-    shader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-    shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-    shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    shader.setInt("material.diffuse", 0);   // bind uniform to texture unit 0
+    shader.setInt("material.specular", 1);
     shader.setFloat("material.shininess", 32.0f);
 
     shader.setVec3("light.LightPos", LightPos);

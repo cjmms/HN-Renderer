@@ -135,3 +135,11 @@ void Shader::setFloat(const char* name, float value)
     unsigned int location = getUniformLocation(name);
     glUniform1f(location, value);
 }
+
+
+
+void Shader::setInt(const char* name, int value) 
+{
+    unsigned int location = getUniformLocation(name);
+    glUniform1i(location, value);
+}

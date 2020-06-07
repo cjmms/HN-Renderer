@@ -82,6 +82,7 @@ void MaterialPractice::renderContainer(glm::mat4 view, glm::mat4 projection, Sha
 
     shader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
     shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+    shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
     shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
     shader.setFloat("material.shininess", 32.0f);
 
