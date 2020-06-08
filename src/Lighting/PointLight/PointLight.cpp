@@ -122,8 +122,13 @@ void PointLight::renderContainer(glm::mat4 view, glm::mat4 projection, Shader& s
 
     shader.setVec3("light.LightPos", LightPos);
     shader.setVec3("light.ambient", glm::vec3(0.2f));
-    shader.setVec3("light.diffuse", glm::vec3(0.6f));
+    shader.setVec3("light.diffuse", glm::vec3(0.5f));
     shader.setVec3("light.specular", glm::vec3(1.0f));
+
+    shader.setFloat("light.constant", 1.0f);
+    shader.setFloat("light.quadratic", 0.09f);
+    shader.setFloat("light.linear", 0.032f);
+
 
     glBindVertexArray(Cube_VAO);
 
@@ -131,6 +136,9 @@ void PointLight::renderContainer(glm::mat4 view, glm::mat4 projection, Shader& s
     {
         glm::mat4 model(1.0f);
         model = glm::translate(model, cubePositions[i]);
+        float angle = 20.0f * i;
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
         glm::mat4 mvp = projection * view * model;
 
         shader.setMat4("mvp", mvp);
