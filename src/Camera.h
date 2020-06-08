@@ -35,6 +35,8 @@ public:
 	float getCameraSpeed();
 
 	glm::vec3 getCameraPos();
+	glm::vec3 getCameraDir();
+
 
 	// update cameraFrontS base on current x and y
 	void updateCameraDirection(float currentX, float currentY);

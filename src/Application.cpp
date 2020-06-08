@@ -70,11 +70,11 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader lightSourceShader("res/Shaders/Lighting/PointLight/LightSource.shader");
-    Shader containerShader("res/Shaders/Lighting/PointLight/Cube.shader");
+    //Shader lightSourceShader("res/Shaders/Lighting/Spotlight/LightSource.shader");
+    Shader containerShader("res/Shaders/Lighting/Spotlight/Cube.shader");
 
 
-    PointLight renderer;
+    Spotlight renderer;
 
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
@@ -94,11 +94,12 @@ int main(void)
   
         containerShader.Bind();
         containerShader.setVec3("CameraPos", camera.getCameraPos());
+        containerShader.setVec3("light.direction", camera.getCameraDir());
         renderer.renderContainer(view, projection, containerShader);
 
 
-        lightSourceShader.Bind();
-        renderer.renderLightSource(view, projection, lightSourceShader);
+        //lightSourceShader.Bind();
+        //renderer.renderLightSource(view, projection, lightSourceShader);
 
         // Swap front and back buffers 
         glfwSwapBuffers(window);

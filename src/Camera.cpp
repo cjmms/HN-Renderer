@@ -155,3 +155,8 @@ glm::vec3 Camera::getCameraPos()
 		std::endl; */
 	return cameraPos;
 }
+
+glm::vec3 Camera::getCameraDir() 
+{
+	return cameraFront;
+}

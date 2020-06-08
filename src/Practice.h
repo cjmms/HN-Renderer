@@ -14,3 +14,4 @@
 #include "Lighting/LightingMap/LightingMap.h"
 #include "Lighting/DirectionalLight/DirectionalLight.h"
 #include "Lighting/PointLight/PointLight.h"
+#include "Lighting/Spotlight/Spotlight.h"
