@@ -94,7 +94,7 @@ int main(void)
   
         containerShader.Bind();
         containerShader.setVec3("CameraPos", camera.getCameraPos());
-        containerShader.setVec3("light.direction", camera.getCameraDir());
+        //containerShader.setVec3("light.direction", camera.getCameraDir());
         renderer.renderContainer(view, projection, containerShader);
 
 
