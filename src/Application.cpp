@@ -70,11 +70,11 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
-    //Shader lightSourceShader("res/Shaders/Lighting/Spotlight/LightSource.shader");
-    Shader containerShader("res/Shaders/Lighting/Spotlight/Cube.shader");
+    Shader lightSourceShader("res/Shaders/Lighting/MultipleLights/LightSource.shader");
+    Shader containerShader("res/Shaders/Lighting/MultipleLights/Cube.shader");
 
 
-    Spotlight renderer;
+    MultipleLights renderer;
 
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
@@ -98,8 +98,8 @@ int main(void)
         renderer.renderContainer(view, projection, containerShader);
 
 
-        //lightSourceShader.Bind();
-        //renderer.renderLightSource(view, projection, lightSourceShader);
+        lightSourceShader.Bind();
+        renderer.renderLightSource(view, projection, lightSourceShader);
 
         // Swap front and back buffers 
         glfwSwapBuffers(window);

@@ -15,3 +15,4 @@
 #include "Lighting/DirectionalLight/DirectionalLight.h"
 #include "Lighting/PointLight/PointLight.h"
 #include "Lighting/Spotlight/Spotlight.h"
+#include "Lighting/MultipleLights/MultipleLights.h"
