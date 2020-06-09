@@ -35,6 +35,8 @@ struct Light {
 	vec3 LightPos;
 	vec3 direction;
 	float cutoff;
+	float outterCutoff;
+	float epsilon;
 
 	vec3 ambient;
 	vec3 diffuse;
@@ -67,27 +69,22 @@ void main()
 	float attenuation = 1.0 / (light.constant + light.linear * distance +
 		light.quadratic * (distance * distance));
 
+	// spotlight intensity
+	float theta = dot(eye, normalize(-light.direction));
+	float intensity = clamp(((theta - light.outterCutoff) / light.epsilon), 0.0f, 1.0f);
+
 	// ambient
 	vec3 ambient = light.ambient * texture(material.diffuse, Texture).rgb;
+	
+	// diffuse
+	float diff = max(dot(ray, normal), 0.0f);
+	vec3 diffuse = light.diffuse * diff * texture(material.diffuse, Texture).rgb * intensity;
 
-	float theta = dot(eye, normalize(-light.direction));
+	// specualr
+	float spec = pow(max(dot(reflectRay, eye), 0.0f), material.shininess);
+	vec3 specular = light.specular * spec * texture(material.specular, Texture).rgb * intensity;
 
-	if (light.cutoff < theta)
-	{
-		// diffuse
-		float diff = max(dot(ray, normal), 0.0f);
-		vec3 diffuse = light.diffuse * diff * texture(material.diffuse, Texture).rgb;
-
-		// specualr
-		float spec = pow(max(dot(reflectRay, eye), 0.0f), material.shininess);
-		vec3 specular = light.specular * spec * texture(material.specular, Texture).rgb;
-
-		FragColor = vec4((ambient + diffuse + specular) * attenuation, 1.0f);
-	}
-	else 
-	{
-		FragColor = vec4(ambient * attenuation, 1.0f);
-	}
+	FragColor = vec4((ambient + diffuse + specular) * attenuation, 1.0f);
 }
 
 

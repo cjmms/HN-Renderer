@@ -99,6 +99,8 @@ void Spotlight::renderContainer(glm::mat4 view, glm::mat4 projection, Shader& sh
     shader.setVec3("light.diffuse", glm::vec3(0.5f));
     shader.setVec3("light.specular", glm::vec3(1.0f));
     shader.setFloat("light.cutoff", glm::cos(glm::radians(12.5f)));
+    shader.setFloat("light.outterCutoff", glm::cos(glm::radians(17.5f)));
+    shader.setFloat("light.epsilon", glm::cos(glm::radians(12.5f)) - glm::cos(glm::radians(17.5f)));
 
     shader.setFloat("light.constant", 1.0f);
     shader.setFloat("light.quadratic", 0.09f);
