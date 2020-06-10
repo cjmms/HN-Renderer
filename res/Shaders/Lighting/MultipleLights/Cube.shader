@@ -56,7 +56,6 @@ vec3 calculateDirLight(DirLight dirLight, vec3 normal, vec3 viewDir);
 
 void main() 
 {
-
 	vec3 normal = normalize(Normal);
 	vec3 viewDir = normalize(CameraPos - FragPos);
 
@@ -83,5 +82,4 @@ vec3 calculateDirLight(DirLight light, vec3 normal, vec3 viewDir)
 	vec3 specular = light.specular * spec * texture(material.specular, Texture).rgb;
 
 	return ambient + diffuse + specular;
-	//return light.ambient;
 }

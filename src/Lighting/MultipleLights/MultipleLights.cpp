@@ -73,22 +73,29 @@ MultipleLights::MultipleLights()
 
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
+
+    lightPos[0] = glm::vec3(0.7f, 0.2f, 2.0f);
+    lightPos[1] = glm::vec3(2.3f, -3.3f, -4.0f);
+    lightPos[2] = glm::vec3(-4.0f, 2.0f, -12.0f);
+    lightPos[3] = glm::vec3(0.0f, 0.0f, -3.0f);
 }
 
 
 
 void MultipleLights::renderLightSource(glm::mat4 view, glm::mat4 projection, Shader& shader)
 {
-    glm::mat4 model(1.0f);
-    //model = glm::translate(model, LightPos);
-    model = glm::scale(model, glm::vec3(0.2f));
-
-    glm::mat4 mvp = projection * view * model;
-
-    shader.setMat4("mvp", mvp);
-
     glBindVertexArray(Light_VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    for (int i = 0; i < 4; i++) {
+        glm::mat4 model(1.0f);
+        model = glm::translate(model, lightPos[i]);
+        model = glm::scale(model, glm::vec3(0.2f));
+
+        glm::mat4 mvp = projection * view * model;
+
+        shader.setMat4("mvp", mvp);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 }
 
 
@@ -114,7 +121,7 @@ void MultipleLights::renderContainer(glm::mat4 view, glm::mat4 projection, Shade
     specular_map.bindTexture(GL_TEXTURE1);
 
     
-
+    // material uniform
     shader.setInt("material.diffuse", 0);
     shader.setInt("material.specular", 1);
     shader.setFloat("material.shininess", 32.0f);
@@ -129,10 +136,14 @@ void MultipleLights::renderContainer(glm::mat4 view, glm::mat4 projection, Shade
     shader.setFloat("light.linear", 0.032f);
     */
 
+    // directional light uniform
     shader.setVec3("dirLight.dir", glm::vec3(-0.2f, -1.0f, -0.3f));
-    shader.setVec3("dirLight.ambient", glm::vec3(0.3f));
+    shader.setVec3("dirLight.ambient", glm::vec3(0.2f));
     shader.setVec3("dirLight.diffuse", glm::vec3(0.5f));
-    shader.setVec3("dirLight.specular", glm::vec3(1.0f));
+    shader.setVec3("dirLight.specular", glm::vec3(8.0f));
+
+
+
 
     glBindVertexArray(Cube_VAO);
 

@@ -12,7 +12,7 @@ private:
 	unsigned int VBO;
 	unsigned int Light_VAO, Cube_VAO;
 
-	glm::vec3 lightPos[];
+	glm::vec3 lightPos[4];
 
 public:
 	MultipleLights();
