@@ -125,16 +125,6 @@ void MultipleLights::renderContainer(glm::mat4 view, glm::mat4 projection, Shade
     shader.setInt("material.diffuse", 0);
     shader.setInt("material.specular", 1);
     shader.setFloat("material.shininess", 32.0f);
-    /*
-    //shader.setVec3("light.LightPos", LightPos);
-    shader.setVec3("light.ambient", glm::vec3(0.2f));
-    shader.setVec3("light.diffuse", glm::vec3(0.5f));
-    shader.setVec3("light.specular", glm::vec3(1.0f));
-
-    shader.setFloat("light.constant", 1.0f);
-    shader.setFloat("light.quadratic", 0.09f);
-    shader.setFloat("light.linear", 0.032f);
-    */
 
     // directional light uniform
     shader.setVec3("dirLight.dir", glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -154,6 +144,17 @@ void MultipleLights::renderContainer(glm::mat4 view, glm::mat4 projection, Shade
         shader.setFloat((str + std::to_string(i) + "].linear").c_str(), 0.09f);
         shader.setFloat((str + std::to_string(i) + "].quadratic").c_str(), 0.032f);
     }
+
+    // Spotlight uniform
+    shader.setVec3("spotLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+    shader.setVec3("spotLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+    shader.setVec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader.setFloat("spotLight.constant", 1.0f);
+    shader.setFloat("spotLight.linear", 0.09f);
+    shader.setFloat("spotLight.quadratic", 0.032f);
+    shader.setFloat("spotLight.cutoff", glm::cos(glm::radians(12.5f)));
+    shader.setFloat("spotLight.outterCutoff", glm::cos(glm::radians(17.5f)));
+    shader.setFloat("spotLight.epsilon", glm::cos(glm::radians(12.5f)) - glm::cos(glm::radians(17.5f)));
 
 
     glBindVertexArray(Cube_VAO);
