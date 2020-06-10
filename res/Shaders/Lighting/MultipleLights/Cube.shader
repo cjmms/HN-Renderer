@@ -40,8 +40,22 @@ struct Material {
 	float shininess;
 };
 
+struct PointLight {
+	vec3 position;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+
+	float constant;
+	float linear;
+	float quadratic;
+};
+
+#define NR_POINT_LIGHTS 4
+
 uniform vec3 CameraPos;
 uniform DirLight dirLight;
+uniform PointLight pointLight[NR_POINT_LIGHTS];
 uniform Material material;
 
 in vec3 FragPos;
@@ -50,7 +64,8 @@ in vec2 Texture;
 
 out vec4 FragColor;
 
-vec3 calculateDirLight(DirLight dirLight, vec3 normal, vec3 viewDir);
+vec3 calculateDirLight(DirLight light, vec3 normal, vec3 viewDir);
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDir);
 
 
 
@@ -59,10 +74,14 @@ void main()
 	vec3 normal = normalize(Normal);
 	vec3 viewDir = normalize(CameraPos - FragPos);
 
+	vec3 result = vec3(0.0f);
 
-	vec3 result = vec3(0.7f);
-
+	// directional light
 	result = calculateDirLight(dirLight, normal, viewDir);
+
+	// point light
+	for (int i = 0; i < NR_POINT_LIGHTS; i++) 
+		result += calculatePointLight(pointLight[i], normal, viewDir);
 
 	FragColor = vec4(result, 1.0f);
 }
@@ -83,3 +102,29 @@ vec3 calculateDirLight(DirLight light, vec3 normal, vec3 viewDir)
 
 	return ambient + diffuse + specular;
 }
+
+
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDir) 
+{
+	vec3 lightDir = normalize(light.position - FragPos);
+	vec3 reflectDir = normalize(reflect(-lightDir, normal));
+
+	// ambient
+	vec3 ambient = light.ambient * texture(material.diffuse, Texture).rgb;
+
+	// diffuse
+	float diff = max(dot(lightDir, normal), 0.0f);
+	vec3 diffuse = light.diffuse * diff * texture(material.diffuse, Texture).rgb;
+
+	// specualr
+	float spec = pow(max(dot(reflectDir, viewDir), 0.0f), material.shininess);
+	vec3 specular = light.specular * spec * texture(material.specular, Texture).rgb;
+
+	// attenuation
+	float distance = length(light.position - FragPos);
+	float attenuation = 1.0 / (light.constant + light.linear * distance +
+		light.quadratic * (distance * distance));
+
+	return (ambient + diffuse + specular) * attenuation;
+}
+
