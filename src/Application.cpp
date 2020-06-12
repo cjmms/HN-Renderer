@@ -2,6 +2,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <assimp\Importer.hpp>
+
+
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "Practice.h"
