@@ -12,12 +12,12 @@
 #include <vector>
 
 
-struct Vectex {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec3 texCoords;
-	glm::vec3 tangent;
-	glm::vec3 bitengent;
+struct Vertex {
+	glm::vec3 Position;
+	glm::vec3 Normal;
+	glm::vec3 TexCoords;
+	glm::vec3 Tangent;
+	glm::vec3 Bitangent;
 };
 
 struct Texture {
@@ -28,20 +28,25 @@ struct Texture {
 
 
 
+// Texture unit naming convention: texture_diffuse1, texture_diffuse2, texture_specular1 ......
 class Mesh
 {
 
 public:
-	std::vector<Vectex> vertices;
+	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 	unsigned int VAO;
 
-	Mesh(std::vector<Vectex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+
+	// bind texture, bind VAO, draw
 	void draw(Shader &shader);
 
 private:
 	unsigned int VBO, EBO;
 	void setup();
+	// read date from textures and bind textures
+	void bindTexture(Shader &shader);
 };
 
