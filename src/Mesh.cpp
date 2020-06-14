@@ -88,3 +88,4 @@ void Mesh::bindTexture(Shader& shader)
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 }
+
