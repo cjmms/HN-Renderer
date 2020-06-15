@@ -128,18 +128,18 @@ void MultipleLights::renderContainer(glm::mat4 view, glm::mat4 projection, Shade
 
     // directional light uniform
     shader.setVec3("dirLight.dir", glm::vec3(-0.2f, -1.0f, -0.3f));
-    shader.setVec3("dirLight.ambient", glm::vec3(0.2f));
-    shader.setVec3("dirLight.diffuse", glm::vec3(0.5f));
-    shader.setVec3("dirLight.specular", glm::vec3(8.0f));
+    shader.setVec3("dirLight.ambient", glm::vec3(0.1f));
+    shader.setVec3("dirLight.diffuse", glm::vec3(0.25f));
+    shader.setVec3("dirLight.specular", glm::vec3(5.0f));
 
     // point light uniform
     for (int i = 0; i < 4; i++) 
     {
         std::string str("pointLight[");
         shader.setVec3((str + std::to_string(i) + "].position").c_str(), lightPos[i]);
-        shader.setVec3((str + std::to_string(i) + "].ambient").c_str(), glm::vec3(0.05f, 0.05f, 0.05f));
-        shader.setVec3((str + std::to_string(i) + "].diffuse").c_str(), glm::vec3(0.8f, 0.8f, 0.8f));
-        shader.setVec3((str + std::to_string(i) + "].specular").c_str(), glm::vec3(1.0f, 1.0f, 1.0f));
+        shader.setVec3((str + std::to_string(i) + "].ambient").c_str(), glm::vec3(0.05f));
+        shader.setVec3((str + std::to_string(i) + "].diffuse").c_str(), glm::vec3(0.4f));
+        shader.setVec3((str + std::to_string(i) + "].specular").c_str(), glm::vec3(0.7f));
         shader.setFloat((str + std::to_string(i) + "].constant").c_str(), 1.0f);
         shader.setFloat((str + std::to_string(i) + "].linear").c_str(), 0.09f);
         shader.setFloat((str + std::to_string(i) + "].quadratic").c_str(), 0.032f);

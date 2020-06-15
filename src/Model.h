@@ -23,5 +23,10 @@ private:
 	Mesh processMesh(aiMesh *mesh, const aiScene *scene);
 	std::vector<Texture> loadMaterialTextures(
 		aiMaterial* material, aiTextureType type, std::string typeName);
+
+	glm::vec3 processPosition(aiMesh* mesh, unsigned int i);
+	glm::vec3 processNormal(aiMesh* mesh, unsigned int i);
+	glm::vec2 processTextureCoords(aiMesh* mesh, unsigned int i);
+	void processVertex(std::vector<Vertex> &vertices, aiMesh* mesh);
 };
 
