@@ -54,3 +54,6 @@ void Texture::loadImage(unsigned char* data)
         std::cout << "Image source is not properly loaded." << std::endl;
     }
 }
+
+
+

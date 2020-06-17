@@ -28,7 +28,7 @@ struct Texture {
 
 
 
-// Texture unit naming convention: texture_diffuse1, texture_diffuse2, texture_specular1 ......
+
 class Mesh
 {
 
