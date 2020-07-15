@@ -20,8 +20,8 @@ private:
 	void cubeInit();
 	void planeInit();
 
-	void drawCube(glm::mat4 model, glm::mat4 view, glm::mat4 projection, Shader& shader);
-	void drawPlane(glm::mat4 model, glm::mat4 view, glm::mat4 projection, Shader& shader);
+	void drawCube(glm::mat4 mvp, Shader& shader, Texture& texture);
+	void drawPlane(glm::mat4 mvp, Shader& shader, Texture& texture);
 
 public:
 	DepthTest();

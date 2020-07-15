@@ -103,13 +103,10 @@ void DepthTest::planeInit()
 }
 
 
-void DepthTest::drawCube(glm::mat4 model, glm::mat4 view, glm::mat4 projection, Shader& shader)
+void DepthTest::drawCube(glm::mat4 mvp, Shader& shader, Texture& texture)
 {
-    Texture cubeTexture("res/Textures/marble.jpg", JPG);
-    cubeTexture.bindTexture(GL_TEXTURE0);   
-    shader.setInt("texture0", 0);
+    texture.bindTexture(GL_TEXTURE0);   
 
-    glm::mat4 mvp = projection * view * model;
     shader.setMat4("mvp", mvp);
 
     glBindVertexArray(cubeVAO);
@@ -118,13 +115,10 @@ void DepthTest::drawCube(glm::mat4 model, glm::mat4 view, glm::mat4 projection, 
 
 
 
-void DepthTest::drawPlane(glm::mat4 model, glm::mat4 view, glm::mat4 projection, Shader& shader)
+void DepthTest::drawPlane(glm::mat4 mvp, Shader& shader, Texture& texture)
 {
-    Texture planeTexture("res/Textures/metal.png", PNG);
-    planeTexture.bindTexture(GL_TEXTURE0);
-    shader.setInt("texture0", 0);
+    texture.bindTexture(GL_TEXTURE0);
 
-    glm::mat4 mvp = projection * view * model;
     shader.setMat4("mvp", mvp);
 
     glBindVertexArray(planeVAO);
@@ -135,16 +129,20 @@ void DepthTest::drawPlane(glm::mat4 model, glm::mat4 view, glm::mat4 projection,
 
 void DepthTest::renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader) 
 {
+    Texture planeTexture("res/Textures/metal.jpg", JPG);
+    Texture cubeTexture("res/Textures/marble.jpg", JPG);
+    shader.setInt("texture0", 0);
+
     glm::mat4 model(1.0f);
 
     // draw first cube
     model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
-    drawCube(model, view, projection, shader);
+    drawCube(projection * view * model, shader, cubeTexture);
 
     // draw second cube
     model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
-    drawCube(model, view, projection, shader);
+    drawCube(projection * view * model, shader, cubeTexture);
 
     // draw plane
-    //drawPlane(glm::mat4(1.0f), view, projection, shader);
+    drawPlane(projection * view * glm::mat4(1.0f), shader, planeTexture);
 }
