@@ -17,6 +17,12 @@ private:
 	// plane
 	unsigned int planeVAO, planeVBO;
 
+	void cubeInit();
+	void planeInit();
+
+	void drawCube(glm::mat4 model, glm::mat4 view, glm::mat4 projection, Shader& shader);
+	void drawPlane(glm::mat4 model, glm::mat4 view, glm::mat4 projection, Shader& shader);
+
 public:
 	DepthTest();
 

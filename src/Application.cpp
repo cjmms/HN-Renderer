@@ -71,10 +71,12 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader lightSourceShader("res/Shaders/Lighting/MultipleLights/LightSource.shader");
-    Shader containerShader("res/Shaders/Lighting/MultipleLights/Cube.shader");
+    //Shader lightSourceShader("res/Shaders/Lighting/MultipleLights/LightSource.shader");
+    //Shader containerShader("res/Shaders/Lighting/MultipleLights/Cube.shader");
 
-    MultipleLights renderer;
+    Shader shader("res/Shaders/Advanced_OpenGL/DepthTest/DepthTest.shader");
+
+    DepthTest renderer;
 
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
@@ -92,6 +94,7 @@ int main(void)
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
   
+        /*
         containerShader.Bind();
         containerShader.setVec3("CameraPos", camera.getCameraPos());
         containerShader.setVec3("spotLight.direction", camera.getCameraDir());
@@ -100,6 +103,10 @@ int main(void)
 
         lightSourceShader.Bind();
         renderer.renderLightSource(view, projection, lightSourceShader);
+        */
+
+        shader.Bind();
+        renderer.renderScene(view, projection, shader);
 
         // Swap front and back buffers 
         glfwSwapBuffers(window);
