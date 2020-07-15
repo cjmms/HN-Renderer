@@ -16,3 +16,5 @@
 #include "Lighting/PointLight/PointLight.h"
 #include "Lighting/Spotlight/Spotlight.h"
 #include "Lighting/MultipleLights/MultipleLights.h"
+
+#include "Advanced_OpenGL/DepthTest/DepthTest.h"

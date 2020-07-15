@@ -19,4 +19,3 @@ public:
 	void renderLightSource(glm::mat4 view, glm::mat4 projection, Shader& shader);
 	void renderContainer(glm::mat4 view, glm::mat4 projection, Shader& shader);
 };
-

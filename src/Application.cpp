@@ -74,7 +74,6 @@ int main(void)
     Shader lightSourceShader("res/Shaders/Lighting/MultipleLights/LightSource.shader");
     Shader containerShader("res/Shaders/Lighting/MultipleLights/Cube.shader");
 
-
     MultipleLights renderer;
 
     // Loop until the user closes the window 
