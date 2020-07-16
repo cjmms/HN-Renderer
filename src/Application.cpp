@@ -1,13 +1,14 @@
 #pragma once
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+//#include <GL/glew.h>
+//#include <GLFW/glfw3.h>
 
 
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "Practice.h"
-#include "Camera.h"
-#include "Shader.h"
+//#include "Practice.h"
+//#include "Camera.h"
+//#include "Shader.h"
+#include "Advanced_OpenGL/DepthTest/DepthTestApp.h"
 
 
 Camera camera;
@@ -36,10 +37,18 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    camera.updateCameraDirection(xpos, ypos);
+    camera.updateCameraDirection((float)xpos, (float)ypos);
 }
 
 
+int main(void) 
+{
+    run();
+}
+
+
+
+/*
 int main(void)
 {
     GLFWwindow* window;
@@ -94,16 +103,16 @@ int main(void)
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
   
-        /*
-        containerShader.Bind();
-        containerShader.setVec3("CameraPos", camera.getCameraPos());
-        containerShader.setVec3("spotLight.direction", camera.getCameraDir());
-        renderer.renderContainer(view, projection, containerShader);
+        
+        //containerShader.Bind();
+        //containerShader.setVec3("CameraPos", camera.getCameraPos());
+        //containerShader.setVec3("spotLight.direction", camera.getCameraDir());
+        //renderer.renderContainer(view, projection, containerShader);
 
 
-        lightSourceShader.Bind();
-        renderer.renderLightSource(view, projection, lightSourceShader);
-        */
+        //lightSourceShader.Bind();
+        //renderer.renderLightSource(view, projection, lightSourceShader);
+        
 
         shader.Bind();
         renderer.renderScene(view, projection, shader);
@@ -117,4 +126,5 @@ int main(void)
 
     glfwTerminate();
     return 0;
-}
+}  
+*/
