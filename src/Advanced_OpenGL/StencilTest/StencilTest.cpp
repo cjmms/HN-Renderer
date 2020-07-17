@@ -171,7 +171,8 @@ int runStencilTest()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader shader("res/Shaders/Advanced_OpenGL/StencilTest/TextureShader.shader");
+    Shader TextureShader("res/Shaders/Advanced_OpenGL/StencilTest/TextureShader.shader");
+    Shader SingleColorShader("res/Shaders/Advanced_OpenGL/StencilTest/SingleColorShader.shader");
 
     StencilTest renderer;
 
@@ -189,8 +190,9 @@ int runStencilTest()
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
 
-        shader.Bind();
-        renderer.renderScene(view, projection, shader);
+        //TextureShader.Bind();
+        SingleColorShader.Bind();
+        renderer.renderScene(view, projection, SingleColorShader);
 
 
         glfwSwapBuffers(window);
