@@ -174,3 +174,74 @@ void MultipleLights::renderContainer(glm::mat4 view, glm::mat4 projection, Shade
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 }
+
+
+
+int runMultipleLights() 
+{
+    GLFWwindow* window;
+
+    // Initialize the library
+    if (!glfwInit())
+        return -1;
+
+    // Create a windowed mode window and its OpenGL context
+    window = glfwCreateWindow(1200, 1000, "Vanilla", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // Make the window's context current
+    glfwMakeContextCurrent(window);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+    if (glewInit() != GLEW_OK)
+        std::cout << "init error" << std::endl;
+
+    glEnable(GL_DEPTH_TEST);
+
+    Shader lightSourceShader("res/Shaders/Lighting/MultipleLights/LightSource.shader");
+    Shader containerShader("res/Shaders/Lighting/MultipleLights/Cube.shader");
+
+    MultipleLights renderer;
+
+    // Loop until the user closes the window
+    while (!glfwWindowShouldClose(window))
+    {
+        // input
+        processInput(window);
+
+        // Render here
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        camera.cameraUpdateFrameTime();
+
+        glm::mat4 projection = camera.getProjectionMatrix();
+        glm::mat4 view = camera.getViewMatrix();
+
+
+        containerShader.Bind();
+        containerShader.setVec3("CameraPos", camera.getCameraPos());
+        containerShader.setVec3("spotLight.direction", camera.getCameraDir());
+        renderer.renderContainer(view, projection, containerShader);
+
+
+        lightSourceShader.Bind();
+        renderer.renderLightSource(view, projection, lightSourceShader);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return 0;
+}

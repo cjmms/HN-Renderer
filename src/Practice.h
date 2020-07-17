@@ -1,15 +1,4 @@
 #pragma once
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include "Camera.h"
-#include "Shader.h"
-
-extern Camera camera;
-
-void processInput(GLFWwindow* window);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 #include "Basic/Practice1/Practice1.h"
 #include "Basic/Practice2/Practice2.h"

@@ -1,10 +1,16 @@
 #pragma once
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 #include "../../Shader.h"
 #include "../../Texture.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "../../Camera.h"
+
+extern Camera camera;
 
 
 class DepthTest
@@ -29,3 +35,5 @@ public:
 	void renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader);
 };
 
+
+int runDepthTest();
