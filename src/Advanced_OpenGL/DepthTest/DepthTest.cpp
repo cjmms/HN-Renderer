@@ -179,6 +179,7 @@ int runDepthTest()
         std::cout << "init error" << std::endl;
 
     glEnable(GL_DEPTH_TEST);
+    //glDepthFunc(GL_ALWAYS);
 
     Shader shader("res/Shaders/Advanced_OpenGL/DepthTest/DepthTest.shader");
 
