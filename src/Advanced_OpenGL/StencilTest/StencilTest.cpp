@@ -118,24 +118,49 @@ StencilTest::StencilTest()
 }
 
 
-void StencilTest::renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader) 
+void StencilTest::renderScene(glm::mat4 view, glm::mat4 projection, Shader& SingleColorShader, Shader& TextureShader)
 {
+    TextureShader.Bind();
+
     Texture planeTexture("res/Textures/metal.jpg", JPG);
     Texture cubeTexture("res/Textures/marble.jpg", JPG);
-    shader.setInt("texture0", 0);
+    TextureShader.setInt("texture0", 0);
 
     glm::mat4 model(1.0f);
 
+    glStencilMask(0x00);    // clear stencil buffer
+    // draw plane
+    drawPlane(projection * view * glm::mat4(1.0f), TextureShader, planeTexture);
+
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);  
+    glStencilMask(0xFF);
+
     // draw first cube
     model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
-    drawCube(projection * view * model, shader, cubeTexture);
+    drawCube(projection * view * model, TextureShader, cubeTexture);
 
     // draw second cube
     model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
-    drawCube(projection * view * model, shader, cubeTexture);
+    drawCube(projection * view * model, TextureShader, cubeTexture);
 
-    // draw plane
-    drawPlane(projection * view * glm::mat4(1.0f), shader, planeTexture);
+
+    
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilMask(0x00);        // disable writing to stencil buffer
+    glDisable(GL_DEPTH_TEST);   // disable depth test, make sure the border always shows
+
+    SingleColorShader.Bind();
+
+    // draw first cube
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
+    model = glm::scale(model, glm::vec3(1.1f, 1.1f, 1.1f));
+    drawCube(projection * view * model, TextureShader, cubeTexture);
+
+    // draw second cube
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(1.1f, 1.1f, 1.1f));
+    drawCube(projection * view * model, TextureShader, cubeTexture);
+    
 }
 
 
@@ -169,6 +194,9 @@ int runStencilTest()
     if (glewInit() != GLEW_OK)
         std::cout << "init error" << std::endl;
 
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glEnable(GL_DEPTH_TEST);
 
     Shader TextureShader("res/Shaders/Advanced_OpenGL/StencilTest/TextureShader.shader");
@@ -183,17 +211,18 @@ int runStencilTest()
 
         // Render here 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         camera.cameraUpdateFrameTime();
 
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
 
-        //TextureShader.Bind();
-        SingleColorShader.Bind();
-        renderer.renderScene(view, projection, SingleColorShader);
+        renderer.renderScene(view, projection, SingleColorShader, TextureShader);
 
+        glStencilMask(0xFF);
+        glStencilFunc(GL_ALWAYS, 0, 0xFF);
+        glEnable(GL_DEPTH_TEST);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -24,7 +24,7 @@ private:
 
 public:
 	StencilTest();
-	void renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader);
+	void renderScene(glm::mat4 view, glm::mat4 projection, Shader& SingleColorShader, Shader& TextureShader);
 };
 
 
