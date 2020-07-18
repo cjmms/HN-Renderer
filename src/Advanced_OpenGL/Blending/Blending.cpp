@@ -5,6 +5,7 @@ Blending::Blending()
 {
 	cubeInit();
 	planeInit();
+    grassInit();
 }
 
 
@@ -98,6 +99,35 @@ void Blending::planeInit()
 }
 
 
+void Blending::grassInit() 
+{
+    float grassVertices[] = {
+        // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+        0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+        1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+    };
+
+
+    glGenBuffers(1, &grassVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, grassVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(grassVertices), grassVertices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &grassVAO);
+    glBindVertexArray(grassVAO);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+}
+
+
 void Blending::drawCube(glm::mat4 mvp, Shader& shader, Texture& texture)
 {
 	texture.bindTexture(GL_TEXTURE0);
@@ -117,11 +147,31 @@ void Blending::drawPlane(glm::mat4 mvp, Shader& shader, Texture& texture)
 }
 
 
+void Blending::drawGrass(glm::mat4 mvp, Shader& shader, Texture& texture)
+{
+    std::vector<glm::vec3> vegetation;
+    vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
+    vegetation.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
+    vegetation.push_back(glm::vec3(0.0f, 0.0f, 0.7f));
+    vegetation.push_back(glm::vec3(-0.3f, 0.0f, -2.3f));
+    vegetation.push_back(glm::vec3(0.5f, 0.0f, -0.6f));
+
+    texture.bindTexture(GL_TEXTURE0);
+
+    for (unsigned int i = 0; i < vegetation.size(); i++) 
+    {
+        shader.setMat4("mvp", mvp * glm::translate(glm::mat4(1.0f), vegetation[i]));
+        glBindVertexArray(grassVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+}
+
 
 void Blending::renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader) 
 {
     Texture planeTexture("res/Textures/metal.jpg", JPG);
     Texture cubeTexture("res/Textures/marble.jpg", JPG);
+    Texture grassTexture("res/Textures/grass.PNG", PNG);
     shader.setInt("Texture0", 0);
 
     glm::mat4 model(1.0f);
@@ -135,6 +185,8 @@ void Blending::renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader)
     // draw second cube
     model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
     drawCube(projection * view * model, shader, cubeTexture);
+
+    drawGrass(projection * view, shader, grassTexture);
 }
 
 
