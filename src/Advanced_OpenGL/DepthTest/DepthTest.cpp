@@ -179,9 +179,8 @@ int runDepthTest()
         std::cout << "init error" << std::endl;
 
     glEnable(GL_DEPTH_TEST);
-    //glDepthFunc(GL_ALWAYS);
 
-    Shader shader("res/Shaders/Advanced_OpenGL/DepthTest/DepthTest.shader");
+    Shader shader("res/Shaders/Advanced_OpenGL/Blending/Blending.shader");
 
     DepthTest renderer;
 
@@ -201,7 +200,6 @@ int runDepthTest()
 
         shader.Bind();
         renderer.renderScene(view, projection, shader);
-
 
         glfwSwapBuffers(window);
         glfwPollEvents();

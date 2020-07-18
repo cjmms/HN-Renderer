@@ -1,7 +1,14 @@
-#include "StencilTest.h"
+#include "Blending.h"
 
 
-void StencilTest::cubeInit() 
+Blending::Blending()
+{
+	cubeInit();
+	planeInit();
+}
+
+
+void Blending::cubeInit() 
 {
     float cubeVertices[] = {
         // positions          // texture Coords
@@ -62,8 +69,7 @@ void StencilTest::cubeInit()
     glEnableVertexAttribArray(1);
 }
 
-
-void StencilTest::planeInit()
+void Blending::planeInit() 
 {
     float planeVertices[] = {
         // positions          // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
@@ -91,80 +97,50 @@ void StencilTest::planeInit()
     glEnableVertexAttribArray(1);
 }
 
-void StencilTest::drawCube(glm::mat4 mvp, Shader& shader, Texture& texture)
-{
-    texture.bindTexture(0);
-    shader.setMat4("mvp", mvp);
 
-    glBindVertexArray(cubeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+void Blending::drawCube(glm::mat4 mvp, Shader& shader, Texture& texture)
+{
+	texture.bindTexture(GL_TEXTURE0);
+	shader.setMat4("mvp", mvp);
+
+	glBindVertexArray(cubeVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void Blending::drawPlane(glm::mat4 mvp, Shader& shader, Texture& texture)
+{
+	texture.bindTexture(GL_TEXTURE0);
+	shader.setMat4("mvp", mvp);
+
+	glBindVertexArray(planeVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 
-void StencilTest::drawPlane(glm::mat4 mvp, Shader& shader, Texture& texture)
+
+void Blending::renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader) 
 {
-    texture.bindTexture(0);
-    shader.setMat4("mvp", mvp);
-
-    glBindVertexArray(planeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-}
-
-
-StencilTest::StencilTest()
-{
-	cubeInit();
-	planeInit();
-}
-
-
-void StencilTest::renderScene(glm::mat4 view, glm::mat4 projection, Shader& SingleColorShader, Shader& TextureShader)
-{
-    TextureShader.Bind();
-
     Texture planeTexture("res/Textures/metal.jpg", JPG);
     Texture cubeTexture("res/Textures/marble.jpg", JPG);
-    TextureShader.setInt("texture0", 0);
+    shader.setInt("Texture0", 0);
 
     glm::mat4 model(1.0f);
 
-    glStencilMask(0x00);    // clear stencil buffer
-    // draw plane
-    drawPlane(projection * view * glm::mat4(1.0f), TextureShader, planeTexture);
-
-    glStencilFunc(GL_ALWAYS, 1, 0xFF);  
-    glStencilMask(0xFF);
+    drawPlane(projection * view * glm::mat4(1.0f), shader, planeTexture);
 
     // draw first cube
     model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
-    drawCube(projection * view * model, TextureShader, cubeTexture);
+    drawCube(projection * view * model, shader, cubeTexture);
 
     // draw second cube
     model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
-    drawCube(projection * view * model, TextureShader, cubeTexture);
-
-
-    
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilMask(0x00);        // disable writing to stencil buffer
-    glDisable(GL_DEPTH_TEST);   // disable depth test, make sure the border always shows
-
-    SingleColorShader.Bind();
-
-    // draw first cube
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
-    model = glm::scale(model, glm::vec3(1.1f, 1.1f, 1.1f));
-    drawCube(projection * view * model, TextureShader, cubeTexture);
-
-    // draw second cube
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(1.1f, 1.1f, 1.1f));
-    drawCube(projection * view * model, TextureShader, cubeTexture);
+    drawCube(projection * view * model, shader, cubeTexture);
 }
 
 
 
-int runStencilTest() 
+
+int runBlending()
 {
     GLFWwindow* window;
 
@@ -193,15 +169,12 @@ int runStencilTest()
     if (glewInit() != GLEW_OK)
         std::cout << "init error" << std::endl;
 
-    glEnable(GL_STENCIL_TEST);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+
     glEnable(GL_DEPTH_TEST);
 
-    Shader TextureShader("res/Shaders/Advanced_OpenGL/StencilTest/TextureShader.shader");
-    Shader SingleColorShader("res/Shaders/Advanced_OpenGL/StencilTest/SingleColorShader.shader");
+    Shader shader("res/Shaders/Advanced_OpenGL/StencilTest/TextureShader.shader");
 
-    StencilTest renderer;
+    Blending renderer;
 
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
@@ -210,18 +183,15 @@ int runStencilTest()
 
         // Render here 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         camera.cameraUpdateFrameTime();
 
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
 
-        renderer.renderScene(view, projection, SingleColorShader, TextureShader);
-
-        glStencilMask(0xFF);
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glEnable(GL_DEPTH_TEST);
+        shader.Bind();
+        renderer.renderScene(view, projection, shader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -230,3 +200,4 @@ int runStencilTest()
     glfwTerminate();
     return 0;
 }
+

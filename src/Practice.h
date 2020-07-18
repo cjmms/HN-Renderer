@@ -19,3 +19,4 @@
 
 #include "Advanced_OpenGL/DepthTest/DepthTest.h"
 #include "Advanced_OpenGL/StencilTest/StencilTest.h"
+#include "Advanced_OpenGL/Blending/Blending.h"

@@ -35,6 +35,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 int main(void) 
 {
     //runMultipleLights();
+
+    //  Advanced OpenGL
     //runDepthTest();
-    runStencilTest();
+    //runStencilTest();
+    runBlending();
 }
