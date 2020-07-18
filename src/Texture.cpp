@@ -32,12 +32,12 @@ void Texture::loadImage(unsigned char* data)
         {
         case JPG:
             // 2nd arg is mipmap level, 3rd arg is the format of output data, 6th arg should always be 0.
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             break;
         case PNG:
             // can't load PNG properly
             // TODO
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
             break;
         default:
             std::cout << "Image source type Error" << std::endl;

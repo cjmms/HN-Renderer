@@ -103,13 +103,13 @@ void Blending::grassInit()
 {
     float grassVertices[] = {
         // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
-        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-        0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
-        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+        0.0f,  0.5f,  0.0f,  0.0f,  1.0f,
+        0.0f, -0.5f,  0.0f,  0.0f,  0.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  0.0f,
 
-        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
-        1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+        0.0f,  0.5f,  0.0f,  0.0f,  1.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  0.0f,
+        1.0f,  0.5f,  0.0f,  1.0f,  1.0f
     };
 
 
@@ -224,7 +224,7 @@ int runBlending()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader shader("res/Shaders/Advanced_OpenGL/StencilTest/TextureShader.shader");
+    Shader shader("res/Shaders/Advanced_OpenGL/Blending/Blending.shader");
 
     Blending renderer;
 

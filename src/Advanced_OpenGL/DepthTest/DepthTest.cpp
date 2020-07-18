@@ -180,7 +180,7 @@ int runDepthTest()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader shader("res/Shaders/Advanced_OpenGL/Blending/Blending.shader");
+    Shader shader("res/Shaders/Advanced_OpenGL/DepthTest/DepthTest.shader");
 
     DepthTest renderer;
 
