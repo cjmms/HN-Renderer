@@ -145,6 +145,8 @@ void DepthTest::renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader
 
     // draw plane
     drawPlane(projection * view * glm::mat4(1.0f), shader, planeTexture);
+
+    
 }
 
 
@@ -179,6 +181,7 @@ int runDepthTest()
         std::cout << "init error" << std::endl;
 
     glEnable(GL_DEPTH_TEST);
+    
 
     Shader shader("res/Shaders/Advanced_OpenGL/DepthTest/DepthTest.shader");
 

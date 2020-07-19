@@ -167,11 +167,33 @@ void Blending::drawGrass(glm::mat4 mvp, Shader& shader, Texture& texture)
 }
 
 
+void Blending::drawGlass(glm::mat4 mvp, Shader& shader, Texture& texture)
+{
+    std::vector<glm::vec3> vegetation;
+    vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
+    vegetation.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
+    vegetation.push_back(glm::vec3(0.0f, 0.0f, 0.7f));
+    vegetation.push_back(glm::vec3(-0.3f, 0.0f, -2.3f));
+    vegetation.push_back(glm::vec3(0.5f, 0.0f, -0.6f));
+
+    texture.bindTexture(GL_TEXTURE0);
+
+    for (unsigned int i = 0; i < vegetation.size(); i++)
+    {
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        shader.setMat4("mvp", mvp * glm::translate(model, vegetation[i]));
+        glBindVertexArray(grassVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+}
+
+
 void Blending::renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader) 
 {
     Texture planeTexture("res/Textures/metal.jpg", JPG);
     Texture cubeTexture("res/Textures/marble.jpg", JPG);
     Texture grassTexture("res/Textures/grass.PNG", PNG);
+    Texture glassTexture("res/Textures/blending_transparent_window.png", PNG);
     shader.setInt("Texture0", 0);
 
     glm::mat4 model(1.0f);
@@ -187,6 +209,8 @@ void Blending::renderScene(glm::mat4 view, glm::mat4 projection, Shader& shader)
     drawCube(projection * view * model, shader, cubeTexture);
 
     drawGrass(projection * view, shader, grassTexture);
+
+    drawGlass(projection * view, shader, glassTexture);
 }
 
 
@@ -223,6 +247,9 @@ int runBlending()
 
 
     glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Shader shader("res/Shaders/Advanced_OpenGL/Blending/Blending.shader");
 

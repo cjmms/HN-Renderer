@@ -23,6 +23,7 @@ private:
 	void drawCube(glm::mat4 mvp, Shader& shader, Texture& texture);
 	void drawPlane(glm::mat4 mvp, Shader& shader, Texture& texture);
 	void drawGrass(glm::mat4 mvp, Shader& shader, Texture& texture);
+	void drawGlass(glm::mat4 mvp, Shader& shader, Texture& texture);
 
 public:
 	Blending();
