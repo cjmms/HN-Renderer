@@ -169,20 +169,30 @@ void Blending::drawGrass(glm::mat4 mvp, Shader& shader, Texture& texture)
 
 void Blending::drawGlass(glm::mat4 mvp, Shader& shader, Texture& texture)
 {
-    std::vector<glm::vec3> vegetation;
-    vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
-    vegetation.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
-    vegetation.push_back(glm::vec3(0.0f, 0.0f, 0.7f));
-    vegetation.push_back(glm::vec3(-0.3f, 0.0f, -2.3f));
-    vegetation.push_back(glm::vec3(0.5f, 0.0f, -0.6f));
+    std::vector<glm::vec3> windows;
+    windows.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
+    windows.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
+    windows.push_back(glm::vec3(0.0f, 0.0f, 0.7f));
+    windows.push_back(glm::vec3(-0.3f, 0.0f, -2.3f));
+    windows.push_back(glm::vec3(0.5f, 0.0f, -0.6f));
 
     texture.bindTexture(GL_TEXTURE0);
 
-    for (unsigned int i = 0; i < vegetation.size(); i++)
+    // sort transparent objects base on depth
+    std::map<float, glm::vec3> sorted;
+    for (unsigned int i = 0; i < windows.size(); i++)
     {
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        shader.setMat4("mvp", mvp * glm::translate(model, vegetation[i]));
-        glBindVertexArray(grassVAO);
+        float distance = glm::length(camera.getCameraPos() - windows[i]);
+        sorted[distance] = windows[i];
+    }
+
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    glBindVertexArray(grassVAO);
+
+    // draw the most distant transparent object first
+    for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
+    {
+        shader.setMat4("mvp", mvp * glm::translate(model, it->second));
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 }

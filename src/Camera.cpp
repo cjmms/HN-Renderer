@@ -68,7 +68,7 @@ void Camera::updateCameraDirection(float currentX, float currentY)
 
 void Camera::setCameraKey(GLFWwindow* window)
 {
-	setCameraSpeed(2.5f);
+	setCameraSpeed(0.5f);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cameraPos += cameraSpeed * cameraFront;
