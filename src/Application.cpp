@@ -40,5 +40,6 @@ int main(void)
     //runDepthTest();
     //runStencilTest();
     //runBlending();
-    runCulling();
+    //runCulling();
+    runFrameBuffer();
 }
