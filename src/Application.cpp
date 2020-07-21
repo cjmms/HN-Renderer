@@ -39,5 +39,6 @@ int main(void)
     //  Advanced OpenGL
     //runDepthTest();
     //runStencilTest();
-    runBlending();
+    //runBlending();
+    runCulling();
 }
