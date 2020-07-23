@@ -24,6 +24,7 @@ FrameBuffer::FrameBuffer()
 
 	cubeInit();
 	planeInit();
+    quadInit();
 }
 
 
