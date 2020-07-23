@@ -5,7 +5,8 @@
 
 enum ImageType {
 	PNG,
-	JPG
+	JPG,
+	ATTACHMENT
 };
 
 
@@ -19,8 +20,13 @@ private:
 
 	
 public:
+	// create normal texture
 	Texture( const char* filePath, ImageType imageType);
+	
+	// Create FBO attachment
+	Texture( int width, int height);
 	void bindTexture(GLenum textureUnit);
+	inline unsigned int getTextureID() const { return texture; };
 
 private:
 	void loadImage(unsigned char* data);
