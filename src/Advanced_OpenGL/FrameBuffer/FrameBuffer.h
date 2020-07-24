@@ -14,6 +14,7 @@ enum SceneType
 	ORIGIN,
 	INVERSE,
 	GERY,
+	EDGE,
 	DEFAULT
 };
 

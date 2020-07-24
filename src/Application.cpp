@@ -41,5 +41,5 @@ int main(void)
     //runStencilTest();
     //runBlending();
     //runCulling();
-    runFrameBuffer();
+    runFrameBuffer();   // press R, I, G, E
 }

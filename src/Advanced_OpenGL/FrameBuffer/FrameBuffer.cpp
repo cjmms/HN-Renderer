@@ -222,6 +222,8 @@ void process(GLFWwindow* window, SceneType& type)
         type = INVERSE;
     else if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
         type = GERY;
+    else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        type = EDGE;
     
     camera.setCameraKey(window);
     //Sreturn DEFAULT;
@@ -270,6 +272,9 @@ int runFrameBuffer()
     Shader geryShader("res/Shaders/Advanced_OpenGL/FrameBuffer/FrameBuffer_Gery.shader");
     geryShader.setInt("ScreenTexture", 0);
 
+    Shader edgeShader("res/Shaders/Advanced_OpenGL/FrameBuffer/FrameBuffer_Edge.shader");
+    edgeShader.setInt("ScreenTexture", 0);
+
     FrameBuffer renderer;
 
     SceneType type = ORIGIN;
@@ -297,6 +302,8 @@ int runFrameBuffer()
         case GERY:
             renderer.render(view, projection, shader, geryShader);
             break;
+        case EDGE:
+            renderer.render(view, projection, shader, edgeShader);
         default:
             break;
         }
