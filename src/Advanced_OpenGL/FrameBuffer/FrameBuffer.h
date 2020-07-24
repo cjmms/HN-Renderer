@@ -9,6 +9,13 @@
 
 extern Camera camera;
 
+enum SceneType
+{
+	ORIGIN,
+	INVERSE,
+	GERY,
+	DEFAULT
+};
 
 class FrameBuffer
 {
@@ -31,6 +38,7 @@ public:
 	void render(glm::mat4 view, glm::mat4 projection, Shader& shader, Shader& screenShader);
 };
 
+void process(GLFWwindow* window, SceneType& type);
 
 int runFrameBuffer();
 

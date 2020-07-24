@@ -172,7 +172,7 @@ void FrameBuffer::drawPlane(glm::mat4 mvp, Shader& shader, Texture& texture)
 void FrameBuffer::drawScene(glm::mat4 view, glm::mat4 projection, Shader& shader)
 {
     Texture planeTexture("res/Textures/metal.jpg", JPG);
-    Texture cubeTexture("res/Textures/marble.jpg", JPG);
+    Texture cubeTexture("res/Textures/wood_container.png", PNG);
 
     glm::mat4 model(1.0f);
 
@@ -190,7 +190,6 @@ void FrameBuffer::drawScene(glm::mat4 view, glm::mat4 projection, Shader& shader
 
 void FrameBuffer::render(glm::mat4 view, glm::mat4 projection, Shader& shader, Shader& screenShader)
 {
-    
     // bind my FBO, and then render it
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -199,7 +198,6 @@ void FrameBuffer::render(glm::mat4 view, glm::mat4 projection, Shader& shader, S
     shader.Bind();
     drawScene(view, projection, shader);
     
-
 
     // bind default FBO, clear it
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -211,9 +209,23 @@ void FrameBuffer::render(glm::mat4 view, glm::mat4 projection, Shader& shader, S
     glDisable(GL_DEPTH_TEST);       // disable depth test, since this demo only renders a texture
     glBindTexture(GL_TEXTURE_2D, colorAttachment);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    
 }
 
+
+void process(GLFWwindow* window, SceneType& type)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+    else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+        type = ORIGIN;
+    else if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+        type = INVERSE;
+    else if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+        type = GERY;
+    
+    camera.setCameraKey(window);
+    //Sreturn DEFAULT;
+}
 
 
 int runFrameBuffer()
@@ -252,19 +264,43 @@ int runFrameBuffer()
     Shader screenShader("res/Shaders/Advanced_OpenGL/FrameBuffer/FrameBuffer_Screen.shader");
     screenShader.setInt("ScreenTexture", 0);
 
+    Shader inverseShader("res/Shaders/Advanced_OpenGL/FrameBuffer/FrameBuffer_Inverse.shader");
+    inverseShader.setInt("ScreenTexture", 0);
+
+    Shader geryShader("res/Shaders/Advanced_OpenGL/FrameBuffer/FrameBuffer_Gery.shader");
+    geryShader.setInt("ScreenTexture", 0);
+
     FrameBuffer renderer;
+
+    SceneType type = ORIGIN;
+    Shader& postProcessShader = screenShader;
 
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
     {
-        processInput(window);
+        process(window, type);
 
         camera.cameraUpdateFrameTime();
 
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
 
-        renderer.render(view, projection, shader, screenShader);
+
+        switch (type)
+        {
+        case ORIGIN:
+            renderer.render(view, projection, shader, screenShader);
+            break;
+        case INVERSE:
+            renderer.render(view, projection, shader, inverseShader);
+            break;
+        case GERY:
+            renderer.render(view, projection, shader, geryShader);
+            break;
+        default:
+            break;
+        }
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
