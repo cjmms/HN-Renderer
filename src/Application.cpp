@@ -41,5 +41,6 @@ int main(void)
     //runStencilTest();
     //runBlending();
     //runCulling();
-    runFrameBuffer();   // press R, I, G, E
+    //runFrameBuffer();   // press R, I, G, E
+    runSkyBox();
 }

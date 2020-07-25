@@ -22,3 +22,4 @@
 #include "Advanced_OpenGL/Blending/Blending.h"
 #include "Advanced_OpenGL/Culling/Culling.h"
 #include "Advanced_OpenGL/FrameBuffer/FrameBuffer.h"
+#include "Advanced_OpenGL/SkyBox/SkyBox.h"
