@@ -4,6 +4,7 @@
 SkyBox::SkyBox()
 {
 	cubemapInit();
+    cubeInit();
 }
 
 
@@ -54,7 +55,7 @@ void SkyBox::cubemapInit()
          1.0f, -1.0f,  1.0f
     };
 
-    unsigned int cubemapTexture = loadCubemap(faces);
+    cubemapTexture = loadCubemap(faces);
 
 	glGenBuffers(1, &cubemapVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, cubemapVBO);
@@ -68,24 +69,106 @@ void SkyBox::cubemapInit()
 }
 
 
+
 void SkyBox::drawCubemap()
 {
+    //glDepthMask(GL_FALSE);
     glDisable(GL_DEPTH_TEST);
 
-    //unsigned int cubemapTexture = loadCubemap(faces);
     glBindVertexArray(cubemapVAO);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapVAO);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glEnable(GL_DEPTH_TEST);
+    //glDepthMask(GL_TRUE);
 }
 
 
-void SkyBox::render(glm::mat4 view, glm::mat4 projection, Shader& shader)
+void SkyBox::cubeInit()
+{
+    float cubeVertices[] = {
+        // positions          // texture Coords
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
+
+    glGenBuffers(1, &cubeVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &cubeVAO);
+    glBindVertexArray(cubeVAO);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+}
+
+
+void SkyBox::drawCube(glm::mat4 mvp, Shader& shader, Texture& texture)
 {
     shader.Bind();
-    shader.setMat4("mvp", projection * view);
+    texture.bindTexture(GL_TEXTURE0);
+    shader.setMat4("mvp", mvp);
+    //texture.bindTexture(GL_TEXTURE0);
+
+    glBindVertexArray(cubeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void SkyBox::render(glm::mat4 view, glm::mat4 projection, Shader& skyShader, Shader& cubeShader)
+{
+    skyShader.Bind();
+    // removes translation part of the 4 X 4 transformation matrix
+    // keep the top up 3 X 3 matrix
+    // this step is for cubemap only
+    skyShader.setMat4("mvp", projection * glm::mat4(glm::mat3(view)));
     drawCubemap();
+
+    Texture cubeTexture("res/Textures/wood_container.png", PNG);
+    //glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
+    drawCube(projection * view, cubeShader, cubeTexture);
 }
 
 
@@ -125,6 +208,8 @@ int runSkyBox()
     Shader skyBoxShader("res/Shaders/Advanced_OpenGL/SkyBox/SkyBox.shader");
     skyBoxShader.setInt("skybox", 0);
 
+    Shader CubeShader("res/Shaders/Advanced_OpenGL/SkyBox/Cube.shader");
+    CubeShader.setInt("Texture0", 0);
 
     SkyBox renderer;
 
@@ -138,7 +223,7 @@ int runSkyBox()
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
 
-        renderer.render(view, projection, skyBoxShader);
+        renderer.render(view, projection, skyBoxShader, CubeShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

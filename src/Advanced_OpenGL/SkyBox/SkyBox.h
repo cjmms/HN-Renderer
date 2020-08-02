@@ -15,8 +15,13 @@ private:
 	unsigned int cubemapVAO, cubemapVBO;
     unsigned int cubemapTexture;
 
+    unsigned int cubeVAO, cubeVBO;
+
 	void cubemapInit();
 	void drawCubemap();
+
+    void cubeInit();
+    void drawCube(glm::mat4 mvp, Shader& shader, Texture& texture);
 
     std::vector<std::string> faces
     {
@@ -30,7 +35,7 @@ private:
 
 public:
 	SkyBox();
-	void render(glm::mat4 view, glm::mat4 projection, Shader& shader);
+	void render(glm::mat4 view, glm::mat4 projection, Shader& shader, Shader& CubeShader);
 };
 
 
