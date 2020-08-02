@@ -69,7 +69,6 @@ void SkyBox::cubemapInit()
 }
 
 
-
 void SkyBox::drawCubemap()
 {
     //glDepthMask(GL_FALSE);
@@ -143,15 +142,14 @@ void SkyBox::cubeInit()
 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+   
 }
 
 
 void SkyBox::drawCube(glm::mat4 mvp, Shader& shader, Texture& texture)
 {
-    shader.Bind();
     texture.bindTexture(GL_TEXTURE0);
     shader.setMat4("mvp", mvp);
-    //texture.bindTexture(GL_TEXTURE0);
 
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -166,9 +164,14 @@ void SkyBox::render(glm::mat4 view, glm::mat4 projection, Shader& skyShader, Sha
     skyShader.setMat4("mvp", projection * glm::mat4(glm::mat3(view)));
     drawCubemap();
 
+
+    cubeShader.Bind();
+
     Texture cubeTexture("res/Textures/wood_container.png", PNG);
-    //glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
-    drawCube(projection * view, cubeShader, cubeTexture);
+    // draw first cube
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
+    drawCube(projection * view * model, cubeShader, cubeTexture);
+
 }
 
 
@@ -182,7 +185,7 @@ int runSkyBox()
         return -1;
 
     // Create a windowed mode window and its OpenGL context 
-    window = glfwCreateWindow(800, 600, "Vanilla", NULL, NULL);
+    window = glfwCreateWindow(1200, 1000, "Vanilla", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -202,14 +205,12 @@ int runSkyBox()
     if (glewInit() != GLEW_OK)
         std::cout << "init error" << std::endl;
 
+
     glEnable(GL_DEPTH_TEST);
 
 
     Shader skyBoxShader("res/Shaders/Advanced_OpenGL/SkyBox/SkyBox.shader");
-    skyBoxShader.setInt("skybox", 0);
-
-    Shader CubeShader("res/Shaders/Advanced_OpenGL/SkyBox/Cube.shader");
-    CubeShader.setInt("Texture0", 0);
+    Shader cubeShader("res/Shaders/Advanced_OpenGL/SkyBox/Cube.shader");
 
     SkyBox renderer;
 
@@ -218,12 +219,17 @@ int runSkyBox()
     {
         processInput(window);
 
+        // Render here 
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         camera.cameraUpdateFrameTime();
 
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
 
-        renderer.render(view, projection, skyBoxShader, CubeShader);
+        //cubeShader.Bind();
+        renderer.render(view, projection, skyBoxShader, cubeShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -232,4 +238,3 @@ int runSkyBox()
     glfwTerminate();
     return 0;
 }
-
