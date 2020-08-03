@@ -9,6 +9,8 @@
 
 extern Camera camera;
 
+
+
 class SkyBox
 {
 private:

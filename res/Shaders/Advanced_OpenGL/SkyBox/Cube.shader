@@ -20,6 +20,7 @@ in vec2 TextureCoord;
 out vec4 FragColor;
 
 uniform sampler2D Texture0;
+uniform samplerCube skybox;
 
 void main()
 {
