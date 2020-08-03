@@ -235,6 +235,8 @@ int runSkyBox()
     Shader skyBoxShader("res/Shaders/Advanced_OpenGL/SkyBox/SkyBox.shader");
     Shader cubeShader("res/Shaders/Advanced_OpenGL/SkyBox/Cube.shader");
     Shader cubeReflectionShader("res/Shaders/Advanced_OpenGL/SkyBox/Cube_Reflection.shader");
+    Shader cubeRefractionShader("res/Shaders/Advanced_OpenGL/SkyBox/Cube_Refraction.shader");
+
 
     SkyBox renderer;
 
@@ -263,19 +265,18 @@ int runSkyBox()
                 renderer.render(view, projection, skyBoxShader, cubeShader);
                 break;
             case 2:
-                std::cout << 2 << std::endl;
                 cubeReflectionShader.Bind();
                 cubeReflectionShader.setVec3("cameraPos", camera.getCameraPos());
                 renderer.render(view, projection, skyBoxShader, cubeReflectionShader);
                 break;
             case 3:
-                std::cout << 3 << std::endl;
+                cubeRefractionShader.Bind();
+                cubeRefractionShader.setVec3("cameraPos", camera.getCameraPos());
+                renderer.render(view, projection, skyBoxShader, cubeRefractionShader);
                 break;
             default:
                 std::cout << "num error" << std::endl;
         }
-
-        //renderer.render(view, projection, skyBoxShader, cubeShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
