@@ -71,15 +71,9 @@ void SkyBox::cubemapInit()
 
 void SkyBox::drawCubemap()
 {
-    //glDepthMask(GL_FALSE);
-    glDisable(GL_DEPTH_TEST);
-
     glBindVertexArray(cubemapVAO);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    glEnable(GL_DEPTH_TEST);
-    //glDepthMask(GL_TRUE);
 }
 
 
@@ -155,16 +149,14 @@ void SkyBox::drawCube(glm::mat4 mvp, Shader& shader, Texture& texture)
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
+
+
+// render cubemap at the end of rendering loop
+// also, run early depth test to boost performance
+// However, cubemap is a 1 X 1 X 1 cube, which will pass most depth test(block almost everything)
+// Do a trick in the vertex shader, trick depth test that cubemap has max depth value
 void SkyBox::render(glm::mat4 view, glm::mat4 projection, Shader& skyShader, Shader& cubeShader)
 {
-    skyShader.Bind();
-    // removes translation part of the 4 X 4 transformation matrix
-    // keep the top up 3 X 3 matrix
-    // this step is for cubemap only
-    skyShader.setMat4("mvp", projection * glm::mat4(glm::mat3(view)));
-    drawCubemap();
-
-
     cubeShader.Bind();
 
     Texture cubeTexture("res/Textures/wood_container.png", PNG);
@@ -172,6 +164,21 @@ void SkyBox::render(glm::mat4 view, glm::mat4 projection, Shader& skyShader, Sha
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -1.0f));
     drawCube(projection * view * model, cubeShader, cubeTexture);
 
+
+    // modified depth value of cubemap will be 1.0f
+    // depth >= 1.0f will be discarded
+    // in this case, change it to: depth > 1.0f will be discarded
+    glDepthFunc(GL_LEQUAL);
+    skyShader.Bind();
+
+    // removes translation part of the 4 X 4 transformation matrix
+    // keep the top up 3 X 3 matrix
+    // this step is for cubemap only
+    skyShader.setMat4("mvp", projection * glm::mat4(glm::mat3(view)));
+    drawCubemap();
+
+    // change depth test setting to default
+    glDepthFunc(GL_LESS);
 }
 
 
