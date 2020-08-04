@@ -185,10 +185,10 @@ void SkyBox::render(glm::mat4 view, glm::mat4 projection, Shader& skyShader, Sha
     glDepthFunc(GL_LESS);
 }
 
-unsigned int num = 1;
-unsigned int maxNum = 3;    // maximum practices
+static unsigned int num = 1;
+static unsigned int maxNum = 3;    // maximum practices
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void static key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_N && action == GLFW_PRESS)
     {

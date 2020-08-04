@@ -16,11 +16,14 @@ private:
 	unsigned int cubeVAO, cubeVBO;
 
 	void cubeInit();
-	void drawPoints(glm::mat4 mvp, Shader& shader);
+	//void drawPoints(glm::mat4 mvp, Shader& shader);
 
 public:
 	Build_inVar();
+	void drawPoints(glm::mat4 mvp, Shader& shader);
+	void drawTriangle(glm::mat4 mvp, Shader& shader);
 	void render(glm::mat4 view, glm::mat4 projection, Shader& shader);
+	
 };
 
 

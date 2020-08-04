@@ -73,6 +73,7 @@ void Build_inVar::cubeInit()
 
 void Build_inVar::drawPoints(glm::mat4 mvp, Shader& shader)
 {
+    shader.Bind();
     shader.setMat4("mvp", mvp);
 
     glBindVertexArray(cubeVAO);
@@ -80,10 +81,34 @@ void Build_inVar::drawPoints(glm::mat4 mvp, Shader& shader)
 }
 
 
+void Build_inVar::drawTriangle(glm::mat4 mvp, Shader& shader)
+{
+    shader.Bind();
+    shader.setMat4("mvp", mvp);
+
+    glBindVertexArray(cubeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+
 void Build_inVar::render(glm::mat4 view, glm::mat4 projection, Shader& shader)
 {
     drawPoints(projection * view, shader);
 }
+
+
+static unsigned int num = 1;
+static unsigned int maxNum = 3;    // maximum practices
+
+void static key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_N && action == GLFW_PRESS)
+    {
+        num++;
+        if (num > maxNum) num = 1;
+    }
+}
+
 
 
 int runBuild_inVar() 
@@ -113,13 +138,16 @@ int runBuild_inVar()
         glfwSetCursorPosCallback(window, mouse_callback);
         glfwSetScrollCallback(window, scroll_callback);
 
+        glfwSetKeyCallback(window, key_callback);
+
         if (glewInit() != GLEW_OK)
             std::cout << "init error" << std::endl;
 
         glEnable(GL_DEPTH_TEST);
 
 
-        Shader shader("res/Shaders/Advanced_OpenGL/Build-inVar/PointSize.shader");
+        Shader pointSizeShader("res/Shaders/Advanced_OpenGL/Build-inVar/PointSize.shader");
+        Shader colorCubeShader("res/Shaders/Advanced_OpenGL/Build-inVar/ColorCube.shader");
         glEnable(GL_PROGRAM_POINT_SIZE);
 
 
@@ -139,8 +167,26 @@ int runBuild_inVar()
             glm::mat4 projection = camera.getProjectionMatrix();
             glm::mat4 view = camera.getViewMatrix();
 
-            shader.Bind();
-            renderer.render(view, projection, shader);
+
+            switch (num) {
+            case 1:
+                //std::cout << 1 << std::endl;
+                renderer.drawPoints(projection * view, pointSizeShader);
+                break;
+            case 2:
+                renderer.drawTriangle(projection * view, colorCubeShader);
+                break;
+            case 3:
+                //cubeRefractionShader.Bind();
+                //cubeRefractionShader.setVec3("cameraPos", camera.getCameraPos());
+                //renderer.render(view, projection, skyBoxShader, cubeRefractionShader);
+                break;
+            default:
+                std::cout << "num error" << std::endl;
+            }
+
+
+            //renderer.render(view, projection, shader);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
