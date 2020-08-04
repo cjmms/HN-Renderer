@@ -23,3 +23,4 @@
 #include "Advanced_OpenGL/Culling/Culling.h"
 #include "Advanced_OpenGL/FrameBuffer/FrameBuffer.h"
 #include "Advanced_OpenGL/SkyBox/SkyBox.h"
+#include "Advanced_OpenGL/Build-inVar/Build_inVar.h"

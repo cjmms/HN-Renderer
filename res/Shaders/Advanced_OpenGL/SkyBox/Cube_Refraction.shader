@@ -29,12 +29,15 @@ uniform vec3 cameraPos;
 
 void main()
 {
+	// air reflective index: 1.0
+	// glass reflective index: 1.52
+	// enter from air to glass
 	float ratio = 1.0 / 1.52;
 
 	// view direction, from camera to Fragment position
 	vec3 I = normalize(FragPos - cameraPos);
 
-	// reflection vector
+	// refraction vector
 	vec3 R = refract(I, normalize(Normal), ratio);
 
 	// sample skybox texture by using reflection vector

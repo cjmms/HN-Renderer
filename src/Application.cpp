@@ -42,5 +42,6 @@ int main(void)
     //runBlending();
     //runCulling();
     //runFrameBuffer();   // press R, I, G, E
-    runSkyBox();
+    //runSkyBox();            // press N
+    runBuild_inVar();
 }
