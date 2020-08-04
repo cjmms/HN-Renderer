@@ -8,66 +8,63 @@ Build_inVar::Build_inVar()
 
 void Build_inVar::cubeInit()
 {
-    float cubeVertices[] = {
-        // positions          // texture Coords     // normal
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,   0.0f,  0.0f, -1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,   0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,   0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,   0.0f,  0.0f, -1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,   0.0f,  0.0f, -1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,   0.0f,  0.0f, -1.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,   0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,   0.0f,  0.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,   0.0f,  0.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,   0.0f,  0.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,   0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,   0.0f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,   -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,   -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,   -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,   -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,   -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,   -1.0f,  0.0f,  0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,   1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,   1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,   1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,   1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,   1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,   1.0f,  0.0f,  0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,   0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,   0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,   0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,   0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,   0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,   0.0f, -1.0f,  0.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,   0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,   0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,   0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,   0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,   0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,   0.0f,  1.0f,  0.0f
+    float vertices[] = {
+        // back face
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // bottom-right    
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right              
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left                
+        // front face
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-right        
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // top-left        
+        // left face
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-left       
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
+        // right face
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right      
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right          
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
+        // bottom face          
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // top-left        
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
+        // top face
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right                 
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, // bottom-left  
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f  // top-left              
     };
 
     glGenBuffers(1, &cubeVBO);
     glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glGenVertexArrays(1, &cubeVAO);
     glBindVertexArray(cubeVAO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
-    glEnableVertexAttribArray(2);
 }
 
 
@@ -148,6 +145,8 @@ int runBuild_inVar()
 
         Shader pointSizeShader("res/Shaders/Advanced_OpenGL/Build-inVar/PointSize.shader");
         Shader colorCubeShader("res/Shaders/Advanced_OpenGL/Build-inVar/ColorCube.shader");
+        Shader frontFacingShader("res/Shaders/Advanced_OpenGL/Build-inVar/FrontFacing.shader");
+
         glEnable(GL_PROGRAM_POINT_SIZE);
 
 
@@ -177,9 +176,7 @@ int runBuild_inVar()
                 renderer.drawTriangle(projection * view, colorCubeShader);
                 break;
             case 3:
-                //cubeRefractionShader.Bind();
-                //cubeRefractionShader.setVec3("cameraPos", camera.getCameraPos());
-                //renderer.render(view, projection, skyBoxShader, cubeRefractionShader);
+                renderer.drawTriangle(projection * view, frontFacingShader);
                 break;
             default:
                 std::cout << "num error" << std::endl;
