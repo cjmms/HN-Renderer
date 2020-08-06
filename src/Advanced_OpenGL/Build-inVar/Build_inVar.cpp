@@ -169,7 +169,6 @@ int runBuild_inVar()
 
             switch (num) {
             case 1:
-                //std::cout << 1 << std::endl;
                 renderer.drawPoints(projection * view, pointSizeShader);
                 break;
             case 2:
@@ -182,8 +181,6 @@ int runBuild_inVar()
                 std::cout << "num error" << std::endl;
             }
 
-
-            //renderer.render(view, projection, shader);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
