@@ -41,7 +41,8 @@ int main(void)
     //runStencilTest();
     //runBlending();
     //runCulling();
-    //runFrameBuffer();   // press R, I, G, E
-    //runSkyBox();            // press N
-    runBuild_inVar();
+    //runFrameBuffer();         // press R, I, G, E
+    //runSkyBox();              // press N
+    //runBuild_inVar();         // press N
+    runTriangleHouse();
 }

@@ -5,10 +5,10 @@ layout(Location = 0) in vec3 aPos;
 uniform mat4 mvp;
 
 
-void main() 
+void main()
 {
 	gl_Position = mvp * vec4(aPos, 1.0f);
-	gl_PointSize = gl_Position.z;
+	gl_PointSize = 10.0f;
 }
 
 
@@ -17,7 +17,7 @@ void main()
 #shader geometry
 #version 330 core
 layout(points) in;
-layout(points, max_vertices = 1) out;
+layout(points, max_vertices = 5) out;
 
 void main() 
 {
@@ -30,7 +30,6 @@ void main()
 
 
 
-
 #shader fragment
 #version 330 core
 
@@ -38,5 +37,5 @@ out vec4 FragColor;
 
 void main()
 {
-	FragColor = vec4(1.0f, 0.5f, 0.3f, 1.0f);
+	FragColor = vec4(0.4f, 0.2f, 0.8f, 1.0f);
 }

@@ -24,3 +24,4 @@
 #include "Advanced_OpenGL/FrameBuffer/FrameBuffer.h"
 #include "Advanced_OpenGL/SkyBox/SkyBox.h"
 #include "Advanced_OpenGL/Build-inVar/Build_inVar.h"
+#include "Advanced_OpenGL/TriangleHouse/TriangleHouse.h"

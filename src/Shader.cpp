@@ -40,7 +40,8 @@ ShaderProgramSource Shader::parseShader(const std::string& path)
                 currentMode = ShaderMode::VERTEX_MODE;
             else if (line.find("fragment") != std::string::npos)
                 currentMode = ShaderMode::FRAGMENT_MODE;
-            else if (line.find("geometry") != std::string::npos)
+            else if (  line.find("geometry") != std::string::npos && 
+                      !(line.find("//") != std::string::npos))
                 currentMode = ShaderMode::GEOMETRY_MODE;
         }
         else
