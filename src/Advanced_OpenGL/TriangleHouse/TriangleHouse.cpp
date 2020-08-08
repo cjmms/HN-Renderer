@@ -5,10 +5,10 @@
 TriangleHouse::TriangleHouse()
 {
     float vertices[] = {
-        -0.5f,  0.5f, 0.0f, // top-left
-         0.5f,  0.5f, 0.0f, // top-right
-         0.5f, -0.5f, 0.0f, // bottom-right
-        -0.5f, -0.5f, 0.0f  // bottom-left
+        -0.5f,  0.5f, 0.0f, 0.4f, 0.2f, 0.8f,// top-left
+         0.5f,  0.5f, 0.0f, 0.8f, 0.2f, 0.1f,// top-right
+         0.5f, -0.5f, 0.0f, 0.5f, 0.9f, 0.8f,// bottom-right
+        -0.5f, -0.5f, 0.0f, 0.1f, 0.2f, 0.6f,// bottom-left
     };
 
     unsigned int VBO, VAO;
@@ -19,8 +19,11 @@ TriangleHouse::TriangleHouse()
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 }
 
 
