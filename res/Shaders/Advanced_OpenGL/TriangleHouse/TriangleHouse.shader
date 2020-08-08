@@ -2,13 +2,10 @@
 #version 330 core
 layout(Location = 0) in vec3 aPos;
 
-uniform mat4 mvp;
-
 
 void main()
 {
-	gl_Position = mvp * vec4(aPos, 1.0f);
-	gl_PointSize = 10.0f;
+	gl_Position =  vec4(aPos, 1.0f);
 }
 
 
@@ -17,14 +14,32 @@ void main()
 #shader geometry
 #version 330 core
 layout(points) in;
-layout(points, max_vertices = 5) out;
+layout(triangle_strip, max_vertices = 5) out;
+
+void build_house(vec4 position)
+{
+	gl_Position = position + vec4(-0.2, -0.2, 0.0, 0.0);	// 1:bottom-left
+	EmitVertex();
+	
+	gl_Position = position + vec4(0.2, -0.2, 0.0, 0.0);    // 2:bottom-right
+	EmitVertex();
+
+	gl_Position = position + vec4(-0.2, 0.2, 0.0, 0.0);    // 3:top-left
+	EmitVertex();
+
+	gl_Position = position + vec4(0.2, 0.2, 0.0, 0.0);    // 4:top-right
+	EmitVertex();
+
+	gl_Position = position + vec4(0.0, 0.4, 0.0, 0.0);    // 5:top
+	EmitVertex();
+
+	EndPrimitive();
+}
+
 
 void main() 
 {
-	gl_Position = gl_in[0].gl_Position;
-	gl_PointSize = gl_in[0].gl_PointSize;
-	EmitVertex();
-	EndPrimitive();
+	build_house(gl_in[0].gl_Position);
 }
 
 

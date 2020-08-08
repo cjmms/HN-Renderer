@@ -4,17 +4,13 @@
 
 TriangleHouse::TriangleHouse()
 {
-    float vertices[] = {     0, 0, 0};
-    /*
     float vertices[] = {
-        -0.5f, -0.5f, 0.5f,  // bottom-left
-        0.5f, 0.5f, 0.5f, // top-right
-        0.5f, -0.5f, 0.5f, // bottom-right        
-        0.5f, 0.5f, 0.5f, // top-right
-        -0.5f, -0.5f, 0.5f, // bottom-left
-        -0.5f, 0.5f, 0.5f // top-left 
+        -0.5f,  0.5f, 0.0f, // top-left
+         0.5f,  0.5f, 0.0f, // top-right
+         0.5f, -0.5f, 0.0f, // bottom-right
+        -0.5f, -0.5f, 0.0f  // bottom-left
     };
-    */
+
     unsigned int VBO, VAO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -31,8 +27,8 @@ TriangleHouse::TriangleHouse()
 
 void TriangleHouse::render(glm::mat4 view, glm::mat4 projection, Shader& shader)
 {
-    shader.setMat4("mvp", projection * view);
-    glDrawArrays(GL_POINTS, 0, 6);
+    //shader.setMat4("mvp", projection * view);
+    glDrawArrays(GL_POINTS, 0, 4);
 }
 
 
@@ -69,7 +65,6 @@ int runTriangleHouse()
     glEnable(GL_DEPTH_TEST);
 
     Shader shader("res/Shaders/Advanced_OpenGL/TriangleHouse/TriangleHouse.shader");
-    //Shader  shader("res/Shaders/Advanced_OpenGL/Build-inVar/PointSize.shader");
     shader.Bind();
 
     TriangleHouse renderer;
