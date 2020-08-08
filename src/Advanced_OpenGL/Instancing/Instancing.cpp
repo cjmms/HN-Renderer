@@ -15,7 +15,7 @@ Instancing::Instancing()
          0.05f,  0.05f,  0.0f, 1.0f, 1.0f
     };
 
-    unsigned int VAO, VBO;
+    unsigned int VAO, VBO, instanceVBO;
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -29,6 +29,34 @@ Instancing::Instancing()
 
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // unbind current buffer
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glm::vec2 translations[100];
+    int index = 0;
+    float offset = 0.1;
+    for (int x = -10; x < 10; x += 2)
+    {
+        for (int y = -10; y < 10; y += 2)
+        {
+            glm::vec2 translation;
+            translation.x = (float)x / 10.0f + offset;
+            translation.y = (float)y / 10.0f + offset;
+            translations[index++] = translation;
+        }
+    }
+
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, translations, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(2);
+
+    // 2 means the second vertex attribute
+    // 1 means data is updated per instance
+    glVertexAttribDivisor(2, 1);
 }
 
 
@@ -71,27 +99,9 @@ int runInstancing()
     glEnable(GL_DEPTH_TEST);
 
 
-    glm::vec2 translations[100];
-    int index = 0;
-    float offset = 0.1;
-    for (int x = -10; x < 10; x += 2)
-    {
-        for (int y = -10; y < 10; y += 2)
-        {
-            glm::vec2 translation;
-            translation.x = (float)x / 10.0f + offset;
-            translation.y = (float)y / 10.0f + offset;
-            translations[index++] = translation;
-        }
-    }
-
-
     Shader shader("res/Shaders/Advanced_OpenGL/Instancing/Instancing.shader");
     shader.Bind();
     
-    for (unsigned int i = 0; i < 100; i++)
-        shader.setVec2(("offsets[" + std::to_string(i) + "]"), translations[i]);
-
 
     Instancing renderer;
 

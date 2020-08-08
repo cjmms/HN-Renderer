@@ -2,15 +2,14 @@
 #version 330 core
 layout(Location = 0) in vec2 aPos;
 layout(Location = 1) in vec3 aColor;
+layout(Location = 2) in vec2 offset;	// offset is passed by instanced array
 
 out vec3 color;
 
-uniform vec2 offsets[100];
-
 void main()
 {
-	vec2 offset = offsets[gl_InstanceID];
-	gl_Position = vec4(aPos + offset, 0.0f, 1.0f);
+	vec2 pos = aPos * (gl_InstanceID / 100.0f);
+	gl_Position = vec4(pos + offset, 0.0f, 1.0f);
 	color = aColor;
 }
 
