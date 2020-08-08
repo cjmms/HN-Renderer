@@ -5,9 +5,12 @@ layout(Location = 1) in vec3 aColor;
 
 out vec3 color;
 
+uniform vec2 offsets[100];
+
 void main()
 {
-	gl_Position = vec4(aPos, 0.0f, 1.0f);
+	vec2 offset = offsets[gl_InstanceID];
+	gl_Position = vec4(aPos + offset, 0.0f, 1.0f);
 	color = aColor;
 }
 

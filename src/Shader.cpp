@@ -145,17 +145,47 @@ void Shader::setMat4(const char* name, glm::mat4 matrix)
 }
 
 
+void Shader::setMat4(const std::string &name, glm::mat4 matrix)
+{
+    setMat4(name.c_str(), matrix);
+}
+
+
+
 void Shader::setVec3(const char* name, glm::vec3 vec)
 {
     unsigned int location = getUniformLocation(name);
     glUniform3fv(location, 1, glm::value_ptr(vec));
 }
 
+
+void Shader::setVec3(const std::string& name, glm::vec3 vec)
+{
+    setVec3(name.c_str(), vec);
+}
+
+
+
+void Shader::setVec2(const char* name, glm::vec2 vec)
+{
+    unsigned int location = getUniformLocation(name);
+    glUniform2fv(location, 1, glm::value_ptr(vec));
+}
+
+
+void Shader::setVec2(const std::string &name, glm::vec2 vec)
+{
+    setVec2(name.c_str(), vec);
+}
+
+
+
 void Shader::setFloat(const char* name, float value)
 {
     unsigned int location = getUniformLocation(name);
     glUniform1f(location, value);
 }
+
 
 
 

@@ -34,8 +34,13 @@ public:
 	void unBind();
 	int getUniformLocation(const char* name);
 	unsigned int getRendererID();
+
 	void setMat4(const char * name, glm::mat4 matrix);
+	void setMat4(const std::string& name, glm::mat4 matrix);
 	void setVec3(const char* name, glm::vec3 vec);
+	void setVec3(const std::string &name, glm::vec3 vec);
+	void setVec2(const char* name, glm::vec2 vec);
+	void setVec2(const std::string &name, glm::vec2 vec);
 	void setFloat(const char* name, float value);
 	void setInt(const char* name, int value);
 	
