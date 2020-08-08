@@ -44,5 +44,6 @@ int main(void)
     //runFrameBuffer();         // press R, I, G, E
     //runSkyBox();              // press N
     //runBuild_inVar();         // press N
-    runTriangleHouse();
+    //runTriangleHouse();
+    runInstancing();
 }
