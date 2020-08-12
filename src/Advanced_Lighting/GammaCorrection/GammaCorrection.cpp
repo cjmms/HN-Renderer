@@ -35,7 +35,7 @@ GammaCorrection::GammaCorrection()
 }
 
 
-static int change = true;
+static int GammaEnabled = true;
 
 
 void GammaCorrection::render(glm::mat4 view, glm::mat4 projection, Shader& shader, Texture& texture)
@@ -43,7 +43,7 @@ void GammaCorrection::render(glm::mat4 view, glm::mat4 projection, Shader& shade
     shader.setMat4("mvp", projection * view);
     shader.setMat4("view", view);
     shader.setVec3("viewPos", camera.getCameraPos());
-    shader.setInt("change", change);
+    shader.setInt("GammaEnabled", GammaEnabled);
 
     texture.bindTexture(GL_TEXTURE0);
 
@@ -56,9 +56,7 @@ void static key_callback(GLFWwindow* window, int key, int scancode, int action, 
 {
     if (key == GLFW_KEY_N && action == GLFW_PRESS)
     {
-        change = !change;
-        if (change) std::cout << "Without Gamma Correction" << std::endl;
-        else std::cout << "With Gamma Correction" << std::endl;
+        GammaEnabled = !GammaEnabled;
     }
 }
 
@@ -104,9 +102,22 @@ int runGammaCorrection()
     Texture texture("res/Textures/wood.jpg", JPG);
     shader.setInt("texture_wood", 0);
 
-    // light position
-    shader.setVec3("lightPos", glm::vec3(0.0f, 0.0f, 0.0f));
 
+    glm::vec3 lightPositions[] = {
+        glm::vec3(-3.0f, 0.0f, 0.0f),
+        glm::vec3(-1.0f, 0.0f, 0.0f),
+        glm::vec3(1.0f, 0.0f, 0.0f),
+        glm::vec3(3.0f, 0.0f, 0.0f)
+    };
+    glm::vec3 lightColors[] = {
+        glm::vec3(0.25),
+        glm::vec3(0.50),
+        glm::vec3(0.75),
+        glm::vec3(1.00)
+    };
+
+    glUniform3fv(glGetUniformLocation(shader.getRendererID(), "lightPositions"), 4, &lightPositions[0][0]);
+    glUniform3fv(glGetUniformLocation(shader.getRendererID(), "lightColors"), 4, &lightColors[0][0]);
 
     GammaCorrection renderer;
 
