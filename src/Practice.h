@@ -28,3 +28,4 @@
 #include "Advanced_OpenGL/Instancing/Instancing.h"
 
 #include "Advanced_Lighting/Blinn-Phong/Blinn_Phong.h"
+#include "Advanced_Lighting/GammaCorrection/GammaCorrection.h"

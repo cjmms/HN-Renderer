@@ -48,5 +48,6 @@ int main(void)
     //runInstancing();
 
     // Advanced Lighting
-    runBlinnPhong();
+    //runBlinnPhong();            // press N
+    runGammaCorrection();
 }
