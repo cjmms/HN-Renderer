@@ -42,13 +42,15 @@ uniform sampler2D texture_wood;
 uniform vec3 viewPos;
 uniform vec3 lightPos;
 
+uniform bool Blinn;
+
 
 void main()
 {
 	vec3 color = texture(texture_wood, fs_in.textureCoord).rgb;
 
 	// ambient
-	vec3 ambient = 0.05f * color;
+	vec3 ambient = 0.02f * color;
 
 	// diffuse
 	vec3 normal = normalize(fs_in.normal);
@@ -59,9 +61,14 @@ void main()
 	// specular
 	vec3 viewDir = normalize(viewPos - fs_in.FragPos);
 	vec3 reflectDir = reflect(-lightDir, normal);
+	vec3 halfwayDir = normalize(viewDir + lightDir);
 
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 8.0f);
-	vec3 specular = spec * vec3(0.3f);
-
+	float spec = 0.0f;
+	if (Blinn) 
+		spec = pow(max(dot(halfwayDir, normal), 0.0f), 16.0f);
+	else 
+		spec = pow(max(dot(viewDir, reflectDir), 0.0f), 8.0f);
+	
+	vec3 specular = spec * vec3(0.2f);
 	FragColor = vec4(specular + ambient + diffuse, 1.0f);
 }

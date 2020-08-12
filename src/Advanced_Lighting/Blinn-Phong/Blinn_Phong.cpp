@@ -33,17 +33,29 @@ Blinn_Phong::Blinn_Phong()
     glEnableVertexAttribArray(2);
 }
 
-
+static int Blinn = true;
 
 void Blinn_Phong::render(glm::mat4 view, glm::mat4 projection, Shader& shader, Texture &texture)
 {
     shader.setMat4("mvp", projection * view);
     shader.setMat4("view", view);
     shader.setVec3("viewPos", camera.getCameraPos());
+    shader.setInt("Blinn", Blinn);
 
     texture.bindTexture(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+
+void static key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_N && action == GLFW_PRESS)
+    {
+        Blinn = !Blinn;
+        if (Blinn) std::cout << "Blinn-Phong" << std::endl;
+        else std::cout << "Phong" << std::endl;
+    }
 }
 
 
@@ -74,6 +86,8 @@ int runBlinnPhong()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
+    glfwSetKeyCallback(window, key_callback);
+
     if (glewInit() != GLEW_OK)
         std::cout << "init error" << std::endl;
 
@@ -88,6 +102,8 @@ int runBlinnPhong()
 
     // light position
     shader.setVec3("lightPos", glm::vec3(0.0f, 0.0f, 0.0f));
+    
+    
     
 
     Blinn_Phong renderer;

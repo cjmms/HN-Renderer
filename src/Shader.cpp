@@ -194,3 +194,10 @@ void Shader::setInt(const char* name, int value)
     unsigned int location = getUniformLocation(name);
     glUniform1i(location, value);
 }
+
+
+
+void Shader::setInt(const std::string& name, int value)
+{
+    setInt(name.c_str(), value);
+}

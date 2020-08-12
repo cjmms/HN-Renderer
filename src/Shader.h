@@ -43,6 +43,8 @@ public:
 	void setVec2(const std::string &name, glm::vec2 vec);
 	void setFloat(const char* name, float value);
 	void setInt(const char* name, int value);
+	void setInt(const std::string& name, int value);
+
 	
 private:
 	// path: res/Shaders/basic.shader
