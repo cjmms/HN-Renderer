@@ -45,5 +45,8 @@ int main(void)
     //runSkyBox();              // press N
     //runBuild_inVar();         // press N
     //runTriangleHouse();
-    runInstancing();
+    //runInstancing();
+
+    // Advanced Lighting
+    runBlinnPhong();
 }

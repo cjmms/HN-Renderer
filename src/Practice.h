@@ -26,3 +26,5 @@
 #include "Advanced_OpenGL/Build-inVar/Build_inVar.h"
 #include "Advanced_OpenGL/TriangleHouse/TriangleHouse.h"
 #include "Advanced_OpenGL/Instancing/Instancing.h"
+
+#include "Advanced_Lighting/Blinn-Phong/Blinn_Phong.h"
