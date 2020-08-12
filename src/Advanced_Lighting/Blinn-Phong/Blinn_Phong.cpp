@@ -29,7 +29,7 @@ Blinn_Phong::Blinn_Phong()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 }
 
@@ -82,8 +82,8 @@ int runBlinnPhong()
     Shader shader("res/Shaders/Advanced_Lighting/Blinn-Phong/Blinn_Phong.shader");
     shader.Bind();
     
-    Texture texture("res/Textures/wood.png", PNG);
-    shader.setInt("texture", 0);
+    Texture texture("res/Textures/wood.jpg", JPG);
+    shader.setInt("texture_wood", 0);
     
 
     Blinn_Phong renderer;
@@ -102,7 +102,7 @@ int runBlinnPhong()
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
 
-        renderer.render(view, projection, shader);
+        renderer.render(view, projection, shader, texture);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
