@@ -39,6 +39,7 @@ void Blinn_Phong::render(glm::mat4 view, glm::mat4 projection, Shader& shader, T
 {
     shader.setMat4("mvp", projection * view);
     shader.setMat4("view", view);
+    shader.setVec3("viewPos", camera.getCameraPos());
 
     texture.bindTexture(GL_TEXTURE0);
 
@@ -84,6 +85,9 @@ int runBlinnPhong()
     
     Texture texture("res/Textures/wood.jpg", JPG);
     shader.setInt("texture_wood", 0);
+
+    // light position
+    shader.setVec3("lightPos", glm::vec3(0.0f, 0.0f, 0.0f));
     
 
     Blinn_Phong renderer;
