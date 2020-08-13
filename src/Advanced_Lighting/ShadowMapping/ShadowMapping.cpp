@@ -40,6 +40,9 @@ void ShadowMapping::initFloor()
     glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
+
+
+    createTexture(floorTextureID, "res/Textures/wood.jpg", JPG);
 }
 
 
@@ -109,6 +112,8 @@ void ShadowMapping::initCube()
     glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
+
+    createTexture(cubeTextureID, "res/Textures/container.jpg", JPG);
 }
 
 
@@ -134,11 +139,15 @@ void ShadowMapping::drawCube()
 void ShadowMapping::render(Shader& shader)
 {
     glm::mat4 model(1.0f);
+    glActiveTexture(GL_TEXTURE0);
 
+    // floor
+    glBindTexture(GL_TEXTURE_2D, floorTextureID);
     shader.setMat4("model", model);
     drawFloor();
 
     // cubes
+    glBindTexture(GL_TEXTURE_2D, cubeTextureID);
     model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.setMat4("model", model);
@@ -191,7 +200,8 @@ int runShadowMapping()
 
     Shader shader("res/Shaders/Advanced_Lighting/ShadowMapping/shadowMapping.shader");
     shader.Bind();
-    
+
+    shader.setInt("texture_0", 0);
 
     ShadowMapping renderer;
 

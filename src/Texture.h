@@ -27,11 +27,17 @@ public:
 	
 	// Create FBO attachment
 	Texture( int width, int height);
+
 	void bindTexture(GLenum textureUnit);
 	inline unsigned int getTextureID() const { return texture; };
 
-private:
-	void loadImage(unsigned char* data);
+
 };
 
 unsigned int loadCubemap(std::vector<std::string> faces);
+
+void createTexture(unsigned int &id, const char* filePath, ImageType imageType);
+
+void createDepthAttachment(unsigned int &id, unsigned int width, unsigned int height);
+
+void loadImage(unsigned char* data, ImageType imageType, unsigned int width, unsigned int height);

@@ -14,7 +14,7 @@ Texture::Texture(const char* filePath, ImageType imageType)
 
     stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(filePath, &width, &height, &nrChannels, 0);
-    loadImage(data);
+    loadImage(data, imageType, width, height);
 }
 
 Texture::Texture(int width, int height)
@@ -31,6 +31,39 @@ Texture::Texture(int width, int height)
 }
 
 
+void createTexture(unsigned int& id, const char* filePath, ImageType imageType)
+{
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_set_flip_vertically_on_load(true);
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(filePath, &width, &height, &nrChannels, 0);
+    loadImage(data, imageType, width, height);
+}
+
+
+void createDepthAttachment(unsigned int &id, unsigned int width, unsigned int height)
+{
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);  // bind texture
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+        width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glBindTexture(GL_TEXTURE_2D, 0);        // unbind texture
+}
+
+
 void Texture::bindTexture(GLenum textureUnit)
 {
     glActiveTexture(textureUnit);
@@ -38,7 +71,7 @@ void Texture::bindTexture(GLenum textureUnit)
 }
 
 
-void Texture::loadImage(unsigned char* data) 
+void loadImage(unsigned char* data, ImageType imageType, unsigned int width, unsigned int height) 
 {
     if (data) {
         switch (imageType)

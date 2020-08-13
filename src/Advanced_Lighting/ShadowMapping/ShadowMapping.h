@@ -15,6 +15,9 @@ class ShadowMapping
 private:
 	unsigned int floorVAO, floorVBO;
 	unsigned int cubeVAO, cubeVBO;
+	unsigned int depthBufferFBO;
+
+	unsigned int cubeTextureID, floorTextureID;
 
 	void initFloor();
 	void initCube();
