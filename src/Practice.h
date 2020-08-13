@@ -29,3 +29,4 @@
 
 #include "Advanced_Lighting/Blinn-Phong/Blinn_Phong.h"
 #include "Advanced_Lighting/GammaCorrection/GammaCorrection.h"
+#include "Advanced_Lighting/ShadowMapping/ShadowMapping.h"
