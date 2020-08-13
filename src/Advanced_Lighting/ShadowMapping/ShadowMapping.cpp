@@ -6,8 +6,33 @@ ShadowMapping::ShadowMapping()
 {
     initFloor();
     initCube();
+    initDepthBufferFBO();
+
+    // calculate light view matrix and light projection matrix
+    // light position: vec3(-2.0, 4.0, -1.0) look at origin
+    lightView = glm::lookAt( glm::vec3(-2.0f, 4.0f, -1.0f),
+                             glm::vec3( 0.0f, 0.0f,  0.0f),
+                             glm::vec3( 0.0f, 1.0f,  0.0f) );
+
+    // near: 1.0f, far: 7.5f
+    // since the light soure is directional light, using orthographic projection
+    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
 }
 
+
+void ShadowMapping::initDepthBufferFBO()
+{
+    // depth buffer FBO
+    glGenFramebuffers(1, &depthBufferFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+
+    // tell OpenGL that nothing will be drawn, no need for color buffer attachment
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
 
 void ShadowMapping::initFloor()
@@ -136,8 +161,9 @@ void ShadowMapping::drawCube()
 
 
 
-void ShadowMapping::render(Shader& shader)
+void ShadowMapping::drawScene(Shader& shader)
 {
+    shader.Bind();
     glm::mat4 model(1.0f);
     glActiveTexture(GL_TEXTURE0);
 
@@ -163,6 +189,41 @@ void ShadowMapping::render(Shader& shader)
     model = glm::scale(model, glm::vec3(0.25));
     shader.setMat4("model", model);
     drawCube();
+}
+
+
+
+void ShadowMapping::fillDepthBuffer(Shader& shader)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
+    shader.Bind();
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+
+    shader.setMat4("projection", lightProjection);
+    shader.setMat4("view", lightView);
+
+    drawScene(shader);
+}
+
+
+void ShadowMapping::renderScene(Shader& shader)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);   // bind default FBO
+    shader.Bind();
+    glViewport(0, 0, 1200, 1000);           // default resolution
+
+    shader.setMat4("view", camera.getViewMatrix());
+    shader.setMat4("projection", camera.getProjectionMatrix());
+
+    drawScene(shader);
+}
+
+
+void ShadowMapping::render(Shader& depthBufferShader, Shader& sceneShader)
+{
+    fillDepthBuffer(depthBufferShader);
+
+    renderScene(sceneShader);
 }
 
 
@@ -198,10 +259,13 @@ int runShadowMapping()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader shader("res/Shaders/Advanced_Lighting/ShadowMapping/shadowMapping.shader");
-    shader.Bind();
 
-    shader.setInt("texture_0", 0);
+    Shader depthBufferShader("res/Shaders/Advanced_Lighting/ShadowMapping/simpleDepthBuffer.shader");
+
+    Shader sceneShader("res/Shaders/Advanced_Lighting/ShadowMapping/shadowMapping.shader");
+    sceneShader.Bind();
+
+    sceneShader.setInt("texture_0", 0);
 
     ShadowMapping renderer;
 
@@ -216,13 +280,7 @@ int runShadowMapping()
 
         camera.cameraUpdateFrameTime();
 
-        glm::mat4 projection = camera.getProjectionMatrix();
-        glm::mat4 view = camera.getViewMatrix();
-
-        shader.setMat4("view", view);
-        shader.setMat4("projection", projection);
-
-        renderer.render(shader);
+        renderer.render(depthBufferShader, sceneShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
