@@ -2,12 +2,17 @@
 #version 330 core
 
 layout(Location = 0) in vec3 aPos;
-layout(Location = 1) in vec3 aNormal;
-layout(Location = 2) in vec2 aTextureCoord;
 
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
+
+
+// This shader is used to fill depth buffer 
+// mvp is from the perspective of light source
+// This shader should have no output
+
+
 
 void main()
 {
@@ -16,8 +21,16 @@ void main()
 
 
 
+
 #shader fragment
 #version 330 core
 
+// test only
+out vec4 FragColor;
+
+
 void main()
-{}
+{
+	// test only
+	FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
+}

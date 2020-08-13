@@ -195,7 +195,7 @@ void ShadowMapping::drawScene(Shader& shader)
 
 void ShadowMapping::fillDepthBuffer(Shader& shader)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
+    //glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
     shader.Bind();
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 
@@ -208,7 +208,6 @@ void ShadowMapping::fillDepthBuffer(Shader& shader)
 
 void ShadowMapping::renderScene(Shader& shader)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);   // bind default FBO
     shader.Bind();
     glViewport(0, 0, 1200, 1000);           // default resolution
 
@@ -223,7 +222,7 @@ void ShadowMapping::render(Shader& depthBufferShader, Shader& sceneShader)
 {
     fillDepthBuffer(depthBufferShader);
 
-    renderScene(sceneShader);
+    //renderScene(sceneShader);
 }
 
 
