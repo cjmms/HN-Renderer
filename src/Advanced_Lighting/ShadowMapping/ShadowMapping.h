@@ -19,13 +19,13 @@ private:
 	void initFloor();
 	void initCube();
 
-	void drawFloor(Shader &shader);
+	void drawFloor();
 	void drawCube();
 
 
 public:
 	ShadowMapping();
-	void render(glm::mat4 view, glm::mat4 projection, Shader &shader);
+	void render(Shader &shader);
 };
 
 
