@@ -169,6 +169,8 @@ void ShadowMapping::drawScene(Shader& shader)
     shader.Bind();
     glm::mat4 model(1.0f);
     glActiveTexture(GL_TEXTURE0);
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, depthMap);
 
     // floor
     glBindTexture(GL_TEXTURE_2D, floorTextureID);

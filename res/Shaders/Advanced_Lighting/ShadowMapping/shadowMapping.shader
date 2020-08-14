@@ -52,8 +52,32 @@ uniform sampler2D depthMap;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
+
+// returns 1 if within shadow area, otherwise returns 0
+float shadowCalculation()
+{
+	// transform from clip space to Normailzed Device Coordinate
+	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
+
+	// since the range of NDC is [-1, 1], range of depth buffer is [0, 1]
+	// transform projCoord to range [0, 1]
+	projCoord = projCoord * 0.5f + 0.5f;
+
+	// extract depth value from pass 1
+	float depthInBuffer = texture(depthMap, projCoord.xy).r;
+
+	float currentDepth = projCoord.z;
+
+	return currentDepth > depthInBuffer ? 1.0f : 0.0f;
+	//return currentDepth == 0 ? 1.0f : 0.0f;
+}
+
+
+
 vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 color)
 {
+	float shadow = 1 - shadowCalculation();
+
 	// ambient
 	vec3 ambient = 0.15 * color;
 
@@ -71,8 +95,8 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 
 	vec3 specular = spec * lightColor;
 
-	
-	return ambient + diffuse + specular;
+	// shadow is not completely dark, ambient should lit shadow area
+	return ambient + shadow * diffuse + shadow * specular;
 }
 
 
@@ -83,8 +107,8 @@ void main()
 	vec3 normal = normalize(fs_in.normal);
 
 	vec3 lighting = BlinnPhong(normal, fs_in.FragPos, lightPos, lightColor, color);
-
 	color *= lighting;
 
+	// no Gamma Correction
 	FragColor = vec4(color, 1.0f);
 }
