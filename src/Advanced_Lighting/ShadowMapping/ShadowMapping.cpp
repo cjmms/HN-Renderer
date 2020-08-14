@@ -7,6 +7,7 @@ ShadowMapping::ShadowMapping()
     initFloor();
     initCube();
     initDepthBufferFBO();
+    initDebugQuad();
 
     // calculate light view matrix and light projection matrix
     // light position: vec3(-2.0, 4.0, -1.0) look at origin
@@ -146,6 +147,36 @@ void ShadowMapping::initCube()
 
 
 
+void ShadowMapping::initDebugQuad()
+{
+    float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+
+    glGenBuffers(1, &quadVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &quadVAO);
+    glBindVertexArray(quadVAO);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+}
+
+
+
 void ShadowMapping::drawFloor()
 {
     glBindVertexArray(floorVAO);
@@ -163,14 +194,27 @@ void ShadowMapping::drawCube()
 }
 
 
+void ShadowMapping::drawDebugQuad(Shader& shader)
+{
+    shader.Bind();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);   // default FBO
+
+    shader.setInt("depthMap", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
 
 void ShadowMapping::drawScene(Shader& shader)
 {
     shader.Bind();
     glm::mat4 model(1.0f);
     glActiveTexture(GL_TEXTURE0);
-    //glActiveTexture(GL_TEXTURE1);
-    //glBindTexture(GL_TEXTURE_2D, depthMap);
+
 
     // floor
     glBindTexture(GL_TEXTURE_2D, floorTextureID);
@@ -233,11 +277,12 @@ void ShadowMapping::renderScene(Shader& shader)
 }
 
 
-void ShadowMapping::render(Shader& depthBufferShader, Shader& sceneShader)
+void ShadowMapping::render(Shader& depthBufferShader, Shader& sceneShader, Shader& debugQuadShader)
 {
     fillDepthBuffer(depthBufferShader);
 
-    renderScene(sceneShader);
+    //renderScene(sceneShader);
+    drawDebugQuad(debugQuadShader);
 }
 
 
@@ -273,6 +318,7 @@ int runShadowMapping()
 
     glEnable(GL_DEPTH_TEST);
 
+    Shader debugQuadShader("res/Shaders/Advanced_Lighting/ShadowMapping/debugQuad.shader");
 
     Shader depthBufferShader("res/Shaders/Advanced_Lighting/ShadowMapping/simpleDepthBuffer.shader");
 
@@ -297,7 +343,7 @@ int runShadowMapping()
 
         camera.cameraUpdateFrameTime();
 
-        renderer.render(depthBufferShader, sceneShader);
+        renderer.render(depthBufferShader, sceneShader, debugQuadShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

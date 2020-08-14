@@ -18,6 +18,8 @@ private:
 	unsigned int floorVAO, floorVBO;
 	unsigned int cubeVAO, cubeVBO;
 
+	unsigned int quadVAO, quadVBO;
+
 	unsigned int depthBufferFBO;
 
 	unsigned int cubeTextureID, floorTextureID, depthMap;
@@ -27,10 +29,12 @@ private:
 
 	void initFloor();
 	void initCube();
+	void initDebugQuad();
 	void initDepthBufferFBO();
 
 	void drawFloor();
 	void drawCube();
+	void drawDebugQuad(Shader& shader);
 	void drawScene(Shader &shader);
 
 	void fillDepthBuffer(Shader &shader);
@@ -39,7 +43,7 @@ private:
 
 public:
 	ShadowMapping();
-	void render(Shader &depthBufferShader, Shader &sceneShader);
+	void render(Shader &depthBufferShader, Shader &sceneShader, Shader &debugQuadShader);
 };
 
 
