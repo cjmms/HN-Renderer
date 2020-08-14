@@ -26,11 +26,11 @@ void main()
 #version 330 core
 
 // test only
-out vec4 FragColor;
+//out vec4 FragColor;
 
 
 void main()
 {
 	// test only
-	FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
+	//FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
 }

@@ -22,6 +22,9 @@ ShadowMapping::ShadowMapping()
 
 void ShadowMapping::initDepthBufferFBO()
 {
+    // depth buffer attachment
+    createDepthAttachment(depthMap, SHADOW_WIDTH, SHADOW_HEIGHT);
+
     // depth buffer FBO
     glGenFramebuffers(1, &depthBufferFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
@@ -195,7 +198,7 @@ void ShadowMapping::drawScene(Shader& shader)
 
 void ShadowMapping::fillDepthBuffer(Shader& shader)
 {
-    //glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
     shader.Bind();
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 
@@ -209,10 +212,20 @@ void ShadowMapping::fillDepthBuffer(Shader& shader)
 void ShadowMapping::renderScene(Shader& shader)
 {
     shader.Bind();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);   // default FBO
     glViewport(0, 0, 1200, 1000);           // default resolution
+
+    shader.setVec3("viewPos", camera.getCameraPos());
 
     shader.setMat4("view", camera.getViewMatrix());
     shader.setMat4("projection", camera.getProjectionMatrix());
+
+    shader.setMat4("lightProjection", lightProjection);
+    shader.setMat4("lightView", lightView);
+
+    shader.setInt("depthMap", 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
 
     drawScene(shader);
 }
@@ -222,7 +235,7 @@ void ShadowMapping::render(Shader& depthBufferShader, Shader& sceneShader)
 {
     fillDepthBuffer(depthBufferShader);
 
-    //renderScene(sceneShader);
+    renderScene(sceneShader);
 }
 
 
@@ -262,9 +275,12 @@ int runShadowMapping()
     Shader depthBufferShader("res/Shaders/Advanced_Lighting/ShadowMapping/simpleDepthBuffer.shader");
 
     Shader sceneShader("res/Shaders/Advanced_Lighting/ShadowMapping/shadowMapping.shader");
+
     sceneShader.Bind();
 
-    sceneShader.setInt("texture_0", 0);
+    sceneShader.setInt("diffuseTexture", 0);
+    sceneShader.setVec3("lightPos", glm::vec3(-2.0f, 4.0f, -1.0f));
+    
 
     ShadowMapping renderer;
 
