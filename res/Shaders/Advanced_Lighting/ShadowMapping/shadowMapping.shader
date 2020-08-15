@@ -53,8 +53,7 @@ uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 
-// returns 1 if within shadow area, otherwise returns 0
-float shadowCalculation()
+float pcf(vec3 normal, vec3 lightDir)
 {
 	// transform from clip space to Normailzed Device Coordinate
 	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
@@ -63,21 +62,29 @@ float shadowCalculation()
 	// transform projCoord to range [0, 1]
 	projCoord = projCoord * 0.5f + 0.5f;
 
-	// extract depth value from pass 1
-	float depthInBuffer = texture(depthMap, projCoord.xy).r;
+	// if outside the shadow map, no shadow will be rendered
+	if (projCoord.z > 1) return 0;
 
-	float currentDepth = projCoord.z;
+	// bias required to fix shadow acne
+	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
 
-	return currentDepth > depthInBuffer ? 1.0f : 0.0f;
-	//return currentDepth == 0 ? 1.0f : 0.0f;
+	float shadow = 0.0;
+	vec2 texelSize = 1 / textureSize(depthMap, 0);
+	for (int x = -1; x <= 1; ++x)
+	{
+		for (int y = -1; y <= 1; ++y)
+		{
+			float depthInBuffer = texture(depthMap, projCoord.xy + vec2(x, y) * texelSize).r;
+			shadow += projCoord.z - bias > depthInBuffer ? 1.0f : 0.0f;
+		}
+	}
+	return shadow / 9.0;
 }
 
 
 
 vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 color)
 {
-	float shadow = 1 - shadowCalculation();
-
 	// ambient
 	vec3 ambient = 0.15 * color;
 
@@ -95,8 +102,10 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 
 	vec3 specular = spec * lightColor;
 
+	float shadow = 1 - pcf(normal, lightDir);
+
 	// shadow is not completely dark, ambient should lit shadow area
-	return ambient + shadow * diffuse + shadow * specular;
+	return ambient + shadow * (diffuse + specular);
 }
 
 

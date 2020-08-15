@@ -245,9 +245,11 @@ void ShadowMapping::drawScene(Shader& shader)
 void ShadowMapping::fillDepthBuffer(Shader& shader)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
-    shader.Bind();
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    shader.Bind();
     shader.setMat4("projection", lightProjection);
     shader.setMat4("view", lightView);
 
@@ -281,8 +283,8 @@ void ShadowMapping::render(Shader& depthBufferShader, Shader& sceneShader, Shade
 {
     fillDepthBuffer(depthBufferShader);
 
-    //renderScene(sceneShader);
-    drawDebugQuad(debugQuadShader);
+    renderScene(sceneShader);
+    //drawDebugQuad(debugQuadShader);
 }
 
 
