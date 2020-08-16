@@ -1,5 +1,9 @@
 #pragma once
 
+// Demo of omnidirectional shadow mapping
+// Stupid name, I will call it point shadow mapping(point shadows)
+
+
 #include "../../Shader.h"
 #include "../../Camera.h"
 #include "../../Texture.h"
@@ -9,11 +13,13 @@
 
 extern Camera camera;
 
-const unsigned int SHADOW_HEIGHT = 860;
-const unsigned int SHADOW_WIDTH = 860;
+const unsigned int SHADOW_HEIGHT = 1024;
+const unsigned int SHADOW_WIDTH = 1024;
 
-class ShadowMapping
+
+class PointShadows
 {
+
 private:
 	unsigned int floorVAO, floorVBO;
 	unsigned int cubeVAO, cubeVBO;
@@ -22,30 +28,29 @@ private:
 
 	unsigned int depthBufferFBO;
 
-	unsigned int cubeTextureID, floorTextureID, depthMap;
+	unsigned int cubeTextureID, floorTextureID;
 
 	glm::mat4 lightView;
 	glm::mat4 lightProjection;
 
 	void initFloor();
 	void initCube();
-	void initDebugQuad();
+	//void initDebugQuad();
 	void initDepthBufferFBO();
 
 	void drawFloor();
 	void drawCube();
-	void drawDebugQuad(Shader& shader);
-	void drawScene(Shader &shader);
+	//void drawDebugQuad(Shader& shader);
+	void drawScene(Shader& shader);
 
-	void fillDepthBuffer(Shader &shader);
+	void fillDepthBuffer(Shader& shader);
 	void renderScene(Shader& shader);
 
 
 public:
-	ShadowMapping();
-	void render(Shader &depthBufferShader, Shader &sceneShader, Shader &debugQuadShader);
+	PointShadows();
+	void render(Shader& depthBufferShader, Shader& sceneShader);
 };
 
 
-int runShadowMapping();
-
+int runPointShadows();

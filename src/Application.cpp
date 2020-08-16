@@ -51,4 +51,5 @@ int main(void)
     //runBlinnPhong();           // press N
     //runGammaCorrection();      // press N
     runShadowMapping();
+    runPointShadows();
 }
