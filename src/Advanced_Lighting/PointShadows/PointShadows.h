@@ -13,18 +13,13 @@
 
 extern Camera camera;
 
-const unsigned int SHADOW_HEIGHT = 1024;
-const unsigned int SHADOW_WIDTH = 1024;
 
 
 class PointShadows
 {
 
 private:
-	unsigned int floorVAO, floorVBO;
 	unsigned int cubeVAO, cubeVBO;
-
-	unsigned int quadVAO, quadVBO;
 
 	unsigned int depthBufferFBO;
 
@@ -33,15 +28,13 @@ private:
 	glm::mat4 lightView;
 	glm::mat4 lightProjection;
 
-	void initFloor();
 	void initCube();
 	//void initDebugQuad();
 	void initDepthBufferFBO();
 
-	void drawFloor();
-	void drawCube();
+	void drawCube(unsigned int texture);
 	//void drawDebugQuad(Shader& shader);
-	void drawScene(Shader& shader);
+	void drawRoom(Shader& shader);
 
 	void fillDepthBuffer(Shader& shader);
 	void renderScene(Shader& shader);

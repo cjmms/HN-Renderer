@@ -9,8 +9,7 @@
 
 extern Camera camera;
 
-const unsigned int SHADOW_HEIGHT = 860;
-const unsigned int SHADOW_WIDTH = 860;
+
 
 class ShadowMapping
 {

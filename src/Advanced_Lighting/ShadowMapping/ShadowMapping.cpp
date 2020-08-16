@@ -24,7 +24,8 @@ ShadowMapping::ShadowMapping()
 void ShadowMapping::initDepthBufferFBO()
 {
     // depth buffer attachment
-    createDepthAttachment(depthMap, SHADOW_WIDTH, SHADOW_HEIGHT);
+    // 860 x 860, shadow map resolution
+    createDepthAttachment(depthMap, 860, 860);
 
     // depth buffer FBO
     glGenFramebuffers(1, &depthBufferFBO);
@@ -188,6 +189,7 @@ void ShadowMapping::drawFloor()
 
 void ShadowMapping::drawCube() 
 {
+
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
@@ -245,7 +247,8 @@ void ShadowMapping::drawScene(Shader& shader)
 void ShadowMapping::fillDepthBuffer(Shader& shader)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
-    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    // resolution of shadow map
+    glViewport(0, 0, 860, 860);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
