@@ -228,6 +228,11 @@ void PointShadows::render(Shader& depthBufferShader, Shader& sceneShader)
 
     sceneShader.setMat4("projection", camera.getProjectionMatrix());
     sceneShader.setMat4("view", camera.getViewMatrix());
+ 
+    sceneShader.setVec3("lightPos", lightPos);
+    sceneShader.setVec3("viewPos", camera.getCameraPos());
+
+    sceneShader.setFloat("farPlane", 25.0f);
 
     renderScene(sceneShader);
 }
@@ -270,12 +275,8 @@ int runPointShadows()
     Shader sceneShader("res/Shaders/Advanced_Lighting/PointShadows/pointShadow.shader");
 
     sceneShader.Bind();
-
     sceneShader.setInt("diffuseMap", 0);
-
-    //sceneShader.setInt("diffuseTexture", 0);
-    //sceneShader.setVec3("lightPos", glm::vec3(-2.0f, 4.0f, -1.0f));
-
+    sceneShader.setInt("depthMap", 1);
 
     PointShadows renderer;
 
