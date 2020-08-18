@@ -21,22 +21,22 @@ class PointShadows
 private:
 	unsigned int cubeVAO, cubeVBO;
 
-	unsigned int depthBufferFBO;
+	unsigned int depthCubemapFBO;
 
-	unsigned int cubeTextureID, floorTextureID;
+	unsigned int cubeTextureID, floorTextureID, depthCubemap;
 
 	glm::mat4 lightView;
 	glm::mat4 lightProjection;
 
 	void initCube();
 	//void initDebugQuad();
-	void initDepthBufferFBO();
+	void initDepthCubemapFBO();
 
 	void drawCube(unsigned int texture);
 	//void drawDebugQuad(Shader& shader);
 	void drawRoom(Shader& shader);
 
-	void fillDepthBuffer(Shader& shader);
+	void fillDepthCubemap(Shader& shader);
 	void renderScene(Shader& shader);
 
 

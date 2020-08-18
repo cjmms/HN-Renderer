@@ -5,9 +5,8 @@ PointShadows::PointShadows()
 {
 	initCube();
 
-	//initDepthBufferFBO();
+	initDepthCubemapFBO();
 }
-
 
 
 
@@ -84,10 +83,20 @@ void PointShadows::initCube()
 
 
 
-void PointShadows::initDepthBufferFBO()
-{}
+void PointShadows::initDepthCubemapFBO()
+{
+    // resolution of cubemap texture: 860 X 860
+    depthCubemap = createDepthCubemap(860, 860);
 
+    glGenFramebuffers(1, &depthCubemapFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthCubemapFBO);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
 
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
 
 
@@ -118,8 +127,14 @@ void PointShadows::drawRoom(Shader &shader)
 
 
 
-void PointShadows::fillDepthBuffer(Shader& shader)
-{}
+void PointShadows::fillDepthCubemap(Shader& shader)
+{
+    shader.Bind();
+    glBindFramebuffer(GL_FRAMEBUFFER, depthCubemapFBO);
+    glViewport(0, 0, 860, 860);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
 
 
@@ -133,13 +148,50 @@ void PointShadows::renderScene(Shader& shader)
     // bind cube room texture
     drawRoom(shader);
 
+    // draw 5 cubes
+    glm::mat4 model(1.0f);
 
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, -3.5f, 0.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.setMat4("model", model);
+    drawCube(cubeTextureID);
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 3.0f, 1.0));
+    model = glm::scale(model, glm::vec3(0.75f));
+    shader.setMat4("model", model);
+    drawCube(cubeTextureID);
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, -1.0f, 0.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.setMat4("model", model);
+    drawCube(cubeTextureID);
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, 1.0f, 1.5));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.setMat4("model", model);
+    drawCube(cubeTextureID);
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, 2.0f, -3.0));
+    model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    model = glm::scale(model, glm::vec3(0.75f));
+    shader.setMat4("model", model);
+    drawCube(cubeTextureID);
 }
 
 
 
 void PointShadows::render(Shader& depthBufferShader, Shader& sceneShader)
 {
+    // generate shadow map
+    fillDepthCubemap(depthBufferShader);
+
+    // render with cubemap
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, 1024, 1024);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemapFBO);
+
     renderScene(sceneShader);
 }
 
@@ -154,7 +206,7 @@ int runPointShadows()
         return -1;
 
     // Create a windowed mode window and its OpenGL context 
-    window = glfwCreateWindow(1200, 1000, "Vanilla", NULL, NULL);
+    window = glfwCreateWindow(1024, 1024, "Vanilla", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

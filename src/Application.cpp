@@ -50,6 +50,6 @@ int main(void)
     // Advanced Lighting
     //runBlinnPhong();           // press N
     //runGammaCorrection();      // press N
-    runShadowMapping();
-    //runPointShadows();
+    //runShadowMapping();
+    runPointShadows();
 }

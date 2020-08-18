@@ -36,6 +36,10 @@ public:
 
 unsigned int loadCubemap(std::vector<std::string> faces);
 
+// create a cubemap for shadow mapping
+// does not need image address as input
+unsigned int createDepthCubemap(unsigned int width, unsigned int height);
+
 void createTexture(unsigned int &id, const char* filePath, ImageType imageType);
 
 void createDepthAttachment(unsigned int &id, unsigned int width, unsigned int height);
