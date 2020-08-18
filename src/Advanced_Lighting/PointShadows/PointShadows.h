@@ -25,12 +25,14 @@ private:
 
 	unsigned int cubeTextureID, floorTextureID, depthCubemap;
 
-	glm::mat4 lightView;
 	glm::mat4 lightProjection;
+	std::vector<glm::mat4> lightViews;
+	glm::vec3 lightPos;
 
 	void initCube();
 	//void initDebugQuad();
 	void initDepthCubemapFBO();
+	void initLightingMatrices();
 
 	void drawCube(unsigned int texture);
 	//void drawDebugQuad(Shader& shader);

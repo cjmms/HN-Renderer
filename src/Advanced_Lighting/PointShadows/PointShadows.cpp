@@ -3,9 +3,14 @@
 
 PointShadows::PointShadows() 
 {
+    // light position init to origin
+    lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
+
 	initCube();
 
 	initDepthCubemapFBO();
+
+    initLightingMatrices();
 }
 
 
@@ -100,6 +105,27 @@ void PointShadows::initDepthCubemapFBO()
 
 
 
+void PointShadows::initLightingMatrices()
+{
+    // init view matrix
+    // using perspective projection since this demo is using point light
+    // angle must be 90 degree to cover a cube
+    float aspect = (float)860 / (float)860;
+    float near = 1.0f;
+    float far = 25.0f;
+    lightProjection = glm::perspective(glm::radians(90.0f), aspect, near, far);
+
+    // init 6 projection matrix
+    lightViews.push_back(glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+    lightViews.push_back(glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+    lightViews.push_back(glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f, 1.0f, 0.0f), glm::vec3(0.0f,  0.0f, 1.0f)));
+    lightViews.push_back(glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+    lightViews.push_back(glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+    lightViews.push_back(glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+}
+
+
+
 void PointShadows::drawCube(unsigned int texture)
 {
     glActiveTexture(GL_TEXTURE0);
@@ -134,6 +160,15 @@ void PointShadows::fillDepthCubemap(Shader& shader)
     glViewport(0, 0, 860, 860);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    for (unsigned int i = 0; i < 6; ++i)
+        shader.setMat4("lightViews[" + std::to_string(i) + "]", lightViews[i]);
+
+    shader.setMat4("lightProjection", lightProjection);
+    shader.setVec3("lightPos", lightPos);
+    shader.setFloat("farPlane", 25.0f);
+
+    renderScene(shader);
 }
 
 
@@ -141,9 +176,6 @@ void PointShadows::fillDepthCubemap(Shader& shader)
 void PointShadows::renderScene(Shader& shader)
 {
     shader.Bind();
-
-    shader.setMat4("projection", camera.getProjectionMatrix());
-    shader.setMat4("view", camera.getViewMatrix());
 
     // bind cube room texture
     drawRoom(shader);
@@ -192,6 +224,11 @@ void PointShadows::render(Shader& depthBufferShader, Shader& sceneShader)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemapFBO);
 
+    sceneShader.Bind();
+
+    sceneShader.setMat4("projection", camera.getProjectionMatrix());
+    sceneShader.setMat4("view", camera.getViewMatrix());
+
     renderScene(sceneShader);
 }
 
@@ -228,7 +265,7 @@ int runPointShadows()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader depthBufferShader("res/Shaders/Advanced_Lighting/ShadowMapping/simpleDepthBuffer.shader");
+    Shader depthBufferShader("res/Shaders/Advanced_Lighting/PointShadows/simpleDepthCubemap.shader");
 
     Shader sceneShader("res/Shaders/Advanced_Lighting/PointShadows/pointShadow.shader");
 
