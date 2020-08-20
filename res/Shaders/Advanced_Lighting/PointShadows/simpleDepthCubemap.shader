@@ -50,18 +50,21 @@ uniform float farPlane;
 
 in vec4 FragPos;
 
+//out vec4 FragColor;
 
 // no output color
 // setup depth value manunally through gl_FragDepth
 void main()
 {
-	float light2FragDistance = length(lightPos - FragPos.xyz);
+	float light2FragDistance = length(FragPos.xyz - lightPos);
 
 	// map to [0, 1]
 	float depth = light2FragDistance / farPlane;
 
 	// write to depth buffer
 	gl_FragDepth = depth;
+
+	//FragColor = vec4(depth, depth, depth, 1.0f);
 }
 
 

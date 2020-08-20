@@ -92,7 +92,7 @@ void PointShadows::initDepthCubemapFBO()
 {
     // resolution of cubemap texture: 860 X 860
     depthCubemap = createDepthCubemap(860, 860);
-
+    
     glGenFramebuffers(1, &depthCubemapFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, depthCubemapFBO);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
@@ -147,7 +147,13 @@ void PointShadows::drawRoom(Shader &shader)
 
     // rendering inside of cube, cull face
     glDisable(GL_CULL_FACE);
+
+    // using this uniform to reverse normal
+    // since the light source is inside the room
+    shader.setInt("reverse_normal", 1.0f);
     drawCube(floorTextureID);
+    shader.setInt("reverse_normal", 0.0f);
+
     glEnable(GL_CULL_FACE);
 }
 
@@ -155,11 +161,11 @@ void PointShadows::drawRoom(Shader &shader)
 
 void PointShadows::fillDepthCubemap(Shader& shader)
 {
-    shader.Bind();
-    glBindFramebuffer(GL_FRAMEBUFFER, depthCubemapFBO);
     glViewport(0, 0, 860, 860);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthCubemapFBO);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    shader.Bind();
 
     for (unsigned int i = 0; i < 6; ++i)
         shader.setMat4("lightViews[" + std::to_string(i) + "]", lightViews[i]);
@@ -218,13 +224,16 @@ void PointShadows::render(Shader& depthBufferShader, Shader& sceneShader)
     fillDepthCubemap(depthBufferShader);
 
     // render with cubemap
+    
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, 1024, 1024);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemapFBO);
 
     sceneShader.Bind();
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
 
     sceneShader.setMat4("projection", camera.getProjectionMatrix());
     sceneShader.setMat4("view", camera.getViewMatrix());
@@ -235,6 +244,7 @@ void PointShadows::render(Shader& depthBufferShader, Shader& sceneShader)
     sceneShader.setFloat("farPlane", 25.0f);
 
     renderScene(sceneShader);
+    
 }
 
 

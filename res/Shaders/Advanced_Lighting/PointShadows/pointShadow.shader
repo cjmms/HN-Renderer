@@ -15,6 +15,7 @@ out VS_OUT{
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform bool reverse_normal;
 
 
 void main()
@@ -23,7 +24,11 @@ void main()
 
 	vs_out.textureCoord = aTextureCoord;
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0f));
-	vs_out.normal = transpose(inverse(mat3(model))) * aNormal;
+
+	if (reverse_normal)
+		vs_out.normal = transpose(inverse(mat3(model))) * -1.0f * aNormal;
+	else
+		vs_out.normal = transpose(inverse(mat3(model))) * aNormal;
 }
 
 
@@ -49,10 +54,46 @@ uniform vec3 viewPos;
 uniform float farPlane;
 
 
+float calculateShadow(vec3 offset)
+{
+	vec3 frag2Light = fs_in.FragPos - lightPos;
+	float currentDepth = length(frag2Light);
+
+	float depthInBuffer = texture(depthMap, frag2Light + offset).r;
+
+	depthInBuffer *= farPlane;
+
+	float bias = 0.05f;
+
+	return currentDepth - bias > depthInBuffer ? 0.0f : 1.0f;
+}
+
+
+// sample a cube around frag, total number of samples * samples * samples 
+float pcf()
+{
+	float shadow = 0.0f;
+	float offset = 0.1f;
+	float samples = 4;
+
+	for (float x = -offset; x < offset; x += offset / (samples * 0.5))
+	{
+		for (float y = -offset; y < offset; y += offset / (samples * 0.5))
+		{
+			for (float z = -offset; z < offset; z += offset / (samples * 0.5))
+			{
+				shadow += calculateShadow(vec3(x, y, z));
+			}
+		}
+	}
+	return shadow / (samples * samples * samples);
+}
+
+
 vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 color)
 {
 	// ambient
-	vec3 ambient = 0.15 * color;
+	vec3 ambient = 0.3 * color;
 
 	// diffuse
 	vec3 lightDir = normalize(lightPos - fragPos);
@@ -68,17 +109,19 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 
 	vec3 specular = spec * lightColor;
 
-	//float shadow = 1 - pcf(normal, lightDir);
+	
+	//float shadow =  calculateShadow(vec3(0, 0, 0));
+	float shadow = pcf();
 
 	// shadow is not completely dark, ambient should lit shadow area
-	return ambient + 1.0f * (diffuse + specular);
+	return ambient + shadow * (diffuse + specular);
 }
 
 
 void main()
 {
 	vec3 color = texture(diffuseMap, fs_in.textureCoord).rgb;
-	vec3 lightColor = vec3(1.0f);
+	vec3 lightColor = vec3(0.3f);
 	vec3 normal = normalize(fs_in.normal);
 
 	vec3 lighting = BlinnPhong(normal, fs_in.FragPos, lightPos, lightColor, color);
