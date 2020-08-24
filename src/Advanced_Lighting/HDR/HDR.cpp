@@ -5,7 +5,7 @@
 HDR::HDR()
 {
 	initCube();
-    //initQuad();
+    initQuad();
 }
 
 
@@ -132,6 +132,22 @@ void HDR::drawCube(Shader &shader)
 }
 
 
+void HDR::drawQuad(Shader &shader)
+{
+    shader.Bind();
+
+    glActiveTexture(GL_TEXTURE0);
+    // testing texture
+    glBindTexture(GL_TEXTURE_2D, cubeTex);
+
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+
+    shader.unBind();
+}
+
+
 void HDR::renderLightingScene(Shader &shader)
 {
     shader.Bind();
@@ -150,6 +166,10 @@ void HDR::renderLightingScene(Shader &shader)
 void HDR::renderHDRScene(Shader& shader)
 {
     shader.Bind();
+
+    shader.setInt("Texture", 0);
+    drawQuad(shader);
+
     shader.unBind();
 }
 
@@ -158,7 +178,7 @@ void HDR::renderHDRScene(Shader& shader)
 
 void HDR::render(Shader &lightingShader, Shader &hdrShader)
 {
-    renderLightingScene(lightingShader);
+    //renderLightingScene(lightingShader);
     renderHDRScene(hdrShader);
 }
 
@@ -197,7 +217,7 @@ int runHDR()
 
     Shader lightingSceneShader("res/Shaders/Advanced_Lighting/HDR/lightingSceneShader.shader");
 
-    //Shader hdrShader("res/Shaders/Advanced_Lighting/PointShadows/pointShadow.shader");
+    Shader hdrShader("res/Shaders/Advanced_Lighting/HDR/hdr.shader");
 
 
     HDR renderer;
@@ -213,7 +233,7 @@ int runHDR()
 
         camera.cameraUpdateFrameTime();
 
-        renderer.render(lightingSceneShader, lightingSceneShader);
+        renderer.render(lightingSceneShader, hdrShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
