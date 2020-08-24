@@ -31,3 +31,4 @@
 #include "Advanced_Lighting/GammaCorrection/GammaCorrection.h"
 #include "Advanced_Lighting/ShadowMapping/ShadowMapping.h"
 #include "Advanced_Lighting/PointShadows/PointShadows.h"
+#include "Advanced_Lighting/HDR/HDR.h"
