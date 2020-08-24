@@ -111,6 +111,26 @@ void HDR::initQuad()
 }
 
 
+void HDR::drawCube(Shader &shader)
+{
+    shader.Bind();
+
+    glm::mat4 model(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 25.0));
+    model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f));
+
+    shader.setMat4("model", model);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, cubeTex);
+
+    glBindVertexArray(cubeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+
+    shader.unBind();
+}
+
 
 void HDR::renderLightingScene(Shader &shader)
 {
@@ -119,12 +139,8 @@ void HDR::renderLightingScene(Shader &shader)
     shader.setMat4("view", camera.getViewMatrix());
     shader.setMat4("projection", camera.getProjectionMatrix());
     shader.setInt("diffuseMap", 0);
-    
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, cubeTex);
-
-    glBindVertexArray(cubeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+   
+    drawCube(shader);
 
     shader.unBind();
 }
@@ -183,9 +199,6 @@ int runHDR()
 
     //Shader hdrShader("res/Shaders/Advanced_Lighting/PointShadows/pointShadow.shader");
 
-    //sceneShader.Bind();
-    //sceneShader.setInt("diffuseMap", 0);
-    //sceneShader.setInt("depthMap", 1);
 
     HDR renderer;
 

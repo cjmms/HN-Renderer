@@ -21,6 +21,8 @@ private:
 
 	void initQuad();
 
+	void drawCube(Shader& shader);
+
 	// render lighting scene to a floating point FBO
 	void renderLightingScene(Shader &lightingShader);
 

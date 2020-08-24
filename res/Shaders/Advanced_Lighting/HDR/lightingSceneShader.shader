@@ -12,7 +12,7 @@ out vec2 texCoord;
 
 void main()
 {
-	gl_Position = projection * view * vec4(aPos, 1.0f);
+	gl_Position = projection * view * model * vec4(aPos, 1.0f);
 	texCoord = aTex;
 }
 
@@ -31,6 +31,5 @@ out vec4 FragColor;
 
 void main()
 {
-	//FragColor = vec4(0.2, 0.6, 0.9, 1.0);
 	FragColor = vec4(texture(diffuseMap, texCoord).rgb, 1.0f);
 }
