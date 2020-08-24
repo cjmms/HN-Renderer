@@ -16,10 +16,16 @@ private:
 
 	unsigned int cubeVAO, cubeVBO, cubeTex;
 	unsigned int quadVAO, quadVBO;
+	unsigned int fbo, colorAttachment, depthAttachment;
 
 	void initCube();
 
 	void initQuad();
+
+	// create a floating point FBO, GL_RGBA16
+	// each component is a 16 bits floating point number
+	// value in color buffer won't be clamped to 1.0
+	void initFBO();
 
 	void drawCube(Shader &shader);
 

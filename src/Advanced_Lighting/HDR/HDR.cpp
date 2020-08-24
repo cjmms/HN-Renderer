@@ -6,6 +6,7 @@ HDR::HDR()
 {
 	initCube();
     initQuad();
+    initFBO();
 }
 
 
@@ -111,6 +112,41 @@ void HDR::initQuad()
 }
 
 
+
+void HDR::initFBO()
+{
+    // create FBO
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    // create color buffer
+    // using texture as attachment since value will be read
+    glGenTextures(1, &colorAttachment);
+    glBindTexture(GL_TEXTURE_2D, colorAttachment);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // create depth buffer
+    // using render buffer
+    glGenRenderbuffers(1, &depthAttachment);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthAttachment);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+
+    // attach color buffer
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorAttachment ,0);
+    // attach depth buffer
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthAttachment);
+
+    // check framebuffer status
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Framebuffer not complete" << std::endl;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+
+
 void HDR::drawCube(Shader &shader)
 {
     shader.Bind();
@@ -132,13 +168,14 @@ void HDR::drawCube(Shader &shader)
 }
 
 
+
 void HDR::drawQuad(Shader &shader)
 {
     shader.Bind();
 
     glActiveTexture(GL_TEXTURE0);
     // testing texture
-    glBindTexture(GL_TEXTURE_2D, cubeTex);
+    glBindTexture(GL_TEXTURE_2D, colorAttachment);
 
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -148,8 +185,11 @@ void HDR::drawQuad(Shader &shader)
 }
 
 
+
 void HDR::renderLightingScene(Shader &shader)
 {
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader.Bind();
 
     shader.setMat4("view", camera.getViewMatrix());
@@ -159,12 +199,14 @@ void HDR::renderLightingScene(Shader &shader)
     drawCube(shader);
 
     shader.unBind();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
 
 void HDR::renderHDRScene(Shader& shader)
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader.Bind();
 
     shader.setInt("Texture", 0);
@@ -175,10 +217,9 @@ void HDR::renderHDRScene(Shader& shader)
 
 
 
-
 void HDR::render(Shader &lightingShader, Shader &hdrShader)
 {
-    //renderLightingScene(lightingShader);
+    renderLightingScene(lightingShader);
     renderHDRScene(hdrShader);
 }
 
