@@ -32,3 +32,4 @@
 #include "Advanced_Lighting/ShadowMapping/ShadowMapping.h"
 #include "Advanced_Lighting/PointShadows/PointShadows.h"
 #include "Advanced_Lighting/HDR/HDR.h"
+#include "Advanced_Lighting/Bloom/Bloom.h"

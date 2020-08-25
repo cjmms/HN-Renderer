@@ -58,7 +58,7 @@ void main()
 	vec3 normal = normalize(fs_in.Normal);
 	vec3 lighting = vec3(0.0f);
 
-	vec3 ambient = 0.15 * color;
+	vec3 ambient = 0.05 * color;
 
 	for (int i = 0; i < 16; i++)
 	{

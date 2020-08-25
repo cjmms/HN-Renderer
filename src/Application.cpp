@@ -52,5 +52,6 @@ int main(void)
     //runGammaCorrection();      // press N
     //runShadowMapping();
     //runPointShadows();
-    runHDR();
+    //runHDR();
+    runBloom();
 }
