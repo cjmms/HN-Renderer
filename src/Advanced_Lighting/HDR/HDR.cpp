@@ -188,18 +188,38 @@ void HDR::drawQuad(Shader &shader)
 
 void HDR::renderLightingScene(Shader &shader)
 {
+    std::vector<glm::vec3> lightPositions;
+    lightPositions.push_back(glm::vec3(0.0f, 0.0f, 49.5f)); // back light
+    lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
+    lightPositions.push_back(glm::vec3(0.0f, -1.8f, 4.0f));
+    lightPositions.push_back(glm::vec3(0.8f, -1.7f, 6.0f));
+    // colors
+    std::vector<glm::vec3> lightColors;
+    lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
+    lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
+    lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
+    lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader.Bind();
 
+    // uniforms setup
     shader.setMat4("view", camera.getViewMatrix());
     shader.setMat4("projection", camera.getProjectionMatrix());
     shader.setInt("diffuseMap", 0);
-   
+    shader.setVec3("viewPos", camera.getCameraPos());
+
+    for (unsigned int i = 0; i < lightPositions.size(); ++i)
+    {
+        shader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
+        shader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+    }
+
     drawCube(shader);
 
     shader.unBind();
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);   // bind to default FBO
 }
 
 

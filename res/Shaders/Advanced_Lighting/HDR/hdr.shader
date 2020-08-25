@@ -24,6 +24,14 @@ out vec4 FragColor;
 
 void main()
 {
+	const float gamma = 2.2f;
+	vec3 hdrColor = texture(Texture, TexCoord).rgb;
 
-	FragColor = vec4(texture(Texture, TexCoord).rgb, 1.0f);
+	// reinhard tone mapping
+	vec3 mappedColor = hdrColor / (hdrColor + vec3(1.0f));
+
+	mappedColor = pow(mappedColor, vec3(1.0f / gamma));
+
+	FragColor = vec4(hdrColor, 1.0f);
+	//FragColor = vec4(mappedColor, 1.0f);
 }
