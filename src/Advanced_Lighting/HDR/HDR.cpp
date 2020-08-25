@@ -9,6 +9,7 @@ HDR::HDR()
     initFBO();
 }
 
+static int hdrEnabled = true;
 
 
 void HDR::initCube()
@@ -78,7 +79,25 @@ void HDR::initCube()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    createTexture(cubeTex, "res/Textures/wood.jpg", JPG);
+
+    // setup texture manually, Gamma correction applied
+    glGenTextures(1, &cubeTex);
+    glBindTexture(GL_TEXTURE_2D, cubeTex);
+
+    stbi_set_flip_vertically_on_load(true);
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load("res/Textures/wood.jpg", &width, &height, &nrChannels, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // free image memory
+    stbi_image_free(data);
+
 }
 
 
@@ -230,6 +249,8 @@ void HDR::renderHDRScene(Shader& shader)
     shader.Bind();
 
     shader.setInt("Texture", 0);
+    shader.setInt("hdr", hdrEnabled);
+
     drawQuad(shader);
 
     shader.unBind();
@@ -243,6 +264,15 @@ void HDR::render(Shader &lightingShader, Shader &hdrShader)
     renderHDRScene(hdrShader);
 }
 
+
+
+void static key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    {
+        hdrEnabled = !hdrEnabled;
+    }
+}
 
 
 int runHDR()
@@ -270,6 +300,8 @@ int runHDR()
 
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+
+    glfwSetKeyCallback(window, key_callback);
 
     if (glewInit() != GLEW_OK)
         std::cout << "init error" << std::endl;

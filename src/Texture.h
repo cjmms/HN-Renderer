@@ -42,6 +42,8 @@ unsigned int createDepthCubemap(unsigned int width, unsigned int height);
 
 void createTexture(unsigned int &id, const char* filePath, ImageType imageType);
 
+// TODO: gamma correction
+
 void createDepthAttachment(unsigned int &id, unsigned int width, unsigned int height);
 
 void loadImage(unsigned char* data, ImageType imageType, unsigned int width, unsigned int height);

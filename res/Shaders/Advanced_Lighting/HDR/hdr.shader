@@ -18,9 +18,11 @@ void main()
 
 in vec2 TexCoord;
 
-uniform sampler2D Texture;
-
 out vec4 FragColor;
+
+
+uniform sampler2D Texture;
+uniform bool hdr;
 
 void main()
 {
@@ -32,6 +34,12 @@ void main()
 
 	mappedColor = pow(mappedColor, vec3(1.0f / gamma));
 
-	FragColor = vec4(hdrColor, 1.0f);
-	//FragColor = vec4(mappedColor, 1.0f);
+	if (hdr) 
+	{
+		FragColor = vec4(mappedColor, 1.0f);
+	}
+	else
+	{
+		FragColor = vec4(hdrColor, 1.0f);
+	}
 }

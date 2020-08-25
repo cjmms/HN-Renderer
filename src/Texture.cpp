@@ -48,6 +48,10 @@ void createTexture(unsigned int& id, const char* filePath, ImageType imageType)
 }
 
 
+
+
+
+
 void createDepthAttachment(unsigned int &id, unsigned int width, unsigned int height)
 {
     glGenTextures(1, &id);
