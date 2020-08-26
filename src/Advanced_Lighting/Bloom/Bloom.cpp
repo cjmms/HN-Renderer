@@ -186,6 +186,14 @@ void Bloom::drawBoxes(Shader& shader)
 void Bloom::renderLightingScene(Shader& boxShader, Shader& lightSourceShader)
 {
     drawLightSource(lightSourceShader);
+
+    boxShader.Bind();
+    for (unsigned int i = 0; i < lightPositions.size(); ++i)
+    {
+        boxShader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
+        boxShader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+    }
+
     drawBoxes(boxShader);
 }
 
@@ -232,7 +240,6 @@ int runBloom()
     glEnable(GL_DEPTH_TEST);
 
     Shader boxShader("res/Shaders/Advanced_Lighting/Bloom/lightingScene.shader");
-
     Shader lightingSourceShader("res/Shaders/Advanced_Lighting/Bloom/lightingSource.shader");
 
 
