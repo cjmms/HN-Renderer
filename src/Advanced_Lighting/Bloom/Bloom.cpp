@@ -7,6 +7,19 @@ Bloom::Bloom()
 {
 	initCube();
 	initQuad();
+
+    createTexture(boxTextureID, "res/Textures/wood_container.png", PNG);
+    createTexture(floorTextureID, "res/Textures/wood.jpg", JPG);
+
+    lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
+    lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
+    lightPositions.push_back(glm::vec3(3.0f, 0.5f, 1.0f));
+    lightPositions.push_back(glm::vec3(-.8f, 2.4f, -1.0f));
+
+    lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
+    lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
+    lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
+    lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
 }
 
 
@@ -90,14 +103,10 @@ void Bloom::initQuad()
 
 void Bloom::drawCube(Shader &shader, glm::mat4 model)
 {
-    shader.Bind();
-
     shader.setMat4("model", model);
 
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    shader.unBind();
 }
 
 
@@ -108,6 +117,18 @@ void Bloom::drawLightSource(Shader& shader)
     shader.setMat4("view", camera.getViewMatrix());
     shader.setMat4("projection", camera.getProjectionMatrix());
 
+    glm::mat4 model;
+
+    for (unsigned int i = 0; i < lightPositions.size(); ++i)
+    {
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPositions[i]);
+        model = glm::scale(model, glm::vec3(0.25f));
+
+        shader.setVec3("lightColor", lightColors[i]);
+
+        drawCube(shader, model);
+    }
 
     shader.unBind();
 }
@@ -119,7 +140,10 @@ void Bloom::drawBoxes(Shader& shader)
     shader.Bind();
     shader.setMat4("view", camera.getViewMatrix());
     shader.setMat4("projection", camera.getProjectionMatrix());
+    shader.setInt("diffuseMap", 0);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, floorTextureID);
 
     // create one large cube that acts as the floor
     glm::mat4 model = glm::mat4(1.0f);
@@ -128,7 +152,7 @@ void Bloom::drawBoxes(Shader& shader)
     drawCube(shader, model);
 
     // then create multiple cubes as the scenery
-    //glBindTexture(GL_TEXTURE_2D, containerTexture);
+    glBindTexture(GL_TEXTURE_2D, boxTextureID);
     model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0));
     model = glm::scale(model, glm::vec3(0.5f));
     drawCube(shader, model);
@@ -161,7 +185,7 @@ void Bloom::drawBoxes(Shader& shader)
 
 void Bloom::renderLightingScene(Shader& boxShader, Shader& lightSourceShader)
 {
-    //drawLightSource(lightSourceShader);
+    drawLightSource(lightSourceShader);
     drawBoxes(boxShader);
 }
 
@@ -207,9 +231,9 @@ int runBloom()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader lightingSceneShader("res/Shaders/Advanced_Lighting/Bloom/lightingScene.shader");
+    Shader boxShader("res/Shaders/Advanced_Lighting/Bloom/lightingScene.shader");
 
-    Shader hdrShader("res/Shaders/Advanced_Lighting/Bloom/lightingScene.shader");
+    Shader lightingSourceShader("res/Shaders/Advanced_Lighting/Bloom/lightingSource.shader");
 
 
     Bloom renderer;
@@ -225,7 +249,7 @@ int runBloom()
 
         camera.cameraUpdateFrameTime();
 
-        renderer.render(lightingSceneShader, hdrShader);
+        renderer.render(boxShader, lightingSourceShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

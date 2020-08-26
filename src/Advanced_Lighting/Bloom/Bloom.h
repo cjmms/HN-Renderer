@@ -18,6 +18,11 @@ public:
 
 private:
 	unsigned int cubeVAO, cubeVBO;
+	unsigned int boxTextureID;
+	unsigned int floorTextureID;
+
+	std::vector<glm::vec3> lightPositions;
+	std::vector<glm::vec3> lightColors;
 
 	void initCube();
 	void initQuad();
