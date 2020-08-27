@@ -75,14 +75,12 @@ void main()
 	vec3 normal = normalize(fs_in.Normal);
 
 	vec3 ambient = 0.15 * color;
-	vec3 lighting = vec3(1.0f);
+	vec3 lighting = vec3(0.0f);
 
 	for (int i = 0; i < 4; ++i)
 	{
 		lighting += calculateLighting(normal, i, color);
 	}
-
-	//FragColor = vec4(texture(diffuseMap, fs_in.TexCoord).rgb, 1.0f);
 
 	vec3 result = ambient + lighting;
 
@@ -94,4 +92,5 @@ void main()
 		BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 	FragColor = vec4(ambient + lighting, 1.0f);
+	//FragColor = vec4(0.1, 0.4, 0.3, 1.0f);
 }

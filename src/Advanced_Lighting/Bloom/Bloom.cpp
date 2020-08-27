@@ -129,7 +129,12 @@ void Bloom::initFBO()
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    // generate color buffers
+    // telling OpenGL that we are rendering to GL_COLOR_ATTACHMENT0 and GL_COLOR_ATTACHMENT1
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments);
+
+
+    // generate 2 color buffers
     glGenTextures(2, colorBuffers);
 
     for (unsigned int i = 0; i < 2; ++i)
@@ -149,9 +154,20 @@ void Bloom::initFBO()
     }
 
 
-    // telling OpenGL that we are rendering to GL_COLOR_ATTACHMENT0 and GL_COLOR_ATTACHMENT1
-    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    glDrawBuffers(2, attachments);
+    // generate depth buffer
+    unsigned int depthAttachment;
+    glGenRenderbuffers(1, &depthAttachment);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthAttachment);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+
+    // attach depth buffer
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthAttachment);
+
+    // check framebuffer status
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Framebuffer not complete" << std::endl;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
