@@ -96,7 +96,29 @@ void Bloom::initCube()
 
 void Bloom::initQuad()
 {
+    float quadVertices[] = {
+        // positions        // texture Coords
+        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+         1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+    };
 
+    glGenBuffers(1, &quadVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &quadVAO);
+    glBindVertexArray(quadVAO);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 
@@ -107,6 +129,15 @@ void Bloom::drawCube(Shader &shader, glm::mat4 model)
 
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+
+
+void Bloom::drawQuad()
+{
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
 }
 
 
@@ -199,9 +230,25 @@ void Bloom::renderLightingScene(Shader& boxShader, Shader& lightSourceShader)
 
 
 
-void Bloom::render(Shader& boxShader, Shader& lightSourceShader)
+void Bloom::renderBloomScene(Shader &shader)
 {
-    renderLightingScene(boxShader, lightSourceShader);
+    shader.Bind();
+
+    shader.setInt("lightingScene", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, boxTextureID);
+
+    drawQuad();
+
+    shader.unBind();
+}
+
+
+void Bloom::render(Shader& boxShader, Shader& lightSourceShader, Shader &bloomShader)
+{
+    //renderLightingScene(boxShader, lightSourceShader);
+
+    renderBloomScene(bloomShader);
 }
 
 
@@ -241,6 +288,7 @@ int runBloom()
 
     Shader boxShader("res/Shaders/Advanced_Lighting/Bloom/lightingScene.shader");
     Shader lightingSourceShader("res/Shaders/Advanced_Lighting/Bloom/lightingSource.shader");
+    Shader bloomShader("res/Shaders/Advanced_Lighting/Bloom/bloom.shader");
 
 
     Bloom renderer;
@@ -256,7 +304,7 @@ int runBloom()
 
         camera.cameraUpdateFrameTime();
 
-        renderer.render(boxShader, lightingSourceShader);
+        renderer.render(boxShader, lightingSourceShader, bloomShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -81,6 +81,6 @@ void main()
 		lighting += calculateLighting(normal, i, color);
 	}
 
-	//FragColor = vec4(texture(diffuseMap, fs_in.TexCoord).rgb, 1.0f);
-	FragColor = vec4(ambient + lighting, 1.0f);
+	FragColor = vec4(texture(diffuseMap, fs_in.TexCoord).rgb, 1.0f);
+	//FragColor = vec4(ambient + lighting, 1.0f);
 }
