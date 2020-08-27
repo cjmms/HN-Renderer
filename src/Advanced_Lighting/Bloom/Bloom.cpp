@@ -8,8 +8,8 @@ Bloom::Bloom()
 	initCube();
 	initQuad();
 
-    createTexture(boxTextureID, "res/Textures/wood_container.png", PNG);
-    createTexture(floorTextureID, "res/Textures/wood.jpg", JPG);
+    createTexture(boxTextureID, "res/Textures/wood_container.png", false);
+    createTexture(floorTextureID, "res/Textures/wood.jpg", false);
 
     lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
     lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
