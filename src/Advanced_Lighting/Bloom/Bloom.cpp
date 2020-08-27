@@ -7,9 +7,10 @@ Bloom::Bloom()
 {
 	initCube();
 	initQuad();
+    initFBO();
 
-    createTexture(boxTextureID, "res/Textures/wood_container.png", false);
-    createTexture(floorTextureID, "res/Textures/wood.jpg", false);
+    createTexture(boxTextureID, "res/Textures/wood_container.png", true);
+    createTexture(floorTextureID, "res/Textures/wood.jpg", true);
 
     lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
     lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
@@ -119,6 +120,38 @@ void Bloom::initQuad()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+
+
+void Bloom::initFBO()
+{
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    // generate color buffers
+    glGenTextures(2, colorBuffers);
+
+    for (unsigned int i = 0; i < 2; ++i)
+    {
+        glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+
+        // HDR, GL_RGBA16F
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        // attach texture to framebuffer
+        glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+    }
+
+
+    // telling OpenGL that we are rendering to GL_COLOR_ATTACHMENT0 and GL_COLOR_ATTACHMENT1
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments);
 }
 
 
@@ -236,7 +269,7 @@ void Bloom::renderBloomScene(Shader &shader)
 
     shader.setInt("lightingScene", 0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, boxTextureID);
+    glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
 
     drawQuad();
 
@@ -246,8 +279,12 @@ void Bloom::renderBloomScene(Shader &shader)
 
 void Bloom::render(Shader& boxShader, Shader& lightSourceShader, Shader &bloomShader)
 {
-    //renderLightingScene(boxShader, lightSourceShader);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    renderLightingScene(boxShader, lightSourceShader);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     renderBloomScene(bloomShader);
 }
 

@@ -23,11 +23,20 @@ private:
 
 	unsigned int quadVAO, quadVBO;
 
+	unsigned int fbo;
+
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColors;
 
+	unsigned int colorBuffers[2];
+
 	void initCube();
 	void initQuad();
+
+	// init a fbo to render HDR scene
+	// no depth buffer and stencil buffer
+	// contains 2 color buffer, one for lighting scene, one for lighting extraction
+	void initFBO();
 
 	void drawCube(Shader &shader, glm::mat4 model);
 

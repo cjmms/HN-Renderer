@@ -25,5 +25,9 @@ uniform sampler2D lightingScene;
 
 void main()
 {
-	FragColor = vec4(texture(lightingScene, TexCoord).rgb, 1.0f);
+	vec3 hdrColor = texture(lightingScene, TexCoord).rgb;
+
+	vec3 mappedColor = hdrColor / (hdrColor + vec3(1.0f));
+
+	FragColor = vec4(mappedColor, 1.0f);
 }

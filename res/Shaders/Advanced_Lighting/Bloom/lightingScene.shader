@@ -34,6 +34,8 @@ void main()
 
 #shader fragment
 #version 330 core
+layout(Location = 0) out vec4 FragColor;
+layout(Location = 1) out vec4 BrightColor;
 
 struct Light {
 	vec3 Position;
@@ -48,7 +50,6 @@ in VS_OUT
 	vec2 TexCoord;
 } fs_in;
 
-out vec4 FragColor;
 
 uniform Light lights[4];
 uniform sampler2D diffuseMap;
@@ -81,6 +82,16 @@ void main()
 		lighting += calculateLighting(normal, i, color);
 	}
 
-	FragColor = vec4(texture(diffuseMap, fs_in.TexCoord).rgb, 1.0f);
-	//FragColor = vec4(ambient + lighting, 1.0f);
+	//FragColor = vec4(texture(diffuseMap, fs_in.TexCoord).rgb, 1.0f);
+
+	vec3 result = ambient + lighting;
+
+	float brightness = dot(result, vec3(0.2126, 0.7152, 0.0722));
+
+	if (brightness > 1.0)
+		BrightColor = vec4(result, 1.0f);
+	else
+		BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+	FragColor = vec4(ambient + lighting, 1.0f);
 }
