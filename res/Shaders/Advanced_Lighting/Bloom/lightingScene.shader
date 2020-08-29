@@ -92,5 +92,4 @@ void main()
 		BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 	FragColor = vec4(ambient + lighting, 1.0f);
-	//FragColor = vec4(0.1, 0.4, 0.3, 1.0f);
 }

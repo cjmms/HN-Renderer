@@ -287,6 +287,10 @@ void Bloom::renderBloomScene(Shader &shader)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
 
+    shader.setInt("brightScene", 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
+
     drawQuad();
 
     shader.unBind();

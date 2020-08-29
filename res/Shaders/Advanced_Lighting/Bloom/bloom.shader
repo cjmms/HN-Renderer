@@ -22,14 +22,19 @@ in vec2 TexCoord;
 out vec4 FragColor;
 
 uniform sampler2D lightingScene;
+uniform sampler2D brightScene;
 
 void main()
 {
 	const float gamma = 2.2f;
 
 	vec3 hdrColor = texture(lightingScene, TexCoord).rgb;
+	vec3 brightColor = texture(brightScene, TexCoord).rgb;
 
-	vec3 mappedColor = hdrColor / (hdrColor + vec3(1.0f));
+	vec3 mappedColor = hdrColor + brightColor;
+
+
+	mappedColor = mappedColor / (mappedColor + vec3(1.0f));
 
 	mappedColor = pow(mappedColor, vec3(1.0f / gamma));
 
