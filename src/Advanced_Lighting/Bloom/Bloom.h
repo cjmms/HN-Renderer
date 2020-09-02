@@ -14,7 +14,7 @@ class Bloom
 {
 public:
 	Bloom();
-	void render(Shader& boxShader, Shader& lightSourceShader, Shader& bloomShader);
+	void render(Shader& boxShader, Shader& lightSourceShader, Shader& bloomShader, Shader& blurredShader);
 
 private:
 	unsigned int cubeVAO, cubeVBO;
@@ -29,6 +29,9 @@ private:
 	std::vector<glm::vec3> lightColors;
 
 	unsigned int colorBuffers[2];
+
+	unsigned int pingpongFBO[2];
+	unsigned int pingpongColorBuffer[2];
 
 	void initCube();
 	void initQuad();
@@ -46,7 +49,9 @@ private:
 
 	void drawBoxes(Shader &shader);
 
-	void renderBloomScene(Shader &bloomShader);
+	void renderBloomScene(Shader &shader);
+
+	void renderBlurredLights(Shader &shader);
 
 	void renderLightingScene(Shader &boxShader, Shader &lightSourceShader);
 

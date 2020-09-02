@@ -167,6 +167,34 @@ void Bloom::initFBO()
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Framebuffer not complete" << std::endl;
 
+
+
+
+    // init pingpongFBO
+    glGenFramebuffers(2, pingpongFBO);
+    glGenTextures(2, pingpongColorBuffer);
+
+    for (unsigned int i = 0; i < 2; ++i)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+        glBindTexture(GL_TEXTURE_2D, pingpongColorBuffer[i]);
+
+        // HDR, GL_RGBA16F
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        // attach texture to framebuffer
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorBuffer[i], 0);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "Ping Pong Framebuffer not complete" << std::endl;
+    }
+
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -279,17 +307,53 @@ void Bloom::renderLightingScene(Shader& boxShader, Shader& lightSourceShader)
 
 
 
+void Bloom::renderBlurredLights(Shader &shader)
+{
+    shader.Bind();
+
+    int iterations = 20;
+    glActiveTexture(GL_TEXTURE0);
+    shader.setInt("image", 0);
+
+    for (unsigned int i = 0; i < iterations; ++i)
+    {
+        // render horizontally
+        glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[0]);
+        shader.setInt("horizontal", true);
+
+        // The first iteration will use colorBuffer as texture
+        glBindTexture(GL_TEXTURE_2D, i== 0 ? colorBuffers[1] : pingpongColorBuffer[1]);
+        drawQuad();
+
+        // render vertically
+        glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[1]);
+        shader.setInt("horizontal", false);
+
+        glBindTexture(GL_TEXTURE_2D, pingpongColorBuffer[0]);
+        drawQuad();
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    shader.unBind();
+}
+
+
+
+
 void Bloom::renderBloomScene(Shader &shader)
 {
     shader.Bind();
 
+    // real scene without bloom
     shader.setInt("lightingScene", 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
 
+    // extracted lights
     shader.setInt("brightScene", 1);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
+    //glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
+    glBindTexture(GL_TEXTURE_2D, pingpongColorBuffer[1]);
 
     drawQuad();
 
@@ -297,11 +361,13 @@ void Bloom::renderBloomScene(Shader &shader)
 }
 
 
-void Bloom::render(Shader& boxShader, Shader& lightSourceShader, Shader &bloomShader)
+void Bloom::render(Shader& boxShader, Shader& lightSourceShader, Shader &bloomShader, Shader &blurredShader)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     renderLightingScene(boxShader, lightSourceShader);
+
+    renderBlurredLights(blurredShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -346,6 +412,7 @@ int runBloom()
     Shader boxShader("res/Shaders/Advanced_Lighting/Bloom/lightingScene.shader");
     Shader lightingSourceShader("res/Shaders/Advanced_Lighting/Bloom/lightingSource.shader");
     Shader bloomShader("res/Shaders/Advanced_Lighting/Bloom/bloom.shader");
+    Shader blurredShader("res/Shaders/Advanced_Lighting/Bloom/blur.shader");
 
 
     Bloom renderer;
@@ -361,7 +428,7 @@ int runBloom()
 
         camera.cameraUpdateFrameTime();
 
-        renderer.render(boxShader, lightingSourceShader, bloomShader);
+        renderer.render(boxShader, lightingSourceShader, bloomShader, blurredShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
