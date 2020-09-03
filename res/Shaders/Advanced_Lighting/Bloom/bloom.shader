@@ -33,8 +33,12 @@ void main()
 
 	vec3 mappedColor = hdrColor + brightColor;
 
+	// tone mapping
+	//mappedColor = mappedColor / (mappedColor + vec3(1.0f));
 
-	mappedColor = mappedColor / (mappedColor + vec3(1.0f));
+	// tone mapping with exposure
+	float exposure = 5.0f;
+	mappedColor = vec3(1.0) - exp(-mappedColor * exposure);
 
 	mappedColor = pow(mappedColor, vec3(1.0f / gamma));
 

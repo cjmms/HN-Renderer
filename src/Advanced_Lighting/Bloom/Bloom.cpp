@@ -2,6 +2,9 @@
 
 
 
+bool enableBloom = true;
+bool enableNonBlurScene = true;
+
 
 Bloom::Bloom()
 {
@@ -347,13 +350,21 @@ void Bloom::renderBloomScene(Shader &shader)
     // real scene without bloom
     shader.setInt("lightingScene", 0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+
+    if (enableNonBlurScene)
+        glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+    else 
+        glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
 
     // extracted lights
     shader.setInt("brightScene", 1);
     glActiveTexture(GL_TEXTURE1);
-    //glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
-    glBindTexture(GL_TEXTURE_2D, pingpongColorBuffer[1]);
+
+
+    if (!enableBloom)
+        glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
+    else
+        glBindTexture(GL_TEXTURE_2D, pingpongColorBuffer[1]);
 
     drawQuad();
 
@@ -374,6 +385,19 @@ void Bloom::render(Shader& boxShader, Shader& lightSourceShader, Shader &bloomSh
     renderBloomScene(bloomShader);
 }
 
+
+void static key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    {
+        enableBloom = !enableBloom;
+    }
+
+    if (key == GLFW_KEY_E && action == GLFW_PRESS)
+    {
+        enableNonBlurScene = !enableNonBlurScene;
+    }
+}
 
 
 int runBloom()
@@ -402,7 +426,7 @@ int runBloom()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    //glfwSetKeyCallback(window, key_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     if (glewInit() != GLEW_OK)
         std::cout << "init error" << std::endl;
