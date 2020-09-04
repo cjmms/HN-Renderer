@@ -18,12 +18,14 @@ public:
 
 private:
 	unsigned int cubeVAO, cubeVBO;
-
+	unsigned int boxTextureID, floorTextureID;
 
 
 	void initCube();
 
 	void drawCube();
+
+	void drawBoxes(Shader &shader);
 
 };
 

@@ -3,6 +3,11 @@
 DeferredShading::DeferredShading()
 {
     initCube();
+
+
+    // diffuse map
+    createTexture(boxTextureID, "res/Textures/wood_container.png", true);
+    createTexture(floorTextureID, "res/Textures/wood.jpg", true);
 }
 
 
@@ -83,15 +88,72 @@ void DeferredShading::drawCube()
 }
 
 
-void DeferredShading::render(Shader &shader)
+
+void DeferredShading::drawBoxes(Shader& shader)
 {
     shader.Bind();
-
-    shader.setMat4("projection", camera.getProjectionMatrix());
     shader.setMat4("view", camera.getViewMatrix());
-    shader.setMat4("model", glm::mat4(1.0));
+    shader.setMat4("projection", camera.getProjectionMatrix());
 
+
+    // create one large cube that acts as the floor
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0));
+    model = glm::scale(model, glm::vec3(12.5f, 0.5f, 12.5f));
+    shader.setMat4("model", model);
     drawCube();
+
+    // then create multiple cubes as the scenery
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.setMat4("model", model);
+    drawCube();
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 1.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.setMat4("model", model);
+    drawCube();
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 2.0));
+    model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    shader.setMat4("model", model);
+    drawCube();
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.7f, 4.0));
+    model = glm::rotate(model, glm::radians(23.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    model = glm::scale(model, glm::vec3(1.25));
+    shader.setMat4("model", model);
+    drawCube();
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.0f, -3.0));
+    model = glm::rotate(model, glm::radians(124.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    shader.setMat4("model", model);
+    drawCube();
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.setMat4("model", model);
+    drawCube();
+
+    shader.unBind();
+}
+
+
+
+void DeferredShading::render(Shader &shader)
+{
+    // Geometry Pass
+    // render objects and pass all geometry info into a G-buffer
+
+    shader.Bind();
+    drawBoxes(shader);
+
+
+    // Lighting Pass
+    // using G-buffer as textures and do all the lighting calculationa
+
+
+    
 }
 
 
