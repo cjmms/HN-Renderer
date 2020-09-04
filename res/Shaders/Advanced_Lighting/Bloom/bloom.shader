@@ -37,7 +37,7 @@ void main()
 	//mappedColor = mappedColor / (mappedColor + vec3(1.0f));
 
 	// tone mapping with exposure
-	float exposure = 5.0f;
+	float exposure = 1.0f;
 	mappedColor = vec3(1.0) - exp(-mappedColor * exposure);
 
 	mappedColor = pow(mappedColor, vec3(1.0f / gamma));

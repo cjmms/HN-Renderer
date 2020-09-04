@@ -53,5 +53,6 @@ int main(void)
     //runShadowMapping();
     //runPointShadows();
     //runHDR();
-    runBloom();
+    //runBloom();               // press E, space
+    runDeferredShading();
 }
