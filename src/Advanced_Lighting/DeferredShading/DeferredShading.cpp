@@ -9,6 +9,22 @@ DeferredShading::DeferredShading()
     // diffuse map
     createTexture(boxTextureID, "res/Textures/wood_container.png", true);
     createTexture(floorTextureID, "res/Textures/wood.jpg", true);
+
+    const unsigned int NR_LIGHTS = 32;
+    srand(13);
+    for (unsigned int i = 0; i < NR_LIGHTS; i++)
+    {
+        // calculate slightly random offsets
+        float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+        float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
+        float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+        lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
+        // also calculate random color
+        float rColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
+        float gColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
+        float bColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
+        lightColors.push_back(glm::vec3(rColor, gColor, bColor));
+    }
 }
 
 
@@ -228,29 +244,53 @@ void DeferredShading::drawBoxes(Shader& shader)
 }
 
 
-
-void DeferredShading::render(Shader &geometryPassShader, Shader &lightingPassShader)
+void DeferredShading::geometryPass(Shader& shader)
 {
-    // Geometry Pass
-    // render objects and pass all geometry info into a G-buffer
     glBindFramebuffer(GL_FRAMEBUFFER, FBO_G_buffer);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
-    geometryPassShader.Bind();
-    drawBoxes(geometryPassShader);
+    shader.Bind();
+    drawBoxes(shader);
+    shader.unBind();
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+
+void DeferredShading::render(Shader &geometryPassShader, Shader &lightingPassShader)
+{
+    // render objects and pass all geometry info into a G-buffer
+    geometryPass(geometryPassShader);
 
     // Lighting Pass
     // using G-buffer as textures and do all the lighting calculation
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     lightingPassShader.Bind();
-    lightingPassShader.setInt("image", 0);
+
+    lightingPassShader.setInt("gPosition", 0);
+    lightingPassShader.setInt("gNormal", 1);
+    lightingPassShader.setInt("diffuseMap", 2);
 
     glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gPosition);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, gNormal);
+
+    glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, gColor);
+
+    lightingPassShader.setVec3("viewPos", camera.getCameraPos());
+
+    for (unsigned int i = 0; i < lightPositions.size(); ++i)
+    {
+        lightingPassShader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
+        lightingPassShader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+    }
+
+
     drawQuad();
 }
 

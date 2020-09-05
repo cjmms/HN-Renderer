@@ -26,6 +26,9 @@ private:
 	// three color attachments
 	unsigned int gNormal, gPosition, gColor;
 
+	std::vector<glm::vec3> lightPositions;
+	std::vector<glm::vec3> lightColors;
+
 	void initCube();
 
 	// create a FBO with a few attachments act like G-buffer
@@ -40,6 +43,8 @@ private:
 	void drawQuad();
 
 	void drawBoxes(Shader &shader); 
+
+	void geometryPass(Shader &shader);
 };
 
 

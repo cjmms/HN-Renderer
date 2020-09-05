@@ -53,6 +53,6 @@ uniform sampler2D diffuseMap;
 void main()
 {
 	gPosition = fs_in.Position;
-	gPosition = normalize(fs_in.Normal);
+	gNormal = normalize(fs_in.Normal);
 	gAlbedo = texture(diffuseMap, fs_in.TexCoord).rgb;
 }
