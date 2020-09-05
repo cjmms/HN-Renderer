@@ -141,10 +141,10 @@ void DeferredShading::initG_buffer()
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
 
     gNormal = createColorAttachment();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gNormal, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
 
     gColor = createColorAttachment();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gColor, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColor, 0);
 
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, attachments);      // tell openGL number of color attachments
@@ -233,17 +233,25 @@ void DeferredShading::render(Shader &geometryPassShader, Shader &lightingPassSha
 {
     // Geometry Pass
     // render objects and pass all geometry info into a G-buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, FBO_G_buffer);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
 
-    //geometryPassShader.Bind();
-    //drawBoxes(geometryPassShader);
+    geometryPassShader.Bind();
+    drawBoxes(geometryPassShader);
 
 
     // Lighting Pass
     // using G-buffer as textures and do all the lighting calculation
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     lightingPassShader.Bind();
+    lightingPassShader.setInt("image", 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gColor);
     drawQuad();
-    
 }
 
 

@@ -35,6 +35,11 @@ void main()
 #shader fragment
 #version 330 core
 
+layout(Location = 0) out vec3 gPosition;
+layout(Location = 1) out vec3 gNormal;
+layout(Location = 2) out vec3 gAlbedo;
+
+
 in VS_OUT
 {
 	vec3 Position;
@@ -43,11 +48,11 @@ in VS_OUT
 } fs_in;
 
 
-out vec4 FragColor;
-
 uniform sampler2D diffuseMap;
 
 void main()
 {
-	FragColor = vec4(0.2, 0.6, 0.5, 1.0f);
+	gPosition = fs_in.Position;
+	gPosition = normalize(fs_in.Normal);
+	gAlbedo = texture(diffuseMap, fs_in.TexCoord).rgb;
 }
