@@ -3,12 +3,13 @@
 DeferredShading::DeferredShading()
 {
     initCube();
-
+    initG_buffer();
 
     // diffuse map
     createTexture(boxTextureID, "res/Textures/wood_container.png", true);
     createTexture(floorTextureID, "res/Textures/wood.jpg", true);
 }
+
 
 
 void DeferredShading::initCube()
@@ -80,6 +81,53 @@ void DeferredShading::initCube()
 
 
 
+unsigned int DeferredShading::createColorAttachment()
+{
+    unsigned int attachmentID;
+    glGenTextures(1, &attachmentID);
+    glBindTexture(GL_TEXTURE_2D, attachmentID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    return attachmentID;
+}
+
+
+
+void DeferredShading::initG_buffer()
+{
+    glGenFramebuffers(1, &FBO_G_buffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, FBO_G_buffer);
+
+    // create and bind three color attachments
+    gPosition = createColorAttachment();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+
+    gNormal = createColorAttachment();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gNormal, 0);
+
+    gColor = createColorAttachment();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gColor, 0);
+
+    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers(3, attachments);      // tell openGL number of color attachments
+
+    // create and bind depth buffer attachment
+    unsigned int depthAttachment;
+    glGenRenderbuffers(1, &depthAttachment);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthAttachment);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthAttachment);
+
+    // check for FBO completeness
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "G-buffer FBO didn't init successfully" << std::endl;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);   // unbind
+}
+
+
+
 void DeferredShading::drawCube()
 {
     glBindVertexArray(cubeVAO);
@@ -94,9 +142,12 @@ void DeferredShading::drawBoxes(Shader& shader)
     shader.Bind();
     shader.setMat4("view", camera.getViewMatrix());
     shader.setMat4("projection", camera.getProjectionMatrix());
+    shader.setInt("diffuseMap", 0);
 
+    glActiveTexture(GL_TEXTURE0);
 
     // create one large cube that acts as the floor
+    glBindTexture(GL_TEXTURE_2D, floorTextureID);
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0));
     model = glm::scale(model, glm::vec3(12.5f, 0.5f, 12.5f));
@@ -104,6 +155,7 @@ void DeferredShading::drawBoxes(Shader& shader)
     drawCube();
 
     // then create multiple cubes as the scenery
+    glBindTexture(GL_TEXTURE_2D, boxTextureID);
     model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.setMat4("model", model);
