@@ -13,7 +13,7 @@ class DeferredShading
 {
 public:
 	DeferredShading();
-	void render(Shader& geometryPassShader, Shader& lightingPassShader);
+	void render(Shader& geometryPassShader, Shader& lightingPassShader, Shader& lightSourceShader);
 
 
 private:
@@ -45,6 +45,8 @@ private:
 	void drawBoxes(Shader &shader); 
 
 	void geometryPass(Shader &shader);
+
+	void lightingPass(Shader &shader);
 };
 
 

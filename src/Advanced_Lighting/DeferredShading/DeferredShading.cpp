@@ -226,7 +226,7 @@ void DeferredShading::drawBoxes(Shader& shader)
 
     model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.7f, 4.0));
     model = glm::rotate(model, glm::radians(23.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    model = glm::scale(model, glm::vec3(1.25));
+    model = glm::scale(model, glm::vec3(1.0));
     shader.setMat4("model", model);
     drawCube();
 
@@ -258,20 +258,18 @@ void DeferredShading::geometryPass(Shader& shader)
 }
 
 
-void DeferredShading::render(Shader &geometryPassShader, Shader &lightingPassShader)
-{
-    // render objects and pass all geometry info into a G-buffer
-    geometryPass(geometryPassShader);
 
-    // Lighting Pass
+
+void DeferredShading::lightingPass(Shader& shader)
+{
     // using G-buffer as textures and do all the lighting calculation
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    lightingPassShader.Bind();
+    shader.Bind();
 
-    lightingPassShader.setInt("gPosition", 0);
-    lightingPassShader.setInt("gNormal", 1);
-    lightingPassShader.setInt("diffuseMap", 2);
+    shader.setInt("gPosition", 0);
+    shader.setInt("gNormal", 1);
+    shader.setInt("diffuseMap", 2);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -282,16 +280,55 @@ void DeferredShading::render(Shader &geometryPassShader, Shader &lightingPassSha
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, gColor);
 
-    lightingPassShader.setVec3("viewPos", camera.getCameraPos());
+    shader.setVec3("viewPos", camera.getCameraPos());
 
     for (unsigned int i = 0; i < lightPositions.size(); ++i)
     {
-        lightingPassShader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
-        lightingPassShader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+        shader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
+        shader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
     }
 
-
     drawQuad();
+}
+
+
+
+void DeferredShading::render(Shader &geometryPassShader, Shader &lightingPassShader, Shader &lightSourceShader)
+{
+    // render objects and pass all geometry info into a G-buffer
+    geometryPass(geometryPassShader);
+
+    // do lighting calculations in a quad
+    lightingPass(lightingPassShader);
+
+    // copy depth buffer from geometry pass to current FBO
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO_G_buffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+    glBlitFramebuffer(
+        0, 0, 1024, 1024, 0, 0, 1024, 1024, GL_DEPTH_BUFFER_BIT, GL_NEAREST
+    );
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+    // render light source
+    lightSourceShader.Bind();
+
+    lightSourceShader.setMat4("view", camera.getViewMatrix());
+    lightSourceShader.setMat4("projection", camera.getProjectionMatrix());
+
+    for (unsigned int i = 0; i < lightPositions.size(); ++i)
+    {
+        glm::mat4 model(1.0f);
+
+        model = glm::translate(model, lightPositions[i]);
+        model = glm::scale(model, glm::vec3(0.125f));
+        
+        lightSourceShader.setMat4("model", model);
+        lightSourceShader.setVec3("color", lightColors[i]);
+
+        drawCube();
+    }
+
 }
 
 
@@ -331,7 +368,7 @@ int runDeferredShading()
 
     Shader geometryPassShader("res/Shaders/Advanced_Lighting/DeferredShading/geometryPass.shader");
     Shader lightingPassShader("res/Shaders/Advanced_Lighting/DeferredShading/lightingPass.shader");
-
+    Shader lightingSourceShader("res/Shaders/Advanced_Lighting/DeferredShading/lightSource.shader");
 
     DeferredShading renderer;
 
@@ -346,7 +383,7 @@ int runDeferredShading()
 
         camera.cameraUpdateFrameTime();
 
-        renderer.render(geometryPassShader, lightingPassShader);
+        renderer.render(geometryPassShader, lightingPassShader, lightingSourceShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

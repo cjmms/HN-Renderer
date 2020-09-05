@@ -57,5 +57,17 @@ void main()
         lighting += diffuse;
     }
 
-    FragColor = vec4(lighting, 1.0);
+
+    // tone mapping with exposure
+    float exposure = 1.0f;
+    vec3 mappedColor = vec3(1.0) - exp(-lighting * exposure);
+
+    float gamma = 2.2f;
+
+    mappedColor = pow(mappedColor, vec3(1.0f / gamma));
+
+    FragColor = vec4(mappedColor, 1.0f);
+
+
+    //FragColor = vec4(lighting, 1.0);
 }
