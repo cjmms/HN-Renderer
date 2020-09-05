@@ -4,6 +4,7 @@ DeferredShading::DeferredShading()
 {
     initCube();
     initG_buffer();
+    initQuad();
 
     // diffuse map
     createTexture(boxTextureID, "res/Textures/wood_container.png", true);
@@ -76,6 +77,42 @@ void DeferredShading::initCube()
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (6 * sizeof(float)));
 
+    glBindVertexArray(0);
+}
+
+
+void DeferredShading::initQuad()
+{
+    float quadVertices[] = {
+        // positions        // texture Coords
+        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+         1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+    };
+
+    glGenBuffers(1, &quadVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &quadVAO);
+    glBindVertexArray(quadVAO);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+
+void DeferredShading::drawQuad()
+{
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindVertexArray(0);
 }
 
@@ -192,19 +229,20 @@ void DeferredShading::drawBoxes(Shader& shader)
 
 
 
-void DeferredShading::render(Shader &shader)
+void DeferredShading::render(Shader &geometryPassShader, Shader &lightingPassShader)
 {
     // Geometry Pass
     // render objects and pass all geometry info into a G-buffer
 
-    shader.Bind();
-    drawBoxes(shader);
+    //geometryPassShader.Bind();
+    //drawBoxes(geometryPassShader);
 
 
     // Lighting Pass
-    // using G-buffer as textures and do all the lighting calculationa
+    // using G-buffer as textures and do all the lighting calculation
 
-
+    lightingPassShader.Bind();
+    drawQuad();
     
 }
 
@@ -243,7 +281,8 @@ int runDeferredShading()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader shader("res/Shaders/Advanced_Lighting/DeferredShading/lightCube.shader");
+    Shader geometryPassShader("res/Shaders/Advanced_Lighting/DeferredShading/geometryPass.shader");
+    Shader lightingPassShader("res/Shaders/Advanced_Lighting/DeferredShading/lightingPass.shader");
 
 
     DeferredShading renderer;
@@ -259,7 +298,7 @@ int runDeferredShading()
 
         camera.cameraUpdateFrameTime();
 
-        renderer.render(shader);
+        renderer.render(geometryPassShader, lightingPassShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

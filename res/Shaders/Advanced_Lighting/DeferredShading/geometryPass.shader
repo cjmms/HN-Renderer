@@ -1,6 +1,8 @@
 #shader vertex
 #version 330 core
 
+// This shader is for the geometry pass of deferred shading
+
 layout(Location = 0) in vec3 aPos;
 layout(Location = 1) in vec3 aNormal;
 layout(Location = 2) in vec2 aTexCoord;
