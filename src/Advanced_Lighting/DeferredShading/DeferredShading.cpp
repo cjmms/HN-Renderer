@@ -286,6 +286,18 @@ void DeferredShading::lightingPass(Shader& shader)
     {
         shader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
         shader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+
+        // atteunation factors
+        const float linear = 0.7f;
+        const float quadratic = 1.8f;
+
+        shader.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
+        shader.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+
+        const float maxI = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
+
+        float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (1.0f - (256.0f / 5.0f) * maxI))) / (2.0f * quadratic);
+        shader.setFloat("lights[" + std::to_string(i) + "].Radius", radius);
     }
 
     drawQuad();

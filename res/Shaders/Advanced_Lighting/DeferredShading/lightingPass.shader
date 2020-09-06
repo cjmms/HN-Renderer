@@ -25,6 +25,10 @@ struct Light
 {
     vec3 Position;
     vec3 Color;
+
+    float Linear;
+    float Quadratic;
+    float Radius;       // light volume
 };
 
 // 32 light source
@@ -47,14 +51,25 @@ void main()
     vec3 Albedo = texture(diffuseMap, TexCoord).rgb;
 
     // then calculate lighting as usual
-    vec3 lighting = Albedo * 0.1; // hard-coded ambient component
+    vec3 lighting = Albedo * 0.01; // hard-coded ambient component
     vec3 viewDir = normalize(viewPos - FragPos);
+
     for (int i = 0; i < N_LIGHTS; ++i)
     {
-        // diffuse
-        vec3 lightDir = normalize(lights[i].Position - FragPos);
-        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Albedo * lights[i].Color;
-        lighting += diffuse;
+        // distance from fragment to light source
+        float distance = length(lights[i].Position - FragPos);
+
+        if (distance < lights[i].Radius)
+        {
+            // diffuse
+            vec3 lightDir = normalize(lights[i].Position - FragPos);
+            vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Albedo * lights[i].Color;
+
+            float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
+            diffuse *= attenuation;
+
+            lighting += diffuse;
+        }
     }
 
 
@@ -67,7 +82,4 @@ void main()
     mappedColor = pow(mappedColor, vec3(1.0f / gamma));
 
     FragColor = vec4(mappedColor, 1.0f);
-
-
-    //FragColor = vec4(lighting, 1.0);
 }

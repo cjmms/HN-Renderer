@@ -188,6 +188,12 @@ void Shader::setFloat(const char* name, float value)
 
 
 
+void Shader::setFloat(const std::string& name, float value)
+{
+    setFloat(name.c_str(), value);
+}
+
+
 
 void Shader::setInt(const char* name, int value) 
 {
