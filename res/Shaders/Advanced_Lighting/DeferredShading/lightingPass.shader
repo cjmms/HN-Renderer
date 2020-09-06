@@ -38,7 +38,7 @@ uniform Light lights[N_LIGHTS];
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
-uniform sampler2D diffuseMap;
+uniform sampler2D AlbedoSpec;
 
 uniform vec3 viewPos;
 
@@ -48,7 +48,8 @@ void main()
     // retrieve data from G-buffer
     vec3 FragPos = texture(gPosition, TexCoord).rgb;
     vec3 Normal = texture(gNormal, TexCoord).rgb;
-    vec3 Albedo = texture(diffuseMap, TexCoord).rgb;
+    vec3 Albedo = texture(AlbedoSpec, TexCoord).rgb;
+    float Specular = texture(AlbedoSpec, TexCoord).a;
 
     // then calculate lighting as usual
     vec3 lighting = Albedo * 0.01; // hard-coded ambient component
@@ -65,10 +66,18 @@ void main()
             vec3 lightDir = normalize(lights[i].Position - FragPos);
             vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Albedo * lights[i].Color;
 
+            // specular
+            vec3 halfwayDir = normalize(lightDir + viewDir);
+            float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+            vec3 specular = lights[i].Color * spec * Specular;
+
             float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
             diffuse *= attenuation;
+            specular *= attenuation;
+
 
             lighting += diffuse;
+            lighting += specular;
         }
     }
 

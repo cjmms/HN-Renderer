@@ -9,15 +9,16 @@ DeferredShading::DeferredShading()
     // diffuse map
     createTexture(boxTextureID, "res/Textures/wood_container.png", true);
     createTexture(floorTextureID, "res/Textures/wood.jpg", true);
+    createTexture(boxSpecID, "res/Textures/steel_frame.png", true);
 
     const unsigned int NR_LIGHTS = 32;
     srand(13);
     for (unsigned int i = 0; i < NR_LIGHTS; i++)
     {
         // calculate slightly random offsets
-        float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
-        float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
-        float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+        float xPos = ((rand() % 100) / 100.0) * 8.0 - 3.0;
+        float yPos = ((rand() % 100) / 100.0) * 8.0 - 4.0;
+        float zPos = ((rand() % 100) / 100.0) * 8.0 - 3.0;
         lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
         // also calculate random color
         float rColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
@@ -196,13 +197,18 @@ void DeferredShading::drawBoxes(Shader& shader)
     shader.setMat4("view", camera.getViewMatrix());
     shader.setMat4("projection", camera.getProjectionMatrix());
     shader.setInt("diffuseMap", 0);
+    shader.setInt("specularMap", 1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, boxSpecID);
+
 
     glActiveTexture(GL_TEXTURE0);
 
     // create one large cube that acts as the floor
     glBindTexture(GL_TEXTURE_2D, floorTextureID);
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0));
+    model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0));
     model = glm::scale(model, glm::vec3(12.5f, 0.5f, 12.5f));
     shader.setMat4("model", model);
     drawCube();
@@ -269,7 +275,7 @@ void DeferredShading::lightingPass(Shader& shader)
 
     shader.setInt("gPosition", 0);
     shader.setInt("gNormal", 1);
-    shader.setInt("diffuseMap", 2);
+    shader.setInt("AlbedoSpec", 2);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, gPosition);

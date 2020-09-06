@@ -37,7 +37,7 @@ void main()
 
 layout(Location = 0) out vec3 gPosition;
 layout(Location = 1) out vec3 gNormal;
-layout(Location = 2) out vec3 gAlbedo;
+layout(Location = 2) out vec4 gAlbedoSpec;
 
 
 in VS_OUT
@@ -49,10 +49,11 @@ in VS_OUT
 
 
 uniform sampler2D diffuseMap;
+uniform sampler2D specularMap;
 
 void main()
 {
 	gPosition = fs_in.Position;
 	gNormal = normalize(fs_in.Normal);
-	gAlbedo = texture(diffuseMap, fs_in.TexCoord).rgb;
+	gAlbedoSpec = vec4(texture(diffuseMap, fs_in.TexCoord).rgb, texture(specularMap, fs_in.TexCoord).r);
 }

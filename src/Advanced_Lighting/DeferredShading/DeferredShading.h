@@ -18,7 +18,7 @@ public:
 
 private:
 	unsigned int cubeVAO, cubeVBO;
-	unsigned int boxTextureID, floorTextureID;
+	unsigned int boxTextureID, floorTextureID, boxSpecID;
 	unsigned int FBO_G_buffer;
 
 	unsigned int quadVAO, quadVBO;
