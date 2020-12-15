@@ -55,6 +55,7 @@ uniform vec3 viewPos;
 
 float pcf(vec3 normal, vec3 lightDir)
 {
+	
 	// transform from clip space to Normailzed Device Coordinate
 	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
 
@@ -68,7 +69,9 @@ float pcf(vec3 normal, vec3 lightDir)
 	// bias required to fix shadow acne
 	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
 
+
 	float shadow = 0.0;
+	
 	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
 	for (int x = -2; x <= 2; ++x)
 	{
@@ -78,7 +81,25 @@ float pcf(vec3 normal, vec3 lightDir)
 			shadow += projCoord.z - bias > depthInBuffer ? 1.0f : 0.0f;
 		}
 	}
+	
+	//return shadow;
 	return shadow / 9.0;
+
+
+	
+	/*
+	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
+	// transform to [0,1] range
+	projCoord = projCoord * 0.5 + 0.5;
+	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+	float closestDepth = texture(depthMap, projCoord.xy).r;
+	// get depth of current fragment from light's perspective
+	float currentDepth = projCoord.z;
+	// check whether current frag pos is in shadow
+	float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+	return shadow;
+	*/
 }
 
 
@@ -103,6 +124,7 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 	vec3 specular = spec * lightColor;
 
 	float shadow = 1 - pcf(normal, lightDir);
+	
 
 	// shadow is not completely dark, ambient should lit shadow area
 	return ambient + shadow * (diffuse + specular);
