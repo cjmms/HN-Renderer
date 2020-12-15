@@ -18,6 +18,7 @@ private:
 	GLenum textureUnit;
 	unsigned int texture;
 	ImageType imageType;
+
 	int width, height, nrChannels;
 
 	
