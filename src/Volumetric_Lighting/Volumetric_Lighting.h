@@ -17,15 +17,16 @@ class Volumetric_Lighting
 public:
 	Volumetric_Lighting();
 	void render( Shader& sceneShader);
-
+	void drawDebugQuad(Shader& shader);
 
 
 
 private:
 	unsigned int cubeVAO, cubeVBO;
 	unsigned int floorVAO, floorVBO;
+	unsigned int quadVAO, quadVBO;
 
-	unsigned int depthCubemapFBO;
+	unsigned int depthMap;
 
 	unsigned int cubeTextureID, floorTextureID, depthCubemap;
 
@@ -35,12 +36,12 @@ private:
 
 	void initCube();
 	void initFloor();
-	//void initDebugQuad();
+	void initDebugQuad();
 	void initLightingMatrices();
 
 	void drawCube(unsigned int texture);
 	void drawFloor(unsigned int texture);
-	//void drawDebugQuad(Shader& shader);
+	
 
 
 	void renderScene(Shader& shader);

@@ -3,12 +3,15 @@
 
 Volumetric_Lighting::Volumetric_Lighting()
 {
-    lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    lightPos = glm::vec3(-3.0f, 3.0f, 0.0f);
 
     initCube();
     initFloor();
+    initDebugQuad();
     createTexture(cubeTextureID, "res/Textures/container.jpg", JPG);
     createTexture(floorTextureID, "res/Textures/wood.jpg", JPG);
+
+    createTexture(depthMap, "res/Textures/wood.jpg", JPG);
 }
 
 
@@ -137,8 +140,36 @@ void Volumetric_Lighting::initCube()
 
 }
 
+void Volumetric_Lighting::initDebugQuad()
+{
+    float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
 
-//void initDebugQuad();
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+
+    glGenBuffers(1, &quadVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &quadVAO);
+    glBindVertexArray(quadVAO);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+}
+
+
+
 void Volumetric_Lighting::initLightingMatrices()
 {}
 
@@ -153,6 +184,7 @@ void Volumetric_Lighting::drawFloor(unsigned int texture)
     glBindVertexArray(0);
 }
 
+
 void Volumetric_Lighting::drawCube(unsigned int texture)
 {
     glActiveTexture(GL_TEXTURE0);
@@ -163,6 +195,20 @@ void Volumetric_Lighting::drawCube(unsigned int texture)
     glBindVertexArray(0);
 }
 //void drawDebugQuad(Shader& shader);
+
+void Volumetric_Lighting::drawDebugQuad(Shader& shader)
+{
+    shader.Bind();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);   // default FBO
+
+    shader.setInt("depthMap", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
 
 
 void Volumetric_Lighting::renderScene(Shader& shader)
@@ -182,11 +228,6 @@ void Volumetric_Lighting::renderScene(Shader& shader)
     shader.setMat4("model", model);
     drawCube(cubeTextureID);
 }
-
-
-
-
-
 
 
 
@@ -226,6 +267,10 @@ int runVolumetricLighting()
 
     //Shader depthBufferShader("res/Shaders/Advanced_Lighting/PointShadows/simpleDepthCubemap.shader");
 
+    Shader debugQuadShader("res/Shaders/Volumetric_Lighting/depthMap.shader");
+    debugQuadShader.Bind();
+    debugQuadShader.setInt("depthMap", 0);
+
     Shader sceneShader("res/Shaders/Volumetric_Lighting/scene.shader");
 
     sceneShader.Bind();
@@ -245,7 +290,8 @@ int runVolumetricLighting()
 
         camera.cameraUpdateFrameTime();
 
-        renderer.render( sceneShader);
+        //renderer.render( sceneShader);
+        renderer.drawDebugQuad(debugQuadShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
