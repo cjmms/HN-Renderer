@@ -55,4 +55,6 @@ int main(void)
     //runHDR();
     //runBloom();               // press E, space
     //runDeferredShading();
+
+    runVolumetricLighting();
 }

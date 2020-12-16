@@ -34,3 +34,6 @@
 #include "Advanced_Lighting/HDR/HDR.h"
 #include "Advanced_Lighting/Bloom/Bloom.h"
 #include "Advanced_Lighting/DeferredShading/DeferredShading.h"
+
+
+#include "Volumetric_Lighting/Volumetric_Lighting.h"
