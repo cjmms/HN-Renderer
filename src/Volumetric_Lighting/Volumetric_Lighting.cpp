@@ -25,7 +25,7 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     sceneShader.setMat4("view", camera.getViewMatrix());
 
     sceneShader.setVec3("lightPos", lightPos);
-    //sceneShader.setVec3("viewPos", camera.getCameraPos());
+    sceneShader.setVec3("viewPos", camera.getCameraPos());
 
     //sceneShader.setFloat("farPlane", 25.0f);
 
@@ -89,12 +89,15 @@ void Volumetric_Lighting::initCube()
     glGenVertexArrays(1, &cubeVAO);
     glBindVertexArray(cubeVAO);
 
+    // position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    // normal
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    // texture coord
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
@@ -179,7 +182,7 @@ int runVolumetricLighting()
 
     //Shader depthBufferShader("res/Shaders/Advanced_Lighting/PointShadows/simpleDepthCubemap.shader");
 
-    Shader sceneShader("res/Shaders/Advanced_Lighting/PointShadows/pointShadow.shader");
+    Shader sceneShader("res/Shaders/Volumetric_Lighting/scene.shader");
 
     sceneShader.Bind();
     sceneShader.setInt("diffuseMap", 0);
