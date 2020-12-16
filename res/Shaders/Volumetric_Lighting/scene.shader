@@ -79,6 +79,19 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 }
 
 
+
+
+float near = 0.1;
+float far = 100.0;
+
+float LinearizeDepth(float depth)
+{
+	float z = depth * 2.0 - 1.0; // back to NDC 
+	return (2.0 * near * far) / (far + near - z * (far - near));
+}
+
+
+
 void main()
 {
 	vec3 color = texture(diffuseMap, fs_in.textureCoord).rgb;
@@ -90,5 +103,8 @@ void main()
 
 	// no Gamma Correction
 	FragColor = vec4(color, 1.0f);
-	//FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+
+	// depth test
+	float depth = LinearizeDepth(gl_FragCoord.z) / far; // divide by far for demonstration
+	//FragColor = vec4(vec3(depth), 1.0);
 }

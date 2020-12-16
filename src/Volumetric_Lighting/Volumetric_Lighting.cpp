@@ -8,13 +8,32 @@ Volumetric_Lighting::Volumetric_Lighting()
     initCube();
     initFloor();
     initDebugQuad();
+    initDepthBufferFBO();
     createTexture(cubeTextureID, "res/Textures/container.jpg", JPG);
     createTexture(floorTextureID, "res/Textures/wood.jpg", JPG);
 
-    createTexture(depthMap, "res/Textures/wood.jpg", JPG);
+
+    lightView = glm::lookAt(lightPos,
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+
+    lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, 25.0f);
 }
 
+void Volumetric_Lighting::fillDepthBuffer(Shader& shader)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
+    // resolution of shadow map
+    glViewport(0, 0, 860, 860);
 
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    shader.Bind();
+    shader.setMat4("projection", lightProjection);
+    shader.setMat4("view", lightView);
+
+    drawScene(shader);
+}
 
 void Volumetric_Lighting::render(Shader& sceneShader)
 {
@@ -28,12 +47,36 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     sceneShader.setMat4("projection", camera.getProjectionMatrix());
     sceneShader.setMat4("view", camera.getViewMatrix());
 
+    // test
+    //sceneShader.setMat4("projection", lightProjection);
+    //sceneShader.setMat4("view", lightView);
+
     sceneShader.setVec3("lightPos", lightPos);
     sceneShader.setVec3("viewPos", camera.getCameraPos());
 
-    //sceneShader.setFloat("farPlane", 25.0f);
+   //renderScene(sceneShader);
+}
 
-    renderScene(sceneShader);
+
+
+void Volumetric_Lighting::initDepthBufferFBO()
+{
+    // depth buffer attachment
+    // 860 x 860, shadow map resolution
+    createDepthAttachment(depthMap, 860, 860);
+
+    
+
+    // depth buffer FBO
+    glGenFramebuffers(1, &depthBufferFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+
+    // tell OpenGL that nothing will be drawn, no need for color buffer attachment
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Volumetric_Lighting::initFloor()
@@ -169,11 +212,6 @@ void Volumetric_Lighting::initDebugQuad()
 }
 
 
-
-void Volumetric_Lighting::initLightingMatrices()
-{}
-
-
 void Volumetric_Lighting::drawFloor(unsigned int texture)
 {
     glActiveTexture(GL_TEXTURE0);
@@ -194,7 +232,7 @@ void Volumetric_Lighting::drawCube(unsigned int texture)
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }
-//void drawDebugQuad(Shader& shader);
+
 
 void Volumetric_Lighting::drawDebugQuad(Shader& shader)
 {
@@ -211,7 +249,7 @@ void Volumetric_Lighting::drawDebugQuad(Shader& shader)
 }
 
 
-void Volumetric_Lighting::renderScene(Shader& shader)
+void Volumetric_Lighting::drawScene(Shader& shader)
 {
     shader.Bind();
 
@@ -228,9 +266,6 @@ void Volumetric_Lighting::renderScene(Shader& shader)
     shader.setMat4("model", model);
     drawCube(cubeTextureID);
 }
-
-
-
 
 
 
@@ -265,9 +300,9 @@ int runVolumetricLighting()
 
     glEnable(GL_DEPTH_TEST);
 
-    //Shader depthBufferShader("res/Shaders/Advanced_Lighting/PointShadows/simpleDepthCubemap.shader");
+    Shader depthBufferShader("res/Shaders/Volumetric_Lighting/depthMap.shader");
 
-    Shader debugQuadShader("res/Shaders/Volumetric_Lighting/depthMap.shader");
+    Shader debugQuadShader("res/Shaders/Volumetric_Lighting/debugQuad.shader");
     debugQuadShader.Bind();
     debugQuadShader.setInt("depthMap", 0);
 
@@ -290,8 +325,10 @@ int runVolumetricLighting()
 
         camera.cameraUpdateFrameTime();
 
-        //renderer.render( sceneShader);
+
+        renderer.fillDepthBuffer(depthBufferShader);
         renderer.drawDebugQuad(debugQuadShader);
+        //renderer.render( sceneShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

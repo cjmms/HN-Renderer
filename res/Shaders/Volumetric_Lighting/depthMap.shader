@@ -1,26 +1,36 @@
 #shader vertex
 #version 330 core
+
 layout(Location = 0) in vec3 aPos;
-layout(Location = 1) in vec2 aTextureCoord;
 
-out vec2 TextureCoord;
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
 
-void main() {
-	gl_Position = vec4(aPos.x, aPos.y, 0.0f, 1.0f);
-	TextureCoord = aTextureCoord;
+
+// This shader is used to fill depth buffer 
+// mvp is from the perspective of light source
+// This shader should have no output
+
+
+
+void main()
+{
+	gl_Position = projection * view * model * vec4(aPos, 1.0f);
 }
+
+
 
 
 #shader fragment
 #version 330 core
 
-in vec2 TextureCoord;
-out vec4 FragColor;
+// test only
+//out vec4 FragColor;
 
-uniform sampler2D depthMap;
 
 void main()
 {
-	// normal
-	FragColor = texture(depthMap, TextureCoord);
+	// test only
+	//FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
 }

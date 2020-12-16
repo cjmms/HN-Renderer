@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "../Shader.h"
 #include "../Camera.h"
 #include "../Texture.h"
@@ -18,36 +17,33 @@ public:
 	Volumetric_Lighting();
 	void render( Shader& sceneShader);
 	void drawDebugQuad(Shader& shader);
-
+	void fillDepthBuffer(Shader& shader);
 
 
 private:
 	unsigned int cubeVAO, cubeVBO;
 	unsigned int floorVAO, floorVBO;
 	unsigned int quadVAO, quadVBO;
+	unsigned int depthBufferFBO;
 
 	unsigned int depthMap;
 
-	unsigned int cubeTextureID, floorTextureID, depthCubemap;
+	unsigned int cubeTextureID, floorTextureID;
 
+	glm::mat4 lightView;
 	glm::mat4 lightProjection;
-	std::vector<glm::mat4> lightViews;
+
 	glm::vec3 lightPos;
 
 	void initCube();
 	void initFloor();
 	void initDebugQuad();
-	void initLightingMatrices();
+	void initDepthBufferFBO();
 
 	void drawCube(unsigned int texture);
 	void drawFloor(unsigned int texture);
 	
-
-
-	void renderScene(Shader& shader);
-
-
+	void drawScene(Shader& shader);
 };
 
 int runVolumetricLighting();
-
