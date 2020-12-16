@@ -6,6 +6,7 @@ Volumetric_Lighting::Volumetric_Lighting()
     lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
 
     initCube();
+    initFloor();
     createTexture(cubeTextureID, "res/Textures/container.jpg", JPG);
     createTexture(floorTextureID, "res/Textures/wood.jpg", JPG);
 }
@@ -32,7 +33,37 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     renderScene(sceneShader);
 }
 
+void Volumetric_Lighting::initFloor()
+{
+    float planeVertices[] = {
+        // positions            // normals         // texcoords
+         25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+        -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
 
+         25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+         25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
+    };
+
+    glGenBuffers(1, &floorVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &floorVAO);
+    glBindVertexArray(floorVAO);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+}
 
 void Volumetric_Lighting::initCube()
 {
@@ -112,6 +143,16 @@ void Volumetric_Lighting::initLightingMatrices()
 {}
 
 
+void Volumetric_Lighting::drawFloor(unsigned int texture)
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glBindVertexArray(floorVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
 void Volumetric_Lighting::drawCube(unsigned int texture)
 {
     glActiveTexture(GL_TEXTURE0);
@@ -128,12 +169,15 @@ void Volumetric_Lighting::renderScene(Shader& shader)
 {
     shader.Bind();
 
-
+    // floor
+    glBindTexture(GL_TEXTURE_2D, floorTextureID);
+    shader.setMat4("model", glm::mat4(1.0f));
+    drawFloor(floorTextureID);
 
     // draw 5 cubes
     glm::mat4 model(1.0f);
 
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, -3.5f, 0.0));
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.5f, 0.0));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.setMat4("model", model);
     drawCube(cubeTextureID);

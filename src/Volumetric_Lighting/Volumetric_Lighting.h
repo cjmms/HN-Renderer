@@ -23,6 +23,7 @@ public:
 
 private:
 	unsigned int cubeVAO, cubeVBO;
+	unsigned int floorVAO, floorVBO;
 
 	unsigned int depthCubemapFBO;
 
@@ -33,10 +34,12 @@ private:
 	glm::vec3 lightPos;
 
 	void initCube();
+	void initFloor();
 	//void initDebugQuad();
 	void initLightingMatrices();
 
 	void drawCube(unsigned int texture);
+	void drawFloor(unsigned int texture);
 	//void drawDebugQuad(Shader& shader);
 
 
