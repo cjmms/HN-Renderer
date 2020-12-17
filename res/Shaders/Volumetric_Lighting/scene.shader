@@ -10,21 +10,28 @@ out VS_OUT{
 	vec2 textureCoord;
 	vec3 FragPos;
 	vec3 normal;
+	vec4 lightSpaceFragPos;
 } vs_out;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 lightView;
+uniform mat4 lightProjection;
 
 
 
 void main()
 {
 	gl_Position = projection * view * model * vec4(aPos, 1.0f);
+	//gl_position = lightProjection * lightView * model * vec4(aPos, 1.0f);
 
 	vs_out.textureCoord = aTextureCoord;
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0f));
 	vs_out.normal = transpose(inverse(mat3(model))) * aNormal;
+
+	// sth went wrong
+	vs_out.lightSpaceFragPos = lightProjection * lightView * model * vec4(aPos, 1.0f);
 }
 
 
@@ -37,17 +44,42 @@ in VS_OUT{
 	vec2 textureCoord;
 	vec3 FragPos;
 	vec3 normal;
+	vec4 lightSpaceFragPos;
 } fs_in;
 
 out vec4 FragColor;
 
 uniform sampler2D diffuseMap;
-uniform samplerCube depthMap;
+uniform sampler2D depthMap;
 
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 uniform float farPlane;
+
+
+float calculateShadow(vec3 normal, vec3 lightDir)
+{
+	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
+
+	// transform to [0,1] range
+	projCoord = projCoord * 0.5 + 0.5;
+
+	if (projCoord.z > 1) return 0;
+
+	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+	float closestDepth = texture(depthMap, projCoord.xy).r;
+
+	// get depth of current fragment from light's perspective
+	float currentDepth = projCoord.z;
+
+	float bias = 0.01f;
+
+	// check whether current frag pos is in shadow
+	float shadow = currentDepth > (closestDepth + bias) ? 1.0 : 0.0;
+
+	return shadow;
+}
 
 
 
@@ -70,24 +102,11 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 
 	vec3 specular = spec * lightColor;
 
-
-	//float shadow =  calculateShadow(vec3(0, 0, 0));
-	//float shadow = pcf();
+	// shadow
+	float shadow = 1 - calculateShadow(normal, lightDir);
 
 	// shadow is not completely dark, ambient should lit shadow area
-	return ambient + (diffuse + specular);
-}
-
-
-
-
-float near = 0.1;
-float far = 100.0;
-
-float LinearizeDepth(float depth)
-{
-	float z = depth * 2.0 - 1.0; // back to NDC 
-	return (2.0 * near * far) / (far + near - z * (far - near));
+	return ambient + shadow * (diffuse + specular);
 }
 
 
@@ -103,8 +122,4 @@ void main()
 
 	// no Gamma Correction
 	FragColor = vec4(color, 1.0f);
-
-	// depth test
-	float depth = LinearizeDepth(gl_FragCoord.z) / far; // divide by far for demonstration
-	//FragColor = vec4(vec3(depth), 1.0);
 }

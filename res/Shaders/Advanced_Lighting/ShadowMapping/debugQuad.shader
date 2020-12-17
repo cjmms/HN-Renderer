@@ -21,7 +21,6 @@ out vec4 FragColor;
 
 uniform sampler2D depthMap;
 
-
 void main()
 {
 	FragColor = texture(depthMap, TextureCoord);

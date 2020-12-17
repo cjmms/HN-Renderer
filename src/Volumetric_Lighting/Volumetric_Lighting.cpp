@@ -47,14 +47,17 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     sceneShader.setMat4("projection", camera.getProjectionMatrix());
     sceneShader.setMat4("view", camera.getViewMatrix());
 
-    // test
-    //sceneShader.setMat4("projection", lightProjection);
-    //sceneShader.setMat4("view", lightView);
-
     sceneShader.setVec3("lightPos", lightPos);
     sceneShader.setVec3("viewPos", camera.getCameraPos());
 
-   //renderScene(sceneShader);
+    sceneShader.setMat4("lightProjection", lightProjection);
+    sceneShader.setMat4("lightView", lightView);
+
+    sceneShader.setInt("depthMap", 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+
+    drawScene(sceneShader);
 }
 
 
@@ -64,8 +67,6 @@ void Volumetric_Lighting::initDepthBufferFBO()
     // depth buffer attachment
     // 860 x 860, shadow map resolution
     createDepthAttachment(depthMap, 860, 860);
-
-    
 
     // depth buffer FBO
     glGenFramebuffers(1, &depthBufferFBO);
@@ -254,6 +255,8 @@ void Volumetric_Lighting::drawScene(Shader& shader)
     shader.Bind();
 
     // floor
+    shader.setInt("diffuseMap", 0);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, floorTextureID);
     shader.setMat4("model", glm::mat4(1.0f));
     drawFloor(floorTextureID);
@@ -301,16 +304,9 @@ int runVolumetricLighting()
     glEnable(GL_DEPTH_TEST);
 
     Shader depthBufferShader("res/Shaders/Volumetric_Lighting/depthMap.shader");
-
     Shader debugQuadShader("res/Shaders/Volumetric_Lighting/debugQuad.shader");
-    debugQuadShader.Bind();
-    debugQuadShader.setInt("depthMap", 0);
-
     Shader sceneShader("res/Shaders/Volumetric_Lighting/scene.shader");
 
-    sceneShader.Bind();
-    sceneShader.setInt("diffuseMap", 0);
-    //sceneShader.setInt("depthMap", 1);
 
     Volumetric_Lighting renderer;
 
@@ -327,8 +323,8 @@ int runVolumetricLighting()
 
 
         renderer.fillDepthBuffer(depthBufferShader);
-        renderer.drawDebugQuad(debugQuadShader);
-        //renderer.render( sceneShader);
+        //renderer.drawDebugQuad(debugQuadShader);
+        renderer.render( sceneShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
