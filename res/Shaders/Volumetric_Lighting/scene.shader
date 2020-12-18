@@ -121,20 +121,18 @@ vec3 calculateVolumetricLighting()
 
 
 		if (InLightWorldSpace.w <= 0) continue;
-		if (sampleInLightWorldSpace.x > 1) continue;
-		if (sampleInLightWorldSpace.y > 1) continue;
-		if (sampleInLightWorldSpace.x < 0) continue;
-		if (sampleInLightWorldSpace.y < 0) continue;
+		//if (sampleInLightWorldSpace.x > 1) continue;
+		//if (sampleInLightWorldSpace.y > 1) continue;
+		//if (sampleInLightWorldSpace.x < 0) continue;
+		//if (sampleInLightWorldSpace.y < 0) continue;
 		
 		float depthMapDepth = texture(depthMap, sampleInLightWorldSpace.xy).r;
-		float bias = 0.01f;
 
-		if ((depthMapDepth + bias) > sampleInLightWorldSpace.z)
+		if ((depthMapDepth) > sampleInLightWorldSpace.z)
 		{
 
 			vec3 sunDir = normalize(lightPos - currentPos);
-			//accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(0.0f);
-			accumFog += vec3(0.0003);
+			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(0.01f);
 		}
 		
 		currentPos += step;	// move to next sample
@@ -180,7 +178,7 @@ float calculateShadow(vec3 normal, vec3 lightDir)
 vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 color)
 {
 	// ambient
-	vec3 ambient = 0.3 * color;
+	vec3 ambient = 0.1 * color;
 
 	// diffuse
 	vec3 lightDir = normalize(lightPos - fragPos);
@@ -202,7 +200,7 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 	vec3 volumetric_lighting = calculateVolumetricLighting();
 
 	// shadow is not completely dark, ambient should lit shadow area
-	return ambient + shadow * (diffuse + specular) + volumetric_lighting;
+	return ambient + shadow * (diffuse + specular + volumetric_lighting);
 }
 
 
@@ -211,7 +209,7 @@ void main()
 {
 	
 	vec3 color = texture(diffuseMap, fs_in.textureCoord).rgb;
-	vec3 lightColor = vec3(0.6f);
+	vec3 lightColor = vec3(0.01f);
 	vec3 normal = normalize(fs_in.normal);
 
 	vec3 lighting = BlinnPhong(normal, fs_in.FragPos, lightPos, lightColor, color);
@@ -223,8 +221,8 @@ void main()
 
 	//lighting *= attenuation;
 
-	//color *= lighting;
-	color *= calculateVolumetricLighting();
+	color *= lighting;
+	//color *= calculateVolumetricLighting();
 
 	// no Gamma Correction
 	FragColor = vec4(color, 1.0f);

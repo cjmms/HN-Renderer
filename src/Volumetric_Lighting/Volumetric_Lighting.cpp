@@ -10,7 +10,7 @@ Volumetric_Lighting::Volumetric_Lighting()
     initDebugQuad();
     initDepthBufferFBO();
     createTexture(cubeTextureID, "res/Textures/container.jpg", JPG);
-    createTexture(floorTextureID, "res/Textures/wood.jpg", JPG);
+    createTexture(floorTextureID, "res/Textures/metal.jpg", JPG);
 
 
     lightView = glm::lookAt(lightPos,
@@ -264,12 +264,22 @@ void Volumetric_Lighting::drawScene(Shader& shader)
     shader.setMat4("model", glm::mat4(1.0f));
     drawFloor(floorTextureID);
 
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -10.0));
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -15.0));
     model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
     shader.setMat4("model", model);
     drawFloor(floorTextureID);
 
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(10.0, 0.0, 0.0));
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 15.0));
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+    shader.setMat4("model", model);
+    drawFloor(floorTextureID);
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(15.0, 0.0, 0.0));
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    shader.setMat4("model", model);
+    drawFloor(floorTextureID);
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-15.0, 0.0, 0.0));
     model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
     shader.setMat4("model", model);
     drawFloor(floorTextureID);
