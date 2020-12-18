@@ -17,7 +17,8 @@ Volumetric_Lighting::Volumetric_Lighting()
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 1.0f, 0.0f));
 
-    lightProjection = glm::perspective(glm::radians(60.0f), 1.0f, 1.0f, 25.0f);
+
+    lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 125.0f);
 }
 
 void Volumetric_Lighting::fillDepthBuffer(Shader& shader)
@@ -265,6 +266,11 @@ void Volumetric_Lighting::drawScene(Shader& shader)
 
     model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -10.0));
     model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+    shader.setMat4("model", model);
+    drawFloor(floorTextureID);
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(10.0, 0.0, 0.0));
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
     shader.setMat4("model", model);
     drawFloor(floorTextureID);
 

@@ -99,42 +99,48 @@ vec3 calculateVolumetricLighting()
 	vec3 viewRayDir = viewRay / rayLength;
 
 	// Step length
-	float stepLength = rayLength / NB_STEPS;
+	//float stepLength = rayLength / NB_STEPS;
+	float stepLength = 0.01f;
 	vec3 step = viewRayDir * stepLength;	// point from camera to pixel
 
 	// init sampleing position and accumlated fog value
 	vec3 currentPos = viewPos;
-	vec3 accumFog = vec3(0.0f);
+	vec3 accumFog = vec3(0.0);
 
 	
 	// sampling along with viewRay
-	for (int i = 0; i < NB_STEPS; ++i)
+	//for (int i = 0; i < NB_STEPS; ++i)
+		for (int i = 0; i < rayLength / stepLength; ++i)
 	{
-		//vec4 sampleInLightWorldSpace = lightProjection * lightView * vec4(currentPos, 1.0f);
+		vec4 InLightWorldSpace = lightProjection * lightView * vec4(currentPos, 1.0f);
 
-		//sampleInLightWorldSpace /= sampleInLightWorldSpace.w;
+		vec4 sampleInLightWorldSpace = InLightWorldSpace / InLightWorldSpace.w;
 		
 		// transform to [0,1] range
-		//sampleInLightWorldSpace = sampleInLightWorldSpace * 0.5 + 0.5;
-		
-		//if (sampleInLightWorldSpace.z > 1) continue;
-		//if (sampleInLightWorldSpace.x > 1) continue;
-		//if (sampleInLightWorldSpace.y > 1) return accumFog;
-		
-		//float depthMapDepth = texture(depthMap, sampleInLightWorldSpace.xy).r;
-		//float bias = 0.01f;
+		sampleInLightWorldSpace = sampleInLightWorldSpace * 0.5 + 0.5;
 
-		//if ((depthMapDepth + bias) > sampleInLightWorldSpace.z)
-		//{
+
+		if (InLightWorldSpace.w <= 0) continue;
+		if (sampleInLightWorldSpace.x > 1) continue;
+		if (sampleInLightWorldSpace.y > 1) continue;
+		if (sampleInLightWorldSpace.x < 0) continue;
+		if (sampleInLightWorldSpace.y < 0) continue;
+		
+		float depthMapDepth = texture(depthMap, sampleInLightWorldSpace.xy).r;
+		float bias = 0.01f;
+
+		if ((depthMapDepth + bias) > sampleInLightWorldSpace.z)
+		{
+
 			vec3 sunDir = normalize(lightPos - currentPos);
-			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(1.0);
-			//accumFog += vec3(0.3, 0.0, 0.0);
-		//}
+			//accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(0.0f);
+			accumFog += vec3(0.0003);
+		}
 		
 		currentPos += step;	// move to next sample
 	}
 
-	return accumFog / NB_STEPS;
+	return accumFog ;
 }
 
 
@@ -149,8 +155,11 @@ float calculateShadow(vec3 normal, vec3 lightDir)
 	// transform to [0,1] range
 	projCoord = projCoord * 0.5 + 0.5;
 
-	if (projCoord.z > 1) return 0;
-	
+	if (fs_in.lightSpaceFragPos.w <= 0) return 0;
+	if (projCoord.x > 1) return 0;
+	if (projCoord.y > 1) return 0;
+	if (projCoord.x < 0) return 0;
+	if (projCoord.y < 0) return 0;
 
 	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
 	float closestDepth = texture(depthMap, projCoord.xy).r;
