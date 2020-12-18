@@ -76,6 +76,10 @@ const float G_SCATTERING = 0.45f;
 const float PI = 3.141f;
 const int NB_STEPS = 10;
 
+const float light_constant = 1.0f;
+const float light_linear = 0.09f;
+const float light_quadratic = 0.032f;
+
 
 
 // Mie scaterring approximated with Henyey-Greenstein phase function.
@@ -106,22 +110,26 @@ vec3 calculateVolumetricLighting()
 	// sampling along with viewRay
 	for (int i = 0; i < NB_STEPS; ++i)
 	{
-		vec4 sampleInLightWorldSpace = lightProjection * lightView * vec4(currentPos, 1.0f);
+		//vec4 sampleInLightWorldSpace = lightProjection * lightView * vec4(currentPos, 1.0f);
 
-		sampleInLightWorldSpace /= sampleInLightWorldSpace.w;
+		//sampleInLightWorldSpace /= sampleInLightWorldSpace.w;
 		
 		// transform to [0,1] range
-		sampleInLightWorldSpace = sampleInLightWorldSpace * 0.5 + 0.5;
+		//sampleInLightWorldSpace = sampleInLightWorldSpace * 0.5 + 0.5;
 		
-		if (sampleInLightWorldSpace.z > 1) return accumFog;
+		//if (sampleInLightWorldSpace.z > 1) continue;
+		//if (sampleInLightWorldSpace.x > 1) continue;
+		//if (sampleInLightWorldSpace.y > 1) return accumFog;
 		
-		float depthMapDepth = texture(depthMap, sampleInLightWorldSpace.xy).r;
-		
-		if (depthMapDepth > sampleInLightWorldSpace.z)
-		{
-			vec3 sunDir = lightPos - currentPos;
+		//float depthMapDepth = texture(depthMap, sampleInLightWorldSpace.xy).r;
+		//float bias = 0.01f;
+
+		//if ((depthMapDepth + bias) > sampleInLightWorldSpace.z)
+		//{
+			vec3 sunDir = normalize(lightPos - currentPos);
 			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(1.0);
-		}
+			//accumFog += vec3(0.3, 0.0, 0.0);
+		//}
 		
 		currentPos += step;	// move to next sample
 	}
@@ -192,13 +200,24 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 
 void main()
 {
+	
 	vec3 color = texture(diffuseMap, fs_in.textureCoord).rgb;
 	vec3 lightColor = vec3(0.6f);
 	vec3 normal = normalize(fs_in.normal);
 
 	vec3 lighting = BlinnPhong(normal, fs_in.FragPos, lightPos, lightColor, color);
-	color *= lighting;
+
+	// attenuation
+	float distance = length(fs_in.FragPos - viewPos);
+	float attenuation = 1.0 / (light_constant + light_linear * distance +
+		light_quadratic * (distance * distance));
+
+	//lighting *= attenuation;
+
+	//color *= lighting;
+	color *= calculateVolumetricLighting();
 
 	// no Gamma Correction
 	FragColor = vec4(color, 1.0f);
+	//FragColor = vec4(1.0f, 1.0f, 0.0, 1.0);
 }

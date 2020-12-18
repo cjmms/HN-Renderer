@@ -17,7 +17,7 @@ Volumetric_Lighting::Volumetric_Lighting()
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 1.0f, 0.0f));
 
-    lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, 25.0f);
+    lightProjection = glm::perspective(glm::radians(60.0f), 1.0f, 1.0f, 25.0f);
 }
 
 void Volumetric_Lighting::fillDepthBuffer(Shader& shader)
@@ -254,6 +254,8 @@ void Volumetric_Lighting::drawScene(Shader& shader)
 {
     shader.Bind();
 
+    glm::mat4 model(1.0f);
+
     // floor
     shader.setInt("diffuseMap", 0);
     glActiveTexture(GL_TEXTURE0);
@@ -261,10 +263,20 @@ void Volumetric_Lighting::drawScene(Shader& shader)
     shader.setMat4("model", glm::mat4(1.0f));
     drawFloor(floorTextureID);
 
-    // draw 5 cubes
-    glm::mat4 model(1.0f);
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -10.0));
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+    shader.setMat4("model", model);
+    drawFloor(floorTextureID);
+
+
 
     model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.5f, 0.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.setMat4("model", model);
+    drawCube(cubeTextureID);
+
+
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.5f, 2.0));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.setMat4("model", model);
     drawCube(cubeTextureID);
