@@ -67,6 +67,8 @@ uniform sampler2D depthMap;
 uniform mat4 lightView;
 uniform mat4 lightProjection;
 
+uniform mat4 ditherPattern;
+
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -74,11 +76,16 @@ uniform float farPlane;
 
 const float G_SCATTERING = 0.45f;
 const float PI = 3.141f;
-const int NB_STEPS = 10;
+const int NB_STEPS = 100;
 
 const float light_constant = 1.0f;
 const float light_linear = 0.09f;
 const float light_quadratic = 0.032f;
+
+
+
+
+
 
 
 
@@ -99,8 +106,8 @@ vec3 calculateVolumetricLighting()
 	vec3 viewRayDir = viewRay / rayLength;
 
 	// Step length
-	//float stepLength = rayLength / NB_STEPS;
-	float stepLength = 0.01f;
+	float stepLength = rayLength / NB_STEPS;
+	//float stepLength = 0.01f;
 	vec3 step = viewRayDir * stepLength;	// point from camera to pixel
 
 	// init sampleing position and accumlated fog value
@@ -109,8 +116,8 @@ vec3 calculateVolumetricLighting()
 
 	
 	// sampling along with viewRay
-	//for (int i = 0; i < NB_STEPS; ++i)
-		for (int i = 0; i < rayLength / stepLength; ++i)
+	for (int i = 0; i < NB_STEPS; ++i)
+		//for (int i = 0; i < rayLength / stepLength; ++i)
 	{
 		vec4 InLightWorldSpace = lightProjection * lightView * vec4(currentPos, 1.0f);
 
@@ -130,12 +137,12 @@ vec3 calculateVolumetricLighting()
 
 		if ((depthMapDepth) > sampleInLightWorldSpace.z)
 		{
-
 			vec3 sunDir = normalize(lightPos - currentPos);
-			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(0.01f);
+			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(0.15f);
 		}
 		
-		currentPos += step;	// move to next sample
+
+		currentPos += step * ditherPattern;	// move to next sample
 	}
 
 	return accumFog ;
@@ -209,7 +216,7 @@ void main()
 {
 	
 	vec3 color = texture(diffuseMap, fs_in.textureCoord).rgb;
-	vec3 lightColor = vec3(0.01f);
+	vec3 lightColor = vec3(0.2f);
 	vec3 normal = normalize(fs_in.normal);
 
 	vec3 lighting = BlinnPhong(normal, fs_in.FragPos, lightPos, lightColor, color);
@@ -226,5 +233,4 @@ void main()
 
 	// no Gamma Correction
 	FragColor = vec4(color, 1.0f);
-	//FragColor = vec4(1.0f, 1.0f, 0.0, 1.0);
 }
