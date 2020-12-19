@@ -67,7 +67,6 @@ uniform sampler2D depthMap;
 uniform mat4 lightView;
 uniform mat4 lightProjection;
 
-uniform mat4 ditherPattern;
 
 uniform vec3 lightPos;
 uniform vec3 viewPos;
@@ -82,10 +81,18 @@ const float light_constant = 1.0f;
 const float light_linear = 0.09f;
 const float light_quadratic = 0.032f;
 
+// bayer matrix
+const int ditherPattern[16] = int[](	0.0f, 0.5f, 0.125f, 0.625f,
+										0.75f, 0.22f, 0.875f, 0.375f,
+										0.1875f, 0.6875f, 0.0625f, 0.5625,
+										0.9375f, 0.4375f, 0.8125f, 0.3125	);
 
-
-
-
+float calculateDitherValue(vec3 currentPos)
+{
+	int index_a = int(currentPos.x) % 4;
+	int index_b = int(currentPos.y) % 4;
+	return ditherPattern[index_a + index_b * 4];
+}
 
 
 
@@ -141,8 +148,8 @@ vec3 calculateVolumetricLighting()
 			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(0.15f);
 		}
 		
-
-		currentPos += step * ditherPattern;	// move to next sample
+		currentPos += step;	// move to next sample
+		//currentPos += step * calculateDitherValue(currentPos);	// move to next sample
 	}
 
 	return accumFog ;
@@ -228,8 +235,8 @@ void main()
 
 	//lighting *= attenuation;
 
-	color *= lighting;
-	//color *= calculateVolumetricLighting();
+	//color *= lighting;
+	color *= calculateVolumetricLighting();
 
 	// no Gamma Correction
 	FragColor = vec4(color, 1.0f);

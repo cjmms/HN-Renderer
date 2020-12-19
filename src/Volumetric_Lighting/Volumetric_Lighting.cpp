@@ -54,14 +54,6 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     sceneShader.setMat4("lightProjection", lightProjection);
     sceneShader.setMat4("lightView", lightView);
 
-    glm::mat4 ditherPattern;
-    ditherPattern[0] = glm::vec4(0.0f, 0.5f, 0.125f, 0.625f);
-    ditherPattern[1] = glm::vec4(0.75f, 0.22f, 0.875f, 0.375f);
-    ditherPattern[2] = glm::vec4(0.1875f, 0.6875f, 0.0625f, 0.5625);
-    ditherPattern[3] = glm::vec4(0.9375f, 0.4375f, 0.8125f, 0.3125);
-    sceneShader.setMat4("ditherPattern", ditherPattern);
-
-
     sceneShader.setInt("depthMap", 1);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthMap);
