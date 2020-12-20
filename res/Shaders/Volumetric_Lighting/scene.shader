@@ -71,15 +71,12 @@ uniform mat4 lightProjection;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
-uniform float farPlane;
 
 const float G_SCATTERING = 0.45f;
 const float PI = 3.141f;
-const int NB_STEPS = 100;
+const int NB_STEPS = 10;
 
-const float light_constant = 1.0f;
-const float light_linear = 0.09f;
-const float light_quadratic = 0.032f;
+
 
 // bayer matrix
 const float ditherPattern[16] = float[](	0.0f, 0.5f, 0.125f, 0.625f,
@@ -126,7 +123,6 @@ vec3 calculateVolumetricLighting()
 	
 	// sampling along with viewRay
 	for (int i = 0; i < NB_STEPS; ++i)
-		//for (int i = 0; i < rayLength / stepLength; ++i)
 	{
 		vec4 InLightWorldSpace = lightProjection * lightView * vec4(currentPos, 1.0f);
 
@@ -151,7 +147,6 @@ vec3 calculateVolumetricLighting()
 		}
 		
 		currentPos += step;	// move to next sample
-		//currentPos += step * calculateDitherValue(currentPos);	// move to next sample
 	}
 
 	return accumFog ;
@@ -159,86 +154,10 @@ vec3 calculateVolumetricLighting()
 
 
 
-
-
-
-float calculateShadow(vec3 normal, vec3 lightDir)
-{
-	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
-
-	// transform to [0,1] range
-	projCoord = projCoord * 0.5 + 0.5;
-
-	if (fs_in.lightSpaceFragPos.w <= 0) return 0;
-	if (projCoord.x > 1) return 0;
-	if (projCoord.y > 1) return 0;
-	if (projCoord.x < 0) return 0;
-	if (projCoord.y < 0) return 0;
-
-	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-	float closestDepth = texture(depthMap, projCoord.xy).r;
-
-	// get depth of current fragment from light's perspective
-	float currentDepth = projCoord.z;
-
-	float bias = 0.01f;
-
-	// check whether current frag pos is in shadow
-	float shadow = currentDepth > (closestDepth + bias) ? 1.0 : 0.0;
-
-	return shadow;
-}
-
-
-
-vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 color)
-{
-	// ambient
-	vec3 ambient = 0.1 * color;
-
-	// diffuse
-	vec3 lightDir = normalize(lightPos - fragPos);
-	float diff = max(dot(normal, lightDir), 0);
-	vec3 diffuse = diff * lightColor;
-
-	// specular
-	vec3 viewDir = normalize(viewPos - fragPos);
-	vec3 reflectDir = reflect(-lightDir, normal);
-	vec3 halfwayDir = normalize(viewDir + lightDir);
-
-	float spec = pow(max(dot(halfwayDir, normal), 0.0f), 64.0f);
-
-	vec3 specular = spec * lightColor;
-
-	// shadow
-	float shadow = 1 - calculateShadow(normal, lightDir);
-
-	vec3 volumetric_lighting = calculateVolumetricLighting();
-
-	// shadow is not completely dark, ambient should lit shadow area
-	return ambient + shadow * (diffuse + specular + volumetric_lighting);
-	//return ambient + shadow * (diffuse + specular );
-}
-
-
-
 void main()
 {
-	
 	vec3 color = texture(diffuseMap, fs_in.textureCoord).rgb;
-	vec3 lightColor = vec3(0.9f);
-	vec3 normal = normalize(fs_in.normal);
 
-	vec3 lighting = BlinnPhong(normal, fs_in.FragPos, lightPos, lightColor, color);
-
-	// attenuation
-	float distance = length(fs_in.FragPos - viewPos);
-	float attenuation = 1.0 / (light_constant + light_linear * distance +
-		light_quadratic * (distance * distance));
-
-	//lighting *= attenuation;
-
-	//color *= lighting;
 	color *= calculateVolumetricLighting();
 
 	// no Gamma Correction
