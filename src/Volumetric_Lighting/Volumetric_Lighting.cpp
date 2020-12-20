@@ -276,6 +276,27 @@ void Volumetric_Lighting::drawDebugQuad(Shader& shader, unsigned int texture)
 }
 
 
+
+void Volumetric_Lighting::bilateralBlur(Shader& shader)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);   // default FBO
+    shader.Bind();
+
+    shader.setInt("image", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, VolumetricLightcolorAtt);
+
+    shader.setInt("depthMap", 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
+
+
 void Volumetric_Lighting::drawScene(Shader& shader)
 {
     shader.Bind();
@@ -396,6 +417,7 @@ int runVolumetricLighting()
     Shader depthBufferShader("res/Shaders/Volumetric_Lighting/depthMap.shader");
     Shader debugQuadShader("res/Shaders/Volumetric_Lighting/debugQuad.shader");
     Shader sceneShader("res/Shaders/Volumetric_Lighting/scene.shader");
+    Shader bilateralBlurShader("res/Shaders/Volumetric_Lighting/bilateralBlur.shader");
 
 
     Volumetric_Lighting renderer;
@@ -414,8 +436,8 @@ int runVolumetricLighting()
 
         renderer.fillDepthBuffer(depthBufferShader);
         renderer.render( sceneShader);
-        renderer.drawDebugQuad(debugQuadShader, renderer.VolumetricLightcolorAtt);
-
+        renderer.bilateralBlur(bilateralBlurShader);
+        
 
         glfwSwapBuffers(window);
         glfwPollEvents();

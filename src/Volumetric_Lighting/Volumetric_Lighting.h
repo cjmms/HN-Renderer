@@ -18,6 +18,7 @@ public:
 	void render( Shader& sceneShader);
 	void drawDebugQuad(Shader& shader, unsigned int texture);
 	void fillDepthBuffer(Shader& shader);
+	void bilateralBlur(Shader& shader);
 
 	unsigned int depthMap;
 	unsigned int VolumetricLightingFBO, RBO, VolumetricLightcolorAtt;
