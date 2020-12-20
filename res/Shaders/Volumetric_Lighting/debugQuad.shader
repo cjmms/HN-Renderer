@@ -19,10 +19,10 @@ void main() {
 in vec2 TextureCoord;
 out vec4 FragColor;
 
-uniform sampler2D depthMap;
+uniform sampler2D map;
 
 
 void main()
 {
-	FragColor = texture(depthMap, TextureCoord);
+	FragColor = texture(map, TextureCoord);
 }

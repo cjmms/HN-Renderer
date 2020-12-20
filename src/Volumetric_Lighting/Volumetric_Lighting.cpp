@@ -9,6 +9,7 @@ Volumetric_Lighting::Volumetric_Lighting()
     initFloor();
     initDebugQuad();
     initDepthBufferFBO();
+    initVolumetricLightingFBO();
     createTexture(cubeTextureID, "res/Textures/container.jpg", JPG);
     createTexture(floorTextureID, "res/Textures/metal.jpg", JPG);
 
@@ -38,7 +39,7 @@ void Volumetric_Lighting::fillDepthBuffer(Shader& shader)
 
 void Volumetric_Lighting::render(Shader& sceneShader)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, VolumetricLightingFBO);
     glViewport(0, 0, 1024, 1024);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -62,6 +63,30 @@ void Volumetric_Lighting::render(Shader& sceneShader)
 }
 
 
+
+
+void Volumetric_Lighting::initVolumetricLightingFBO()
+{
+    // generate FBO
+    glGenFramebuffers(1, &VolumetricLightingFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, VolumetricLightingFBO);
+
+    // generate FBO color attachment, bind to current FBO
+    VolumetricLightcolorAtt = Texture(1024, 1024).getTextureID();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, VolumetricLightcolorAtt, 0);
+
+    // generate FBO depth, stencil attachment(24 bits, 8 bits), bind to current FBO
+    glGenRenderbuffers(1, &RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1024, 1024);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+
+    // check if framebuffer created successfullly
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
 void Volumetric_Lighting::initDepthBufferFBO()
 {
@@ -236,14 +261,14 @@ void Volumetric_Lighting::drawCube(unsigned int texture)
 }
 
 
-void Volumetric_Lighting::drawDebugQuad(Shader& shader)
+void Volumetric_Lighting::drawDebugQuad(Shader& shader, unsigned int texture)
 {
-    shader.Bind();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);   // default FBO
+    shader.Bind();
 
-    shader.setInt("depthMap", 0);
+    shader.setInt("map", 0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -388,8 +413,9 @@ int runVolumetricLighting()
 
 
         renderer.fillDepthBuffer(depthBufferShader);
-        //renderer.drawDebugQuad(debugQuadShader);
         renderer.render( sceneShader);
+        renderer.drawDebugQuad(debugQuadShader, renderer.VolumetricLightcolorAtt);
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
