@@ -277,7 +277,7 @@ void Volumetric_Lighting::drawDebugQuad(Shader& shader, unsigned int texture)
 
 
 
-void Volumetric_Lighting::bilateralBlur(Shader& shader)
+void Volumetric_Lighting::GaussianBlur(Shader& shader)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);   // default FBO
     shader.Bind();
@@ -285,10 +285,6 @@ void Volumetric_Lighting::bilateralBlur(Shader& shader)
     shader.setInt("image", 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, VolumetricLightcolorAtt);
-
-    shader.setInt("depthMap", 1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
 
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -417,7 +413,7 @@ int runVolumetricLighting()
     Shader depthBufferShader("res/Shaders/Volumetric_Lighting/depthMap.shader");
     Shader debugQuadShader("res/Shaders/Volumetric_Lighting/debugQuad.shader");
     Shader sceneShader("res/Shaders/Volumetric_Lighting/scene.shader");
-    Shader bilateralBlurShader("res/Shaders/Volumetric_Lighting/bilateralBlur.shader");
+    Shader GaussianBlurShader("res/Shaders/Volumetric_Lighting/GaussianBlur.shader");
 
 
     Volumetric_Lighting renderer;
@@ -436,7 +432,12 @@ int runVolumetricLighting()
 
         renderer.fillDepthBuffer(depthBufferShader);
         renderer.render( sceneShader);
-        renderer.bilateralBlur(bilateralBlurShader);
+
+        // no blur
+        //renderer.drawDebugQuad(debugQuadShader, renderer.VolumetricLightcolorAtt);
+
+        // Gaussian blur
+        renderer.GaussianBlur(GaussianBlurShader);
         
 
         glfwSwapBuffers(window);
