@@ -82,15 +82,15 @@ const float light_linear = 0.09f;
 const float light_quadratic = 0.032f;
 
 // bayer matrix
-const int ditherPattern[16] = int[](	0.0f, 0.5f, 0.125f, 0.625f,
+const float ditherPattern[16] = float[](	0.0f, 0.5f, 0.125f, 0.625f,
 										0.75f, 0.22f, 0.875f, 0.375f,
 										0.1875f, 0.6875f, 0.0625f, 0.5625,
 										0.9375f, 0.4375f, 0.8125f, 0.3125	);
 
-float calculateDitherValue(vec3 currentPos)
+float calculateDitherValue(vec2 pixel)
 {
-	int index_a = int(currentPos.x) % 4;
-	int index_b = int(currentPos.y) % 4;
+	int index_a = int(pixel.x) % 4;
+	int index_b = int(pixel.y) % 4;
 	return ditherPattern[index_a + index_b * 4];
 }
 
@@ -122,6 +122,8 @@ vec3 calculateVolumetricLighting()
 	vec3 accumFog = vec3(0.0);
 
 	
+	currentPos += step * calculateDitherValue(gl_FragCoord.xy);
+	
 	// sampling along with viewRay
 	for (int i = 0; i < NB_STEPS; ++i)
 		//for (int i = 0; i < rayLength / stepLength; ++i)
@@ -145,7 +147,7 @@ vec3 calculateVolumetricLighting()
 		if ((depthMapDepth) > sampleInLightWorldSpace.z)
 		{
 			vec3 sunDir = normalize(lightPos - currentPos);
-			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(0.15f);
+			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(8.0f) / NB_STEPS;
 		}
 		
 		currentPos += step;	// move to next sample
@@ -215,6 +217,7 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 
 	// shadow is not completely dark, ambient should lit shadow area
 	return ambient + shadow * (diffuse + specular + volumetric_lighting);
+	//return ambient + shadow * (diffuse + specular );
 }
 
 
@@ -223,7 +226,7 @@ void main()
 {
 	
 	vec3 color = texture(diffuseMap, fs_in.textureCoord).rgb;
-	vec3 lightColor = vec3(0.2f);
+	vec3 lightColor = vec3(0.9f);
 	vec3 normal = normalize(fs_in.normal);
 
 	vec3 lighting = BlinnPhong(normal, fs_in.FragPos, lightPos, lightColor, color);
