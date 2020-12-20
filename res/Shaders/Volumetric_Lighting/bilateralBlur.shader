@@ -25,40 +25,29 @@ out vec4 FragColor;
 uniform sampler2D depthMap;
 uniform sampler2D image;
 
+const int BlurSamples = 5;
+
+
+
+
 
 void main()
 {
-	// sample depth value
-	float upSampledDepth = texture(depthMap, gl_FragCoord.xy).r;
-
 	vec3 color = vec3(0.0f);
-	float totalWeight = 0.0f;
+	vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
 
-	// calculate offsets
-	int xOffset = int(gl_FragCoord.x) % 2 == 0 ? -1 : 1;
-	int yOffset = int(gl_FragCoord.y) % 2 == 0 ? -1 : 1;
-	vec2 offsets = vec2(0.0f);
-
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < BlurSamples; i++)
 	{
-		if (i == 1) offsets = vec2(0.0f, yOffset);
-		if (i == 2) offsets = vec2(xOffset, 0.0f);
-		if (i == 3) offsets = vec2(xOffset, yOffset);
-
-		vec3 downscaledColor = texture(image, gl_FragCoord.xy + offsets).rgb;
-		float downscaledDepth = texture(depthMap, gl_FragCoord.xy + offsets).r;
-
-		float currentWeight = max(0.0f, 1.0f - (0.05f) * abs(downscaledDepth - upSampledDepth));
-
-		color += downscaledColor * currentWeight;
-		totalWeight += currentWeight;
+		for (int j = 0; j < BlurSamples; j++)
+		{
+			vec2 offsets = vec2(tex_offset.x * i, tex_offset * j);
+			vec3 downscaledColor = texture(image, TextureCoord + offsets).rgb;
+			color += downscaledColor;
+		}
 	}
 
-	// normalization
-	const float epsilon = 0.0001f;
-	vec3 volumetricLight = color / (totalWeight + epsilon);
+	vec3 volumetricLight = color / float(BlurSamples * BlurSamples);
 
 
 	FragColor = vec4(volumetricLight, 1.0f);
-	//FragColor = texture(image, TextureCoord);
 }
