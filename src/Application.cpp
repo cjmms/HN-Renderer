@@ -35,10 +35,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 
 
-void mouseButton_callback(GLFWwindow* window, int button, int action, int mods)
-{
-    camera.updateCameraState(action, button);
-}
+
 
 
 

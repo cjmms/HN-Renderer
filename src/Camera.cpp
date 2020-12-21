@@ -3,7 +3,7 @@
 
 Camera::Camera()
 	: sensitivity(0.1f), deltaTime(0.0f), lastFrame(0.0f), firstMouse(true), fov(45.0f),
-		leftDown(false), middleDown(false), rightDown(false), disabled(false)
+		 disabled(false)
 {
 	cameraPos = glm::vec3(0.0f, 1.0f, 4.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -79,21 +79,7 @@ void Camera::updateCameraDirection(float currentX, float currentY)
 	calculateCameraFront();
 }
 
-void Camera::updateCameraState(int action, int button)
-{
-	if (button == GLFW_MOUSE_BUTTON_LEFT)
-	{
-		leftDown = (action == GLFW_PRESS);
-	}
-	else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
-		middleDown = (action == GLFW_PRESS);
-	}
 
-	else if (button == GLFW_MOUSE_BUTTON_RIGHT)
-	{
-		rightDown = (action == GLFW_PRESS);
-	}
-}
 
 
 

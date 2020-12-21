@@ -13,11 +13,10 @@ enum BlurState
     BILATERAL
 };
 
-BlurState blurState = NO_BLUR;
-bool enableDithering = true;
-bool enableHighSampling = false;
-bool showUI = false;
 
+bool enableDithering = false;
+bool showUI = false;
+int NB_SAMPLES = 10;
 
 
 Volumetric_Lighting::Volumetric_Lighting()
@@ -75,7 +74,7 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     sceneShader.setMat4("lightView", lightView);
 
     sceneShader.setInt("enableDithering", enableDithering);
-    sceneShader.setInt("enableHighSampling", enableHighSampling);
+    sceneShader.setInt("NB_SAMPLES", NB_SAMPLES);
 
     sceneShader.setInt("depthMap", 1);
     glActiveTexture(GL_TEXTURE1);
@@ -426,31 +425,8 @@ void Volumetric_Lighting::drawScene(Shader& shader)
 
 void static key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_N && action == GLFW_PRESS)
-        blurState = NO_BLUR;
-    
-
-    if (key == GLFW_KEY_G && action == GLFW_PRESS)
-        blurState = GAUSSIAN;
-    
-
-    if (key == GLFW_KEY_B && action == GLFW_PRESS)
-        blurState = BILATERAL;
-    
-
-    if (key == GLFW_KEY_E && action == GLFW_PRESS)
-    {
-        enableDithering = !enableDithering;
-    }
-
-    if (key == GLFW_KEY_H && action == GLFW_PRESS)
-    {
-        enableHighSampling = !enableHighSampling;
-    }
-
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
-        //enableHighSampling = !enableHighSampling;
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         showUI = true;
         camera.disable();
@@ -458,7 +434,6 @@ void static key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
     {
-        //enableHighSampling = !enableHighSampling;
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         showUI = false;
         camera.enable();
@@ -494,7 +469,6 @@ int runVolumetricLighting()
 
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
-    glfwSetMouseButtonCallback(window, mouseButton_callback);
 
 
     glfwSetKeyCallback(window, key_callback);
@@ -529,13 +503,8 @@ int runVolumetricLighting()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-
-
+    const char* states[]{ "No Blur", "Gaussian Blur", "Bilateral Blur" };
+    int state = NO_BLUR;
 
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
@@ -545,8 +514,7 @@ int runVolumetricLighting()
         // Render here 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
+ 
         
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -555,48 +523,17 @@ int runVolumetricLighting()
 
         if (showUI)
         {
-            // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-            if (show_demo_window)
-                ImGui::ShowDemoWindow(&show_demo_window);
+            ImGui::Begin("UI");                          // Create a window called "Hello, world!" and append into it.
+              
+            ImGui::Checkbox("Dithering", &enableDithering);      // Edit bools storing our window open/close state
 
-            // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-            {
-                static int f = 10.0f;
-                static int counter = 0;
+            ImGui::SliderInt("Number of samples", &NB_SAMPLES, 10, 100);
 
-                ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            ImGui::ListBox("", &state, states, IM_ARRAYSIZE(states));
 
-                ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-                ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-                ImGui::Checkbox("Another Window", &show_another_window);
-
-                ImGui::SliderInt("Number of samples", &f, 10, 100);
-                //ImGui::SliderFloat("int", &f, 10.0f, 100.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-                ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-                if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                    counter++;
-                ImGui::SameLine();
-                ImGui::Text("counter = %d", counter);
-
-                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-                ImGui::End();
-            }
-
-            // 3. Show another simple window.
-            if (show_another_window)
-            {
-                ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-                ImGui::Text("Hello from another window!");
-                if (ImGui::Button("Close Me"))
-                    show_another_window = false;
-                ImGui::End();
-            }
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::End();    
         }
-
-        
-        
-
 
 
         camera.cameraUpdateFrameTime();
@@ -606,23 +543,19 @@ int runVolumetricLighting()
         renderer.render( sceneShader);
 
         // no Blur
-        if (blurState == NO_BLUR)
-            renderer.drawDebugQuad(debugQuadShader, renderer.VolumetricLightcolorAtt);
+        if (state == NO_BLUR) renderer.drawDebugQuad(debugQuadShader, renderer.VolumetricLightcolorAtt);
 
         // Gaussian Blur
-        if (blurState == GAUSSIAN)
-            renderer.GaussianBlur(GaussianBlurShader);
+        if (state == GAUSSIAN) renderer.GaussianBlur(GaussianBlurShader);
 
         // Bilateral Blur
-        if (blurState == BILATERAL)
-            renderer.BilateralBlur(BilateralBlurShader);
+        if (state == BILATERAL) renderer.BilateralBlur(BilateralBlurShader);
 
         // Rendering
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         
-
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

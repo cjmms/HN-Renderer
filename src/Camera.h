@@ -8,7 +8,7 @@ void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void mouseButton_callback(GLFWwindow* window, int button, int action, int mods);
+
 
 class Camera
 {
@@ -32,7 +32,7 @@ private:
 
 	float fov;
 
-	bool leftDown, middleDown, rightDown;
+
 	bool disabled;
 
 
@@ -62,8 +62,6 @@ public:
 
 	// update delta time and last frame
 	void cameraUpdateFrameTime();
-
-	void updateCameraState(int action, int button);
 
 
 	// using lookat() to calculate view matrix
