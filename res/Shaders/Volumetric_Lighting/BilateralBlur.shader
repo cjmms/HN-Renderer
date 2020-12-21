@@ -23,6 +23,8 @@ out vec4 FragColor;
 uniform sampler2D image;
 uniform sampler2D depthMap;
 
+const int numberOfSample = 3;
+
 
 void main()
 {
@@ -39,21 +41,23 @@ void main()
 
 	vec2 tex_offset = 1.0 / textureSize(image, 0);
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < numberOfSample; ++i)
 	{
-		if (i == 1) offsets = vec2(0.0f, yOffset * tex_offset.y);
-		if (i == 2) offsets = vec2(xOffset * tex_offset.x, 0.0f);
-		if (i == 3) offsets = vec2(xOffset * tex_offset.x, yOffset * tex_offset.y);
+		offsets.x = i * xOffset * tex_offset.x;
 
-		vec3 downscaledColor = texture(image, TextureCoord + offsets).rgb;
-		float downscaledDepth = texture(depthMap, TextureCoord + offsets).r;
+		for (int j = 0; j < numberOfSample; ++j)
+		{
+			offsets.y = j * yOffset * tex_offset.y;
 
-		float currentWeight = max(0.0f, 1.0f - (0.05f) * abs(downscaledDepth - upSampledDepth));
+			vec3 downscaledColor = texture(image, TextureCoord + offsets).rgb;
+			float downscaledDepth = texture(depthMap, TextureCoord + offsets).r;
 
-		color += downscaledColor * currentWeight;
-		totalWeight += currentWeight;
+			float currentWeight = max(0.0f, 1.0f - (0.05f) * abs(downscaledDepth - upSampledDepth));
+
+			color += downscaledColor * currentWeight;
+			totalWeight += currentWeight;
+		}
 	}
-
 
 	const float epsilon = 0.0001f;
 	vec3 volumetricLight = color / (totalWeight + epsilon);

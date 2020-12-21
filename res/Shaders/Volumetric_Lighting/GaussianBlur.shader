@@ -27,9 +27,9 @@ uniform sampler2D image;
 // GLSL does not support multidimentional array
 // That's why you see the devil below
 // Thank you so much, GLSL!
-float firstFilter[5] = float[5]( 1, 4, 7, 4, 1 );
-float secondFilter[5] = float[5](4, 16, 26, 16, 4);
-float thirdFilter[5] = float[5](7, 26, 41, 26, 7);
+float firstFilter[5] = float[5]( 1.0f, 4.0f, 7.0f, 4.0f, 1.0f );
+float secondFilter[5] = float[5](4.0f, 16.0f, 26.0f, 16.0f, 4.0f);
+float thirdFilter[5] = float[5](7.0f, 26.0f, 41.0f, 26.0f, 7.0f);
 float fourthFilter[5] = secondFilter;
 float fifthFilter[5] = firstFilter;
 
@@ -53,12 +53,12 @@ void main()
 
 			vec2 offsets = vec2(tex_offset.x * i, tex_offset * j);
 			vec3 downscaledColor = texture(image, TextureCoord + offsets).rgb;
-			downscaledColor *= filter[i + 2];
+			downscaledColor *= filter[j + 2];
 			color += downscaledColor;
 		}
 	}
 
-	vec3 volumetricLight = color / 273;
+	vec3 volumetricLight = color / 273.0f;
 
 
 	FragColor = vec4(volumetricLight, 1.0f);

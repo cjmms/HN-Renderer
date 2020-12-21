@@ -66,6 +66,7 @@ uniform sampler2D depthMap;
 
 uniform mat4 lightView;
 uniform mat4 lightProjection;
+uniform int enableDithering;
 
 
 uniform vec3 lightPos;
@@ -74,7 +75,7 @@ uniform vec3 viewPos;
 
 const float G_SCATTERING = 0.45f;
 const float PI = 3.141f;
-const int NB_STEPS = 10;
+const int NB_STEPS = 15;
 
 
 
@@ -118,9 +119,9 @@ vec3 calculateVolumetricLighting()
 	vec3 currentPos = viewPos;
 	vec3 accumFog = vec3(0.0);
 
-	
-	currentPos += step * calculateDitherValue(gl_FragCoord.xy);
-	
+	if (enableDithering == 1)
+		currentPos += step * calculateDitherValue(gl_FragCoord.xy);
+
 	// sampling along with viewRay
 	for (int i = 0; i < NB_STEPS; ++i)
 	{
@@ -143,7 +144,7 @@ vec3 calculateVolumetricLighting()
 		if ((depthMapDepth) > sampleInLightWorldSpace.z)
 		{
 			vec3 sunDir = normalize(lightPos - currentPos);
-			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(8.0f) / NB_STEPS;
+			accumFog += ComputeScattering(dot(viewRayDir, sunDir)) * vec3(10.0f) / NB_STEPS;
 		}
 		
 		currentPos += step;	// move to next sample

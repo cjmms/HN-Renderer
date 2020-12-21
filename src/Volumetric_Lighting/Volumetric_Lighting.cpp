@@ -1,6 +1,19 @@
 #include "Volumetric_Lighting.h"
 
 
+
+enum BlurState
+{
+    NO_BLUR,
+    GAUSSIAN,
+    BILATERAL
+};
+
+BlurState blurState = NO_BLUR;
+bool enableDithering = true;
+
+
+
 Volumetric_Lighting::Volumetric_Lighting()
 {
     lightPos = glm::vec3(-3.0f, 3.0f, 0.0f);
@@ -55,6 +68,8 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     sceneShader.setMat4("lightProjection", lightProjection);
     sceneShader.setMat4("lightView", lightView);
 
+    sceneShader.setInt("enableDithering", enableDithering);
+
     sceneShader.setInt("depthMap", 1);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthMap);
@@ -80,15 +95,6 @@ void Volumetric_Lighting::initVolumetricLightingFBO()
     createDepthAttachment(volumetricLightingDepthMap, 1024, 1024);
     // depth buffer FBO
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, volumetricLightingDepthMap, 0);
-
-    /*
-    // generate FBO depth, stencil attachment(24 bits, 8 bits), bind to current FBO
-    glGenRenderbuffers(1, &RBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1024, 1024);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-    */
 
     // check if framebuffer created successfullly
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -408,6 +414,32 @@ void Volumetric_Lighting::drawScene(Shader& shader)
 
 
 
+
+
+
+void static key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_N && action == GLFW_PRESS)
+        blurState = NO_BLUR;
+    
+
+    if (key == GLFW_KEY_G && action == GLFW_PRESS)
+        blurState = GAUSSIAN;
+    
+
+    if (key == GLFW_KEY_B && action == GLFW_PRESS)
+        blurState = BILATERAL;
+    
+
+    if (key == GLFW_KEY_E && action == GLFW_PRESS)
+    {
+        enableDithering = !enableDithering;
+    }
+}
+
+
+
+
 int runVolumetricLighting()
 {
     GLFWwindow* window;
@@ -433,6 +465,8 @@ int runVolumetricLighting()
 
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+
+    glfwSetKeyCallback(window, key_callback);
 
     if (glewInit() != GLEW_OK)
         std::cout << "init error" << std::endl;
@@ -464,13 +498,16 @@ int runVolumetricLighting()
         renderer.render( sceneShader);
 
         // no Blur
-        //renderer.drawDebugQuad(debugQuadShader, renderer.volumetricLightingDepthMap);
+        if (blurState == NO_BLUR)
+            renderer.drawDebugQuad(debugQuadShader, renderer.VolumetricLightcolorAtt);
 
         // Gaussian Blur
-        //renderer.GaussianBlur(GaussianBlurShader);
+        if (blurState == GAUSSIAN)
+            renderer.GaussianBlur(GaussianBlurShader);
 
         // Bilateral Blur
-        renderer.BilateralBlur(BilateralBlurShader);
+        if (blurState == BILATERAL)
+            renderer.BilateralBlur(BilateralBlurShader);
         
 
         glfwSwapBuffers(window);
