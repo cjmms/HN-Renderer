@@ -3,6 +3,7 @@
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_glfw.h"
 #include "../imgui/imgui_impl_opengl3.h"
+#include <chrono>
 
 
 
@@ -17,6 +18,8 @@ enum BlurState
 bool enableDithering = false;
 bool showUI = false;
 int NB_SAMPLES = 10;
+
+
 
 
 Volumetric_Lighting::Volumetric_Lighting()
@@ -43,12 +46,14 @@ Volumetric_Lighting::Volumetric_Lighting()
 void Volumetric_Lighting::fillDepthBuffer(Shader& shader)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
+
     // resolution of shadow map
     glViewport(0, 0, 860, 860);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
     shader.Bind();
+
     shader.setMat4("projection", lightProjection);
     shader.setMat4("view", lightView);
 
@@ -57,6 +62,7 @@ void Volumetric_Lighting::fillDepthBuffer(Shader& shader)
 
 void Volumetric_Lighting::render(Shader& sceneShader)
 {
+
     glBindFramebuffer(GL_FRAMEBUFFER, VolumetricLightingFBO);
     glViewport(0, 0, 1024, 1024);
 
@@ -81,6 +87,7 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     glBindTexture(GL_TEXTURE_2D, depthMap);
 
     drawScene(sceneShader);
+
 }
 
 
@@ -506,9 +513,11 @@ int runVolumetricLighting()
     const char* states[]{ "No Blur", "Gaussian Blur", "Bilateral Blur" };
     int state = NO_BLUR;
 
+
     // Loop until the user closes the window 
     while (!glfwWindowShouldClose(window))
     {
+        
         processInput(window);
 
         // Render here 
@@ -527,17 +536,17 @@ int runVolumetricLighting()
               
             ImGui::Checkbox("Dithering", &enableDithering);      // Edit bools storing our window open/close state
 
-            ImGui::SliderInt("Number of samples", &NB_SAMPLES, 10, 100);
+            ImGui::SliderInt("Number of samples", &NB_SAMPLES, 10, 1000);
 
             ImGui::ListBox("", &state, states, IM_ARRAYSIZE(states));
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
             ImGui::End();    
         }
 
 
         camera.cameraUpdateFrameTime();
-
 
         renderer.fillDepthBuffer(depthBufferShader);
         renderer.render( sceneShader);
@@ -554,7 +563,6 @@ int runVolumetricLighting()
         // Rendering
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         
         glfwSwapBuffers(window);
         glfwPollEvents();
