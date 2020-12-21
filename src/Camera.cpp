@@ -2,7 +2,8 @@
 
 
 Camera::Camera()
-	: sensitivity(0.1f), deltaTime(0.0f), lastFrame(0.0f), firstMouse(true), fov(45.0f)
+	: sensitivity(0.1f), deltaTime(0.0f), lastFrame(0.0f), firstMouse(true), fov(45.0f),
+		leftDown(false), middleDown(false), rightDown(false), disabled(false)
 {
 	cameraPos = glm::vec3(0.0f, 1.0f, 4.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -43,10 +44,21 @@ float Camera::getCameraSpeed()
 	return cameraSpeed;	
 }
 
+void Camera::disable()
+{
+	disabled = true;
+}
+
+
+void Camera::enable()
+{
+	disabled = false;
+}
 
 
 void Camera::updateCameraDirection(float currentX, float currentY) 
 {
+	if (disabled) return;
 	// make sure camera doesn't suddenly move at the beginning
 	if (firstMouse)
 	{
@@ -54,6 +66,9 @@ void Camera::updateCameraDirection(float currentX, float currentY)
 		lastY = currentY;
 		firstMouse = false;
 	}
+
+	// move camera direction when left button clicked
+	//if (!leftDown) return;	
 
 	calculateCameraAngle(currentX, currentY);
 
@@ -64,10 +79,27 @@ void Camera::updateCameraDirection(float currentX, float currentY)
 	calculateCameraFront();
 }
 
+void Camera::updateCameraState(int action, int button)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT)
+	{
+		leftDown = (action == GLFW_PRESS);
+	}
+	else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+		middleDown = (action == GLFW_PRESS);
+	}
+
+	else if (button == GLFW_MOUSE_BUTTON_RIGHT)
+	{
+		rightDown = (action == GLFW_PRESS);
+	}
+}
+
 
 
 void Camera::setCameraKey(GLFWwindow* window)
 {
+	if (disabled) return;
 	setCameraSpeed(1.5f);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
