@@ -24,5 +24,10 @@ uniform sampler2D map;
 
 void main()
 {
+	// depth buffer test
+	//vec3 color = vec3(texture(map, TextureCoord).r);
+	//FragColor = vec4(color, 1.0f);
+
+	// color buffer test
 	FragColor = texture(map, TextureCoord);
 }

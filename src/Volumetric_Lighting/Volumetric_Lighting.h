@@ -19,9 +19,11 @@ public:
 	void drawDebugQuad(Shader& shader, unsigned int texture);
 	void fillDepthBuffer(Shader& shader);
 	void GaussianBlur(Shader& shader);
+	void BilateralBlur(Shader& shader);
 
 	unsigned int depthMap;
 	unsigned int VolumetricLightingFBO, RBO, VolumetricLightcolorAtt;
+	unsigned int volumetricLightingDepthMap;
 
 
 private:
@@ -30,7 +32,6 @@ private:
 	unsigned int quadVAO, quadVBO;
 	unsigned int depthBufferFBO;
 
-	//unsigned int depthMap;
 
 	unsigned int cubeTextureID, floorTextureID;
 
