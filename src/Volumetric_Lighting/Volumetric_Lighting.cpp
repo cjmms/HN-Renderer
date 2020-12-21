@@ -11,6 +11,7 @@ enum BlurState
 
 BlurState blurState = NO_BLUR;
 bool enableDithering = true;
+bool enableHighSampling = false;
 
 
 
@@ -69,6 +70,7 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     sceneShader.setMat4("lightView", lightView);
 
     sceneShader.setInt("enableDithering", enableDithering);
+    sceneShader.setInt("enableHighSampling", enableHighSampling);
 
     sceneShader.setInt("depthMap", 1);
     glActiveTexture(GL_TEXTURE1);
@@ -434,6 +436,11 @@ void static key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_E && action == GLFW_PRESS)
     {
         enableDithering = !enableDithering;
+    }
+
+    if (key == GLFW_KEY_H && action == GLFW_PRESS)
+    {
+        enableHighSampling = !enableHighSampling;
     }
 }
 

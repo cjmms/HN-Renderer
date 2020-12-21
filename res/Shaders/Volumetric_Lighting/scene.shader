@@ -67,6 +67,7 @@ uniform sampler2D depthMap;
 uniform mat4 lightView;
 uniform mat4 lightProjection;
 uniform int enableDithering;
+uniform int enableHighSampling;
 
 
 uniform vec3 lightPos;
@@ -75,7 +76,7 @@ uniform vec3 viewPos;
 
 const float G_SCATTERING = 0.45f;
 const float PI = 3.141f;
-const int NB_STEPS = 15;
+int NB_STEPS = 15;
 
 
 
@@ -105,6 +106,12 @@ float ComputeScattering(float lightDotView)
 
 vec3 calculateVolumetricLighting()
 {
+	if (enableHighSampling == 1)
+		NB_STEPS = 150;
+	if (enableHighSampling == 0)
+		NB_STEPS = 15;
+
+
 	// view Ray
 	vec3 viewRay = fs_in.FragPos - viewPos;
 	float rayLength = length(viewRay);
@@ -134,10 +141,6 @@ vec3 calculateVolumetricLighting()
 
 
 		if (InLightWorldSpace.w <= 0) continue;
-		//if (sampleInLightWorldSpace.x > 1) continue;
-		//if (sampleInLightWorldSpace.y > 1) continue;
-		//if (sampleInLightWorldSpace.x < 0) continue;
-		//if (sampleInLightWorldSpace.y < 0) continue;
 		
 		float depthMapDepth = texture(depthMap, sampleInLightWorldSpace.xy).r;
 
@@ -161,6 +164,5 @@ void main()
 
 	color *= calculateVolumetricLighting();
 
-	// no Gamma Correction
 	FragColor = vec4(color, 1.0f);
 }
