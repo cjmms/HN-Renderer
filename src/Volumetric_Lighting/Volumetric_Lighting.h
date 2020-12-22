@@ -21,7 +21,7 @@ public:
 	void GaussianBlur(Shader& shader);
 	void BilateralBlur(Shader& shader);
 
-	unsigned int depthMap;
+	unsigned int lightSpaceDepthMap;
 	unsigned int VolumetricLightingFBO, RBO, VolumetricLightcolorAtt;
 	unsigned int volumetricLightingDepthMap;
 

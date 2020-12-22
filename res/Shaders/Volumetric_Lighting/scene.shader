@@ -78,7 +78,7 @@ const float G_SCATTERING = 0.45f;
 const float PI = 3.141f;
 
 
-
+/*
 
 // bayer matrix
 const float ditherPattern[16] = float[](	0.0f, 0.5f, 0.125f, 0.625f,
@@ -159,5 +159,107 @@ void main()
 
 	color *= calculateVolumetricLighting();
 
+	FragColor = vec4(color, 1.0f);
+}
+
+*/
+
+
+
+float pcf(vec3 normal, vec3 lightDir)
+{
+	/*
+	// transform from clip space to Normailzed Device Coordinate
+	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
+
+	// since the range of NDC is [-1, 1], range of depth buffer is [0, 1]
+	// transform projCoord to range [0, 1]
+	projCoord = projCoord * 0.5f + 0.5f;
+
+	// if outside the shadow map, no shadow will be rendered
+	if (projCoord.z > 1) return 0;
+
+	// bias required to fix shadow acne
+	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+
+
+	float shadow = 0.0;
+
+	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
+	for (int x = -2; x <= 2; ++x)
+	{
+		for (int y = -2; y <= 2; ++y)
+		{
+			float depthInBuffer = texture(depthMap, projCoord.xy + vec2(x, y) * texelSize).r;
+			shadow += projCoord.z - bias > depthInBuffer ? 1.0f : 0.0f;
+		}
+	}
+
+	//return shadow;
+	return shadow / 9.0;
+
+	*/
+
+	
+	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
+	// transform to [0,1] range
+	projCoord = projCoord * 0.5 + 0.5;
+
+	if (projCoord.z > 1 || projCoord.z < 0) return 0;
+	if (projCoord.x > 1 || projCoord.x < 0) return 0;
+	if (projCoord.y > 1 || projCoord.y < 0) return 0;
+
+	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+	float closestDepth = texture(depthMap, projCoord.xy).r;
+	// get depth of current fragment from light's perspective
+	float currentDepth = projCoord.z;
+
+	float bias = 0.001f;
+	// check whether current frag pos is in shadow
+	float shadow = (currentDepth - bias) > closestDepth ? 1.0 : 0.0;
+
+	return shadow;
+	
+}
+
+
+
+vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 color)
+{
+	// ambient
+	vec3 ambient = 0.15 * color;
+
+	// diffuse
+	vec3 lightDir = normalize(lightPos - fragPos);
+	float diff = max(dot(normal, lightDir), 0);
+	vec3 diffuse = diff * lightColor;
+
+	// specular
+	vec3 viewDir = normalize(viewPos - fragPos);
+	vec3 reflectDir = reflect(-lightDir, normal);
+	vec3 halfwayDir = normalize(viewDir + lightDir);
+
+	float spec = pow(max(dot(halfwayDir, normal), 0.0f), 64.0f);
+
+	vec3 specular = spec * lightColor;
+
+	float shadow = 1 - pcf(normal, lightDir);
+
+
+	// shadow is not completely dark, ambient should lit shadow area
+	return ambient + shadow * (diffuse + specular);
+}
+
+
+void main()
+{
+	vec3 color = texture(diffuseMap, fs_in.textureCoord).rgb;
+	vec3 lightColor = vec3(1.0f);
+	vec3 normal = normalize(fs_in.normal);
+
+	vec3 lighting = BlinnPhong(normal, fs_in.FragPos, lightPos, lightColor, color);
+	color *= lighting;
+
+	// no Gamma Correction
 	FragColor = vec4(color, 1.0f);
 }

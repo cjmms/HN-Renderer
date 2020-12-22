@@ -43,17 +43,17 @@ void main()
 	{
 		for (int j = -2; j < 3; j++)
 		{
-			float filter[5];
-			if (i == -2) filter = firstFilter;
-			if (i == -1) filter = secondFilter;
-			if (i == 0) filter = thirdFilter;
-			if (i == 1) filter = fourthFilter;
-			if (i == 2) filter = fifthFilter;
+			float GuassianFilter[5];
+			if (i == -2) GuassianFilter = firstFilter;
+			if (i == -1) GuassianFilter = secondFilter;
+			if (i == 0) GuassianFilter = thirdFilter;
+			if (i == 1) GuassianFilter = fourthFilter;
+			if (i == 2) GuassianFilter = fifthFilter;
 
 
 			vec2 offsets = vec2(tex_offset.x * i, tex_offset * j);
 			vec3 downscaledColor = texture(image, TextureCoord + offsets).rgb;
-			downscaledColor *= filter[j + 2];
+			downscaledColor *= GuassianFilter[j + 2];
 			color += downscaledColor;
 		}
 	}

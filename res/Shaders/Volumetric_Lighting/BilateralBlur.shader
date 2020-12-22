@@ -23,12 +23,12 @@ out vec4 FragColor;
 uniform sampler2D image;
 uniform sampler2D depthMap;
 
-const int numberOfSample = 3;
+const int numberOfSample = 5;
 
 
 void main()
 {
-	float upSampledDepth = texture(depthMap, TextureCoord).r;
+	float upSampledDepth = texture(depthMap, gl_FragCoord.xy).r;
 
 	vec3 color = vec3(0.0f);
 	float totalWeight = 0.0f;

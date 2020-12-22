@@ -84,7 +84,7 @@ void Volumetric_Lighting::render(Shader& sceneShader)
 
     sceneShader.setInt("depthMap", 1);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glBindTexture(GL_TEXTURE_2D, lightSpaceDepthMap);
 
     drawScene(sceneShader);
 
@@ -119,12 +119,12 @@ void Volumetric_Lighting::initDepthBufferFBO()
 {
     // depth buffer attachment
     // 860 x 860, shadow map resolution
-    createDepthAttachment(depthMap, 860, 860);
+    createDepthAttachment(lightSpaceDepthMap, 860, 860);
 
     // depth buffer FBO
     glGenFramebuffers(1, &depthBufferFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, depthBufferFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, lightSpaceDepthMap, 0);
 
     // tell OpenGL that nothing will be drawn, no need for color buffer attachment
     glDrawBuffer(GL_NONE);
@@ -360,7 +360,7 @@ void Volumetric_Lighting::drawScene(Shader& shader)
     drawFloor(floorTextureID);
 
     model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 15.0));
-    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+    model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
     shader.setMat4("model", model);
     drawFloor(floorTextureID);
 
@@ -370,7 +370,7 @@ void Volumetric_Lighting::drawScene(Shader& shader)
     drawFloor(floorTextureID);
 
     model = glm::translate(glm::mat4(1.0f), glm::vec3(-15.0, 0.0, 0.0));
-    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0, 0.0, 1.0));
     shader.setMat4("model", model);
     drawFloor(floorTextureID);
 
@@ -380,12 +380,12 @@ void Volumetric_Lighting::drawScene(Shader& shader)
     shader.setMat4("model", model);
     drawFloor(floorTextureID);
 
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0, 0.0, 28.0));
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0, 0.0, 30.5));
     model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
     shader.setMat4("model", model);
     drawFloor(floorTextureID);
 
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0, 0.0, -28.0));
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0, 0.0, -30.5));
     model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
     shader.setMat4("model", model);
     drawFloor(floorTextureID);
