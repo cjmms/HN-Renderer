@@ -20,10 +20,13 @@ public:
 	void fillDepthBuffer(Shader& shader);
 	void GaussianBlur(Shader& shader);
 	void BilateralBlur(Shader& shader);
+	void RayMarching(Shader& shader);
 
 	unsigned int lightSpaceDepthMap;
 	unsigned int VolumetricLightingFBO, RBO, VolumetricLightcolorAtt;
 	unsigned int volumetricLightingDepthMap;
+	unsigned int RayMarchingFBO, RayMarchingColorAtt;
+	
 
 
 private:
@@ -31,6 +34,7 @@ private:
 	unsigned int floorVAO, floorVBO;
 	unsigned int quadVAO, quadVBO;
 	unsigned int depthBufferFBO;
+	//unsigned int RayMarchingFBO, RayMarchingColorAtt;
 
 
 	unsigned int cubeTextureID, floorTextureID;
@@ -45,6 +49,7 @@ private:
 	void initDebugQuad();
 	void initDepthBufferFBO();
 	void initVolumetricLightingFBO();
+	void initRayMarchingFBO();
 
 	void drawCube(unsigned int texture);
 	void drawFloor(unsigned int texture);

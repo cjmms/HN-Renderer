@@ -11,7 +11,6 @@ out VS_OUT{
 	vec3 FragPos;
 	vec3 normal;
 	vec4 lightSpaceFragPos;
-	vec4 worldPos;
 } vs_out;
 
 uniform mat4 model;
@@ -25,16 +24,12 @@ uniform mat4 lightProjection;
 void main()
 {
 	gl_Position = projection * view * model * vec4(aPos, 1.0f);
-	//gl_position = lightProjection * lightView * model * vec4(aPos, 1.0f);
 
 	vs_out.textureCoord = aTextureCoord;
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0f));
 	vs_out.normal = transpose(inverse(mat3(model))) * aNormal;
 
-
 	vs_out.lightSpaceFragPos = lightProjection * lightView * model * vec4(aPos, 1.0f);
-
-	vs_out.worldPos = model * vec4(aPos, 1.0f);
 }
 
 
@@ -56,7 +51,6 @@ in VS_OUT{
 	vec3 FragPos;
 	vec3 normal;
 	vec4 lightSpaceFragPos;
-	vec4 worldPos;
 } fs_in;
 
 out vec4 FragColor;
@@ -64,18 +58,18 @@ out vec4 FragColor;
 uniform sampler2D diffuseMap;
 uniform sampler2D depthMap;
 
-uniform mat4 lightView;
-uniform mat4 lightProjection;
-uniform int enableDithering;
-uniform int NB_SAMPLES;
+//uniform mat4 lightView;
+//uniform mat4 lightProjection;
+//uniform int enableDithering;
+//uniform int NB_SAMPLES;
 
 
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 
-const float G_SCATTERING = 0.45f;
-const float PI = 3.141f;
+//const float G_SCATTERING = 0.45f;
+//const float PI = 3.141f;
 
 
 /*
@@ -166,41 +160,8 @@ void main()
 
 
 
-float pcf(vec3 normal, vec3 lightDir)
-{
-	/*
-	// transform from clip space to Normailzed Device Coordinate
-	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
-
-	// since the range of NDC is [-1, 1], range of depth buffer is [0, 1]
-	// transform projCoord to range [0, 1]
-	projCoord = projCoord * 0.5f + 0.5f;
-
-	// if outside the shadow map, no shadow will be rendered
-	if (projCoord.z > 1) return 0;
-
-	// bias required to fix shadow acne
-	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
-
-
-	float shadow = 0.0;
-
-	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
-	for (int x = -2; x <= 2; ++x)
-	{
-		for (int y = -2; y <= 2; ++y)
-		{
-			float depthInBuffer = texture(depthMap, projCoord.xy + vec2(x, y) * texelSize).r;
-			shadow += projCoord.z - bias > depthInBuffer ? 1.0f : 0.0f;
-		}
-	}
-
-	//return shadow;
-	return shadow / 9.0;
-
-	*/
-
-	
+float calculateShadow(vec3 normal, vec3 lightDir)
+{	
 	vec3 projCoord = fs_in.lightSpaceFragPos.xyz / fs_in.lightSpaceFragPos.w;
 	// transform to [0,1] range
 	projCoord = projCoord * 0.5 + 0.5;
@@ -219,7 +180,6 @@ float pcf(vec3 normal, vec3 lightDir)
 	float shadow = (currentDepth - bias) > closestDepth ? 1.0 : 0.0;
 
 	return shadow;
-	
 }
 
 
@@ -243,7 +203,7 @@ vec3 BlinnPhong(vec3 normal, vec3 fragPos, vec3 lightPos, vec3 lightColor, vec3 
 
 	vec3 specular = spec * lightColor;
 
-	float shadow = 1 - pcf(normal, lightDir);
+	float shadow = 1 - calculateShadow(normal, lightDir);
 
 
 	// shadow is not completely dark, ambient should lit shadow area

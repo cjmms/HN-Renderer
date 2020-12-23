@@ -29,6 +29,7 @@ Volumetric_Lighting::Volumetric_Lighting()
     initCube();
     initFloor();
     initDebugQuad();
+    initRayMarchingFBO();
     initDepthBufferFBO();
     initVolumetricLightingFBO();
     createTexture(cubeTextureID, "res/Textures/container.jpg", JPG);
@@ -79,8 +80,8 @@ void Volumetric_Lighting::render(Shader& sceneShader)
     sceneShader.setMat4("lightProjection", lightProjection);
     sceneShader.setMat4("lightView", lightView);
 
-    sceneShader.setInt("enableDithering", enableDithering);
-    sceneShader.setInt("NB_SAMPLES", NB_SAMPLES);
+    //sceneShader.setInt("enableDithering", enableDithering);
+    //sceneShader.setInt("NB_SAMPLES", NB_SAMPLES);
 
     sceneShader.setInt("depthMap", 1);
     glActiveTexture(GL_TEXTURE1);
@@ -91,7 +92,30 @@ void Volumetric_Lighting::render(Shader& sceneShader)
 }
 
 
+void Volumetric_Lighting::initRayMarchingFBO()
+{
+    // generate FBO
+    glGenFramebuffers(1, &RayMarchingFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, RayMarchingFBO);
 
+    // generate FBO color attachment, bind to current FBO
+    RayMarchingColorAtt = Texture(1024, 1024).getTextureID();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RayMarchingColorAtt, 0);
+
+    // not gonna use this RBO again, make it local
+    unsigned int RBO;
+    // generate FBO depth, stencil attachment(24 bits, 8 bits), bind to current FBO
+    glGenRenderbuffers(1, &RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1024, 1024);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+
+    // check if framebuffer created successfullly
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
 void Volumetric_Lighting::initVolumetricLightingFBO()
 {
@@ -339,6 +363,23 @@ void Volumetric_Lighting::BilateralBlur(Shader& shader)
 }
 
 
+void Volumetric_Lighting::RayMarching(Shader& shader)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, RayMarchingFBO);
+    glViewport(0, 0, 1024, 1024);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    shader.Bind();
+
+    shader.setInt("map", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, VolumetricLightcolorAtt);
+
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
 
 
 void Volumetric_Lighting::drawScene(Shader& shader)
@@ -490,6 +531,7 @@ int runVolumetricLighting()
     Shader sceneShader("res/Shaders/Volumetric_Lighting/scene.shader");
     Shader GaussianBlurShader("res/Shaders/Volumetric_Lighting/GaussianBlur.shader");
     Shader BilateralBlurShader("res/Shaders/Volumetric_Lighting/BilateralBlur.shader");
+    Shader RayMarchingShader("res/Shaders/Volumetric_Lighting/RayMarching.shader");
 
 
     Volumetric_Lighting renderer;
@@ -550,9 +592,12 @@ int runVolumetricLighting()
 
         renderer.fillDepthBuffer(depthBufferShader);
         renderer.render( sceneShader);
+        renderer.RayMarching(RayMarchingShader);
+
+
 
         // no Blur
-        if (state == NO_BLUR) renderer.drawDebugQuad(debugQuadShader, renderer.VolumetricLightcolorAtt);
+        if (state == NO_BLUR) renderer.drawDebugQuad(debugQuadShader, renderer.RayMarchingColorAtt);
 
         // Gaussian Blur
         if (state == GAUSSIAN) renderer.GaussianBlur(GaussianBlurShader);
