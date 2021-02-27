@@ -37,3 +37,4 @@
 
 
 #include "Volumetric_Lighting/Volumetric_Lighting.h"
+#include "ComputeShaderDemo/ComputeShaderDemo.h"

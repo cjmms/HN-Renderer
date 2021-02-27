@@ -61,7 +61,9 @@ int main(void)
     //runBloom();               // press E, space
     //runDeferredShading();
 
-    runVolumetricLighting();
+    //runVolumetricLighting();
+    runComputeShaderDemo();
+    
 }
 
 
