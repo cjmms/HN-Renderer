@@ -18,6 +18,10 @@ class ComputeShaderDemo
 {
 
 public:
+	GLuint tex_output;
+	GLuint ray_program;
+	unsigned int VAO, VBO;
+
 	ComputeShaderDemo();
 	void render(glm::mat4 view, glm::mat4 projection, Shader& shader, Texture& texture);
 };

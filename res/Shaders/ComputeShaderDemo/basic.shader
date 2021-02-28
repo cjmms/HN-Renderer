@@ -23,10 +23,11 @@ void main()
 in vec2 textureCoord;
 out vec4 FragColor;
 
+uniform sampler2D texture_wood;
 
 
 void main()
 {
-	FragColor = vec4(0.8f, 0.5f, 0.7f, 1.0f);
-	//FragColor = mix(texture(hanon, textureCoord), texture(container, textureCoord), 0.2f);
+	//FragColor = vec4(0.8f, 0.5f, 0.7f, 1.0f);
+	FragColor = texture(texture_wood, textureCoord);
 }

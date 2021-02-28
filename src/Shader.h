@@ -15,6 +15,7 @@ struct ShaderProgramSource
     std::string VertexSource;
     std::string FragmentSource;
 	std::string GeometrySource;
+	std::string ComputeSource;
 };
 
 
@@ -64,5 +65,6 @@ private:
 	// return shader ID
 	unsigned int createShader(	const std::string& vertexShader, 
 								const std::string& fragmentShader, 
-								const std::string& geometryShader	);
+								const std::string& geometryShader,
+								const std::string& computeShader);
 };
