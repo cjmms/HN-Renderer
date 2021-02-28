@@ -97,17 +97,6 @@ unsigned int Shader::createShader(  const std::string& vertexShader,
         glAttachShader(shaderProgram, computeShaderID);
     }
 
-    if (hasComputeShader) {
-        int rvalue;
-        glGetShaderiv(computeShaderID, GL_COMPILE_STATUS, &rvalue);
-        fprintf(stderr, "Error in compiling the compute shader\n");
-        GLchar log[10240];
-        GLsizei length;
-        glGetShaderInfoLog(computeShaderID, 10239, NULL, log);
-        std::cout << "ERROR: Compute Shader Compilation Error." << log << std::endl;
-        exit(40);
-    }
-
     // TODO: catch exceptions
     glLinkProgram(shaderProgram);
 

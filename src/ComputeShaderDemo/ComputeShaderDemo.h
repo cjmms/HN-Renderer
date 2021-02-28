@@ -24,6 +24,7 @@ public:
 
 	ComputeShaderDemo();
 	void render(glm::mat4 view, glm::mat4 projection, Shader& shader, Texture& texture);
+	void renderTexture();
 };
 
 
