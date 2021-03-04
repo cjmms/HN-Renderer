@@ -20,6 +20,8 @@ class ParticleSystem
 {
 
 public:
+	ParticleSystem();
+
 	void Init();
 	void Draw();
 	// destory particle system
@@ -27,7 +29,7 @@ public:
 	void Print();
 
 private:
-	unsigned int VBO;
+	unsigned int VAO;
 	unsigned int SSBO;
 
 	Shader RenderShader;

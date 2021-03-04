@@ -54,17 +54,6 @@ void ComputeShaderDemo::renderTexture()
         NULL);
     glBindImageTexture(0, tex_output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
-    /*
-    int work_grp_cnt[3];
-
-    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &work_grp_cnt[0]);
-    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &work_grp_cnt[1]);
-    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &work_grp_cnt[2]);
-
-    printf("max global (total) work group counts x:%i y:%i z:%i\n",
-        work_grp_cnt[0], work_grp_cnt[1], work_grp_cnt[2]);
-        */
-
 
     Shader cs("res/Shaders/ComputeShaderDemo/generateTexture.shader");
 
