@@ -1,6 +1,7 @@
 #include "ComputeShaderDemo.h"
 
 ComputeShaderDemo::ComputeShaderDemo()
+    :shader("res/Shaders/ComputeShaderDemo/basic.shader")
 { 
     float planeVertices[] = {
         // positions            // normals         // texcoords
@@ -80,7 +81,7 @@ void ComputeShaderDemo::renderTexture()
 
 
 
-void ComputeShaderDemo::render(glm::mat4 view, glm::mat4 projection, Shader& shader, Texture& texture)
+void ComputeShaderDemo::render(glm::mat4 view, glm::mat4 projection)
 {
     shader.Bind();
     glm::mat4 model(1.0);
@@ -129,13 +130,6 @@ int runComputeShaderDemo()
     glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_DEPTH_TEST);
 
-    Shader shader("res/Shaders/ComputeShaderDemo/basic.shader");
-    shader.Bind();
-
-    Texture texture("res/Textures/wood.jpg", JPG);
-    shader.setInt("texture_wood", 0);
-
-
     ComputeShaderDemo renderer;
 
     // Loop until the user closes the window 
@@ -152,7 +146,7 @@ int runComputeShaderDemo()
         glm::mat4 projection = camera.getProjectionMatrix();
         glm::mat4 view = camera.getViewMatrix();
 
-        renderer.render(view, projection, shader, texture);
+        renderer.render(view, projection);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -22,8 +22,10 @@ public:
 	GLuint ray_program;
 	unsigned int VAO, VBO;
 
+	Shader shader;
+
 	ComputeShaderDemo();
-	void render(glm::mat4 view, glm::mat4 projection, Shader& shader, Texture& texture);
+	void render(glm::mat4 view, glm::mat4 projection);
 	void renderTexture();
 };
 
