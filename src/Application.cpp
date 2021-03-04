@@ -62,8 +62,8 @@ int main(void)
     //runDeferredShading();
 
     //runVolumetricLighting();
-    runComputeShaderDemo();
-    
+    //runComputeShaderDemo();
+    runPariticleSimulation();
 }
 
 

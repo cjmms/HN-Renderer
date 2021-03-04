@@ -11,9 +11,6 @@
 extern Camera camera;
 
 
-
-
-
 class ComputeShaderDemo
 {
 

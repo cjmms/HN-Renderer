@@ -20,11 +20,10 @@ class ParticleSystem
 {
 
 public:
-	ParticleSystem();
+	ParticleSystem(int num_particles = 10);
 
 	void Init();
 	void Draw();
-	// destory particle system
 	void Destory();
 	void Print();
 

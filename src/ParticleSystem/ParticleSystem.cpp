@@ -4,6 +4,17 @@
 #include <iostream>
 
 
+
+ParticleSystem::ParticleSystem(int num_particles = 10)
+	:Particles()
+{
+	for (int i = 0; i < num_particles; ++i) 
+		Particles.push_back(Particle());
+	
+}
+
+
+
 void ParticleSystem::Init()
 {
 	glGenVertexArrays(1, &VAO);
@@ -46,6 +57,7 @@ void ParticleSystem::Init()
 }
 
 
+
 void ParticleSystem::Draw()
 {
 	// Invoke Compute Shader and wait for all memory access to SSBO to safely finish
@@ -73,6 +85,7 @@ void ParticleSystem::Destory()
 	glDeleteBuffers(1, &SSBO);
 	glDeleteVertexArrays(1, &VAO);
 }
+
 
 
 void ParticleSystem::Print()
