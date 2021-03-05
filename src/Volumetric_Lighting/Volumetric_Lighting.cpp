@@ -1,3 +1,5 @@
+/*
+
 #include "Volumetric_Lighting.h"
 
 #include "../imgui/imgui.h"
@@ -623,3 +625,5 @@ int runVolumetricLighting()
     glfwTerminate();
     return 0;
 }
+
+*/

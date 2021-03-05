@@ -2,11 +2,14 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <cmath>
 
 
+static time_point<steady_clock> start = steady_clock::now();
 
-ParticleSystem::ParticleSystem(int num_particles = 10)
-	:Particles()
+ParticleSystem::ParticleSystem(int num_particles)
+	:Particles(), ComputeShader("res/Shaders/ParticleSystem/ParticleSystem.cs.shader"),
+	RenderShader("res/Shaders/ParticleSystem/Render.shader")
 {
 	for (int i = 0; i < num_particles; ++i) 
 		Particles.push_back(Particle());
@@ -19,6 +22,12 @@ void ParticleSystem::Init()
 {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+
+	{ // Particle SSBO
+		glGenBuffers(1, &SSBO);
+		glBindBuffer(GL_ARRAY_BUFFER, SSBO);
+		glBufferData(GL_ARRAY_BUFFER, Particles.size() * sizeof(Particle), &Particles[0], GL_STREAM_DRAW);
+	}
 
 	{ // Setup Vertex Attributes
 		glEnableVertexAttribArray(0);
@@ -37,45 +46,45 @@ void ParticleSystem::Init()
 		glVertexAttribDivisor(3, 1);
 	}
 
-	{ // Particle SSBO
-		glGenBuffers(1, &SSBO);
-		glBindBuffer(GL_ARRAY_BUFFER, SSBO);
-		glBufferData(GL_ARRAY_BUFFER, Particles.size() * sizeof(Particle), &Particles[0], GL_STREAM_DRAW);
-	}
-
 	glBindVertexArray(0);
 
 
-	// TODO
-	// shader uniforms setup
-
 	// compute shader unifroms
-
+	ComputeShader.Bind();
+	float time = duration_cast<duration<float>>(steady_clock::now() - start).count();
+	ComputeShader.setFloat("time", time);
+	ComputeShader.setVec2("resolution", glm::vec2(1200, 1000));	// pass screen resolution
+	ComputeShader.setVec2("attractor_radii", glm::vec2(400, 200));
 
 	// render shader uniforms
-
+	RenderShader.Bind();
+	RenderShader.setInt("vertex_count", Particles.size());
+	RenderShader.setMat4("projection", glm::ortho(0.0f, (float)1200, (float)1000, 0.0f, -1.0f, 1.0f));
 }
 
 
 
 void ParticleSystem::Draw()
 {
+	/*
 	// Invoke Compute Shader and wait for all memory access to SSBO to safely finish
-	ComputeShader.Bind();
+	ComputeShader.Bind();	
 
-	// pass elapsed time as uniform
-	// TODO
-	ComputeShader.setFloat("time", );
+	float time = duration_cast<duration<float>>(steady_clock::now() - start).count();
+	
+	ComputeShader.setFloat("time", time);
+
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
 	glDispatchCompute((Particles.size() / 128) + 1, 1, 1);	// group size: 128
 	glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
-	
+	*/
 
 	// Render the results
 	RenderShader.Bind();
 	glBindVertexArray(VAO);
 	glDrawArraysInstanced(GL_POINTS, 0, 1, Particles.size());
 	glBindVertexArray(0);
+	
 }
 
 
@@ -109,4 +118,13 @@ void ParticleSystem::Print()
 	ss << "Number of Particles: " << Particles.size() << std::endl;
 
 	std::cout << ss.str() << std::endl;
+}
+
+
+
+float gen_random(float min, float max) {
+	static std::random_device rd;
+	static std::mt19937 mt(rd());
+	std::uniform_real_distribution<float> dist(min, max);
+	return dist(mt);
 }

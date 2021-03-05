@@ -36,6 +36,6 @@
 #include "Advanced_Lighting/DeferredShading/DeferredShading.h"
 
 
-#include "Volumetric_Lighting/Volumetric_Lighting.h"
+//#include "Volumetric_Lighting/Volumetric_Lighting.h"
 #include "ComputeShaderDemo/ComputeShaderDemo.h"
 #include "ParticleSystem/ParticleSimulation.h"

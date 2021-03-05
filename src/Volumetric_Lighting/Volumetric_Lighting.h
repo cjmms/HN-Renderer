@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include "../Shader.h"
@@ -58,3 +59,5 @@ private:
 };
 
 int runVolumetricLighting();
+
+*/
