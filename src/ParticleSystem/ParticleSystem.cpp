@@ -66,7 +66,7 @@ void ParticleSystem::Init()
 
 void ParticleSystem::Draw()
 {
-	/*
+	
 	// Invoke Compute Shader and wait for all memory access to SSBO to safely finish
 	ComputeShader.Bind();	
 
@@ -77,7 +77,7 @@ void ParticleSystem::Draw()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
 	glDispatchCompute((Particles.size() / 128) + 1, 1, 1);	// group size: 128
 	glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
-	*/
+	
 
 	// Render the results
 	RenderShader.Bind();

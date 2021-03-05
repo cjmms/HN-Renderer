@@ -12,8 +12,8 @@ out float vertex_speed;
 uniform float vertex_count;
 
 void main() {
-	float depth_bias = ((2.0 / vertex_count) * gl_VertexID) - 1.0;
-	gl_Position = vec4(position, depth_bias, 1.0);
+	//float depth_bias = ((2.0 / vertex_count) * gl_VertexID) - 1.0;
+	//gl_Position = vec4(position, depth_bias, 1.0);
 	gl_Position = vec4(position, 0.0f, 1.0);
 
 	vertex_scale = scale;
@@ -81,12 +81,12 @@ out vec4 FragColor;
 
 void main() {
 	float d = distance(geom_uv, vec2(0.5, 0.5));
-	float c = geom_speed * 0.3;
+	float c = geom_speed * 300;
 
 	vec4 color = vec4(-0.1 + c, 0.3, 1.4 - c, 0.1);
 	color.a *= pow((1.0 - (2.0 * d)), 0.5);
 	
-	color = vec4(1.0, 0.0, 0.0, 1.0);
+	//color = vec4(1.0, 0.0, 0.0, 1.0);
 
 	FragColor = color;
 };

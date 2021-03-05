@@ -20,7 +20,7 @@ struct Particle
 		scale(gen_random(0.1f, 1.0f)),
 		mass(scale)
 	{
-		std::cout << "Particle position: " << position.x << ", " << position.y << std::endl;
+		//std::cout << "Particle position: " << position.x << ", " << position.y << std::endl;
 	}
 
 	glm::vec2 position;
