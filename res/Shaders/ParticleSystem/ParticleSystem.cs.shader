@@ -19,7 +19,7 @@ uniform vec2 resolution;
 uniform vec2 attractor_radii;
 
 
-
+// not Law of Universal Gravitation
 vec2 calculate_gravity(uint gid, float attractor_mass, vec2 attractor_location) {
 	float d = distance(attractor_location, particles[gid].position);
 	float m = (attractor_mass * particles[gid].mass) / d;
@@ -38,8 +38,8 @@ void main() {
 	particles[gid].velocity += g1 * particles[gid].mass;
 
 	// Attractor #2
-	//vec2 g2 = calculate_gravity(gid, 0.0001, p + (0.3*a));
-	//particles[gid].velocity += g2 * particles[gid].mass;
+	vec2 g2 = calculate_gravity(gid, 0.0001, p + (0.3*a));
+	particles[gid].velocity += g2 * particles[gid].mass;
 
 	// Update position from velocity
 	particles[gid].position += particles[gid].velocity;

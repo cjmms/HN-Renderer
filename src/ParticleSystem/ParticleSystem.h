@@ -15,18 +15,16 @@ float gen_random(float min, float max);
 struct Particle
 {
 	Particle()
-		:position(gen_random(-1.0, 1.0), gen_random(-1.0, 1.0)),
+		:position(gen_random(0.0, 1200.0), gen_random(0.0, 1000.0)),
 		velocity(0.0f),
-		scale(gen_random(0.1f, 1.0f)),
+		scale(gen_random(1.0f, 16.0f)),
 		mass(scale)
-	{
-		//std::cout << "Particle position: " << position.x << ", " << position.y << std::endl;
-	}
+	{}
 
 	glm::vec2 position;
 	glm::vec2 velocity;
-	float mass;
-	float scale;		
+	float scale;
+	float mass;		
 };
 
 

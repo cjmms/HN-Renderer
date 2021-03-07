@@ -59,7 +59,12 @@ void ParticleSystem::Init()
 	// render shader uniforms
 	RenderShader.Bind();
 	RenderShader.setInt("vertex_count", Particles.size());
-	RenderShader.setMat4("projection", glm::ortho(0.0f, (float)1200, (float)1000, 0.0f, -1.0f, 1.0f));
+	//RenderShader.setMat4("projection", glm::ortho(0.0f, (float)1200, (float)1000, 0.0f, -1.0f, 1.0f));
+	RenderShader.setMat4("projection", glm::ortho(0.0f, 1200.0f, 0.0f, 1000.0f, 0.1f, 10.0f));
+
+	glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 1.0), glm::vec3(0, 0, 0), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 projection = glm::ortho(0.0f, 1200.0f, 0.0f, 1000.0f, 0.0f, 10.0f);
+	RenderShader.setMat4("projection", projection * view);
 }
 
 
@@ -71,7 +76,6 @@ void ParticleSystem::Draw()
 	ComputeShader.Bind();	
 
 	float time = duration_cast<duration<float>>(steady_clock::now() - start).count();
-	
 	ComputeShader.setFloat("time", time);
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);

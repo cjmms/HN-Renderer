@@ -44,7 +44,7 @@ int runPariticleSimulation()
     glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_DEPTH_TEST);
 
-    ParticleSystem particleSystem(100000);
+    ParticleSystem particleSystem(4000000);
     particleSystem.Init();
     particleSystem.Print();
 
