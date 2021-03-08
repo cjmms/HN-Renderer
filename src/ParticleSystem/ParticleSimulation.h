@@ -11,6 +11,18 @@
 extern Camera camera;
 
 
+class ParticleSimulator
+{
+    
+
+public:
+    ParticleSystem CreateParticleEffect(glm::vec2 dir, glm::vec2 mag);
+
+
+
+};
+
+
 
 int runPariticleSimulation()
 {
@@ -44,7 +56,7 @@ int runPariticleSimulation()
     glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_DEPTH_TEST);
 
-    ParticleSystem particleSystem(4000000);
+    ParticleSystem particleSystem(100000);
     particleSystem.Init();
     particleSystem.Print();
 

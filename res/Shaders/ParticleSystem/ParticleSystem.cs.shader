@@ -35,11 +35,11 @@ void main() {
 
 	// Attractor #1
 	vec2 g1 = calculate_gravity(gid, 0.0001, p + (0.6*a));
-	particles[gid].velocity += g1 * particles[gid].mass;
+	//particles[gid].velocity += g1 * particles[gid].mass;
 
 	// Attractor #2
-	vec2 g2 = calculate_gravity(gid, 0.0001, p + (0.3*a));
-	particles[gid].velocity += g2 * particles[gid].mass;
+	vec2 g2 = calculate_gravity(gid, 0.0001, p + (0.1*a));
+	//particles[gid].velocity += g2 * particles[gid].mass;
 
 	// Update position from velocity
 	particles[gid].position += particles[gid].velocity;

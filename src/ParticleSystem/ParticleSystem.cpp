@@ -5,16 +5,10 @@
 #include <cmath>
 
 
+
 static time_point<steady_clock> start = steady_clock::now();
 
-ParticleSystem::ParticleSystem(int num_particles)
-	:Particles(), ComputeShader("res/Shaders/ParticleSystem/ParticleSystem.cs.shader"),
-	RenderShader("res/Shaders/ParticleSystem/Render.shader")
-{
-	for (int i = 0; i < num_particles; ++i) 
-		Particles.push_back(Particle());
-	
-}
+
 
 
 
@@ -54,7 +48,7 @@ void ParticleSystem::Init()
 	float time = duration_cast<duration<float>>(steady_clock::now() - start).count();
 	ComputeShader.setFloat("time", time);
 	ComputeShader.setVec2("resolution", glm::vec2(1200, 1000));	// pass screen resolution
-	ComputeShader.setVec2("attractor_radii", glm::vec2(400, 200));
+	ComputeShader.setVec2("attractor_radii", glm::vec2(300, 600));
 
 	// render shader uniforms
 	RenderShader.Bind();
@@ -131,4 +125,44 @@ float gen_random(float min, float max) {
 	static std::mt19937 mt(rd());
 	std::uniform_real_distribution<float> dist(min, max);
 	return dist(mt);
+}
+
+
+/*
+Particle::Particle(glm::vec2 position, glm::vec2 velocity)
+	:position(gen_random(0.0, 300.0), gen_random(0.0, 300.0)),
+	velocity(0.0, 0.7),
+	scale(gen_random(1.0f, 16.0f)),
+	mass(scale)
+{
+	float angle = gen_random(0, 2.0f * 3.1415f);	// random angle from 0 to 2 PI
+	glm::vec2 dir(cosf(angle), sinf(angle));
+	float magnitude = 0.6f;
+	velocity = glm::normalize(dir) * magnitude;
+
+}
+*/
+
+Particle::Particle(glm::vec2 position, glm::vec2 velocity)
+	:position(position),
+	velocity(velocity),
+	scale(gen_random(1.0f, 16.0f)),
+	mass(scale)
+{
+//	float angle = gen_random(0, 2.0f * 3.1415f);	// random angle from 0 to 2 PI
+//	glm::vec2 dir(cosf(angle), sinf(angle));
+//	float magnitude = 0.6f;
+//	velocity = glm::normalize(dir) * magnitude;
+
+}
+
+
+
+ParticleSystem::ParticleSystem(glm::vec2 pos, glm::vec2 velocity, int num_particles = 10)
+	:Particles(), ComputeShader("res/Shaders/ParticleSystem/ParticleSystem.cs.shader"),
+	RenderShader("res/Shaders/ParticleSystem/Render.shader")
+
+{
+	for (int i = 0; i < num_particles; ++i)
+		Particles.push_back(Particle(pos, velocity));
 }

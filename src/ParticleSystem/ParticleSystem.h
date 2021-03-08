@@ -14,12 +14,7 @@ float gen_random(float min, float max);
 
 struct Particle
 {
-	Particle()
-		:position(gen_random(0.0, 1200.0), gen_random(0.0, 1000.0)),
-		velocity(0.0f),
-		scale(gen_random(1.0f, 16.0f)),
-		mass(scale)
-	{}
+	Particle(glm::vec2 position, glm::vec2 velocity);
 
 	glm::vec2 position;
 	glm::vec2 velocity;
@@ -34,7 +29,8 @@ class ParticleSystem
 {
 
 public:
-	ParticleSystem(int num_particles = 10);
+	//ParticleSystem(int num_particles = 10);
+	ParticleSystem(glm::vec2 pos, glm::vec2 velocity, int num_particles = 10);
 
 	void Init();
 	void Draw();
