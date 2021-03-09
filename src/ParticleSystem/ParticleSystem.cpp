@@ -135,8 +135,6 @@ Particle::Particle()
 	scale(gen_random(1.0f, 16.0f)),
 	mass(scale)
 {
-
-
 }
 
 
@@ -174,18 +172,40 @@ glm::vec2 randomPointInSquare(glm::vec2 center, float length)
 
 
 
-ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, glm::vec2 velocity, int num_particles)
+glm::vec2 GenRandomCircSectorDir(float angle1, float angle2)
+{
+	float angle = gen_random(angle1, angle2);	// random angle from 0 to 2 PI
+	return glm::vec2(cosf(angle), sinf(angle));
+}
+
+
+glm::vec2 GenRandomCircDir()
+{
+	return GenRandomCircSectorDir(0.0f, 2.0f * 3.1415f);
+}
+
+
+
+
+
+ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, int num_particles)
 	:Particles(), ComputeShader("res/Shaders/ParticleSystem/ParticleSystem.cs.shader"),
 	RenderShader("res/Shaders/ParticleSystem/Render.shader")
 
 {
 	for (int i = 0; i < num_particles; ++i) {
 		glm::vec2 pos(0.0f);
+		glm::vec2 velocity(0.0f);
 
 		if (spawnConfig.mode == SQUARE)
 			pos = randomPointInSquare(spawnConfig.areaCenter, spawnConfig.length);
 		else if (spawnConfig.mode == CIRCLE)
 			pos = randomPointInCircle(spawnConfig.areaCenter, spawnConfig.length);
+
+		if (moveConfig.mode == LINEAR)
+			velocity = moveConfig.direction * moveConfig.magnitude;
+		if (moveConfig.mode == CIRCULAR)
+			velocity = GenRandomCircDir() * moveConfig.magnitude;
 
 		Particles.push_back(Particle(pos, velocity));
 	}

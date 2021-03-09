@@ -13,7 +13,7 @@ ParticleSystem* ParticleSimulator::CreateParticleEffect(glm::vec2 dir, float mag
 }
 
 
-
+/*
 glm::vec2 ParticleSimulator::GenRandomCircSectorDir(float angle1, float angle2)
 {
 	float angle = gen_random(angle1, angle2);	// random angle from 0 to 2 PI
@@ -26,7 +26,7 @@ glm::vec2 ParticleSimulator::GenRandomCircDir()
 	return GenRandomCircSectorDir(0.0f, 2.0f * 3.1415f);
 }
 
-
+*/
 
 
 
@@ -63,13 +63,14 @@ int runPariticleSimulation()
     glEnable(GL_DEPTH_TEST);
 
     ParticleSimulator simulator;
-    glm::vec2 dir = simulator.GenRandomCircDir();
+  //  glm::vec2 dir = simulator.GenRandomCircDir();
    // ParticleSystem *particleSystem1 = simulator.CreateParticleEffect(dir, 0.6f, 10000);
 
 
-    SpawnConfig sCon(glm::vec2(500.0f), 200.0f, CIRCLE);
+    SpawnConfig sCon(glm::vec2(500.0f), 200.0f, AREA_MODE::CIRCLE);
+    MoveConfig mCon(glm::vec2(0.0, 1.0), 0.7f, DIR_MODE::CIRCULAR);
 
-    ParticleSystem particleSystem(sCon, glm::vec2(0.0, 0.6), 10000);
+    ParticleSystem particleSystem(sCon, mCon, 10000);
     
 
     particleSystem.Init();

@@ -29,6 +29,12 @@ enum AREA_MODE
 	SQUARE
 };
 
+enum DIR_MODE
+{
+	CIRCULAR,
+	LINEAR
+};
+
 struct SpawnConfig
 {
 	SpawnConfig(glm::vec2 center, float length, AREA_MODE mode)
@@ -40,15 +46,25 @@ struct SpawnConfig
 };
 
 
+struct MoveConfig
+{
+	MoveConfig(glm::vec2 dir, float magnitude, DIR_MODE mode)
+		:direction(glm::normalize(dir)), magnitude(magnitude), mode(mode) {}
+
+	glm::vec2 direction;
+	float magnitude;
+	DIR_MODE mode;
+};
+
+
+
+
 class ParticleSystem
 {
 
 public:
-	
-
-
 	ParticleSystem(int num_particles = 10);
-	ParticleSystem(SpawnConfig spawnConfig, glm::vec2 velocity, int num_particles = 10);
+	ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, int num_particles = 10);
 
 	void Init();
 	void Draw();

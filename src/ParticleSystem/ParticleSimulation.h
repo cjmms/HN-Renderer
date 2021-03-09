@@ -20,8 +20,8 @@ public:
     ParticleSystem* CreateParticleEffect(glm::vec2 dir, float mag, int num);
 
 
-    glm::vec2 GenRandomCircSectorDir(float angle1, float angle2);
-    glm::vec2 GenRandomCircDir();
+   // glm::vec2 GenRandomCircSectorDir(float angle1, float angle2);
+   // glm::vec2 GenRandomCircDir();
 };
 
  
