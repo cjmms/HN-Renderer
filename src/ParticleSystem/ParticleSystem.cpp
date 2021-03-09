@@ -134,8 +134,7 @@ Particle::Particle()
 	velocity(0.0, 0.7),
 	scale(gen_random(1.0f, 16.0f)),
 	mass(scale)
-{
-}
+{}
 
 
 Particle::Particle(glm::vec2 position, glm::vec2 velocity)
@@ -143,13 +142,7 @@ Particle::Particle(glm::vec2 position, glm::vec2 velocity)
 	velocity(velocity),
 	scale(gen_random(1.0f, 16.0f)),
 	mass(scale)
-{
-//	float angle = gen_random(0, 2.0f * 3.1415f);	// random angle from 0 to 2 PI
-//	glm::vec2 dir(cosf(angle), sinf(angle));
-//	float magnitude = 0.6f;
-//	velocity = glm::normalize(dir) * magnitude;
-
-}
+{}
 
 
 glm::vec2 randomPointInCircle(glm::vec2 center, float radius)
@@ -184,7 +177,12 @@ glm::vec2 GenRandomCircDir()
 	return GenRandomCircSectorDir(0.0f, 2.0f * 3.1415f);
 }
 
-
+float CalVecAngle(glm::vec2 vec)
+{
+	float angle = atan2f(vec[1], vec[0]);;
+	//if (angle < 0) { angle += 2 * 3.1415f; }
+	return angle;
+}
 
 
 
@@ -204,8 +202,16 @@ ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, i
 
 		if (moveConfig.mode == LINEAR)
 			velocity = moveConfig.direction * moveConfig.magnitude;
-		if (moveConfig.mode == CIRCULAR)
+		else if (moveConfig.mode == CIRCULAR)
 			velocity = GenRandomCircDir() * moveConfig.magnitude;
+		else if (moveConfig.mode == CIRCULAR_SECTOR)
+		{
+			float angle = CalVecAngle(moveConfig.direction);
+
+			float minAngle = angle - moveConfig.angle / 2.0f;
+			float maxAngle = angle + moveConfig.angle / 2.0f;
+			velocity = GenRandomCircSectorDir(minAngle, maxAngle) * moveConfig.magnitude;
+		}
 
 		Particles.push_back(Particle(pos, velocity));
 	}

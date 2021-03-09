@@ -78,4 +78,7 @@ void main() {
 	vec4 color = vec4(-0.1 + c, 0.3, 1.4 - c, 0.1);	// color base on speed
 
 	FragColor = color;
+
+	// testing 
+	FragColor = vec4(1.0, 0.0, 0.0, 1.0f);
 };

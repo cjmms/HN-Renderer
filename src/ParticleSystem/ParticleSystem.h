@@ -32,7 +32,8 @@ enum AREA_MODE
 enum DIR_MODE
 {
 	CIRCULAR,
-	LINEAR
+	LINEAR,
+	CIRCULAR_SECTOR
 };
 
 struct SpawnConfig
@@ -51,8 +52,13 @@ struct MoveConfig
 	MoveConfig(glm::vec2 dir, float magnitude, DIR_MODE mode)
 		:direction(glm::normalize(dir)), magnitude(magnitude), mode(mode) {}
 
+	// add an offset prevent vec2(0.0, 0.0)
+	MoveConfig(glm::vec2 dir, float angle, float magnitude, DIR_MODE mode)
+		:direction(glm::normalize(dir)), magnitude(magnitude), mode(mode), angle(angle) {}
+
 	glm::vec2 direction;
 	float magnitude;
+	float angle;
 	DIR_MODE mode;
 };
 
