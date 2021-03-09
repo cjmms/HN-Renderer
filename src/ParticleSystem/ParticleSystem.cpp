@@ -128,20 +128,17 @@ float gen_random(float min, float max) {
 }
 
 
-/*
-Particle::Particle(glm::vec2 position, glm::vec2 velocity)
+
+Particle::Particle()
 	:position(gen_random(0.0, 300.0), gen_random(0.0, 300.0)),
 	velocity(0.0, 0.7),
 	scale(gen_random(1.0f, 16.0f)),
 	mass(scale)
 {
-	float angle = gen_random(0, 2.0f * 3.1415f);	// random angle from 0 to 2 PI
-	glm::vec2 dir(cosf(angle), sinf(angle));
-	float magnitude = 0.6f;
-	velocity = glm::normalize(dir) * magnitude;
+
 
 }
-*/
+
 
 Particle::Particle(glm::vec2 position, glm::vec2 velocity)
 	:position(position),
@@ -157,12 +154,49 @@ Particle::Particle(glm::vec2 position, glm::vec2 velocity)
 }
 
 
+glm::vec2 randomPointInCircle(glm::vec2 center, float radius)
+{
+	float r = radius * sqrt(gen_random(0, 1));
+	float theta = gen_random(0, 1) * 2 * 3.1415f;
 
-ParticleSystem::ParticleSystem(glm::vec2 pos, glm::vec2 velocity, int num_particles = 10)
+	float x = center[0] + r * cosf(theta);
+	float y = center[1] + r * sinf(theta);
+
+	return glm::vec2(x, y);
+}
+
+glm::vec2 randomPointInSquare(glm::vec2 center, float length)
+{
+	float posX = gen_random(center[0] - length, center[0] + length);
+	float posY = gen_random(center[1] - length, center[1] + length);
+	return glm::vec2(posX, posY);
+}
+
+
+
+ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, glm::vec2 velocity, int num_particles)
+	:Particles(), ComputeShader("res/Shaders/ParticleSystem/ParticleSystem.cs.shader"),
+	RenderShader("res/Shaders/ParticleSystem/Render.shader")
+
+{
+	for (int i = 0; i < num_particles; ++i) {
+		glm::vec2 pos(0.0f);
+
+		if (spawnConfig.mode == SQUARE)
+			pos = randomPointInSquare(spawnConfig.areaCenter, spawnConfig.length);
+		else if (spawnConfig.mode == CIRCLE)
+			pos = randomPointInCircle(spawnConfig.areaCenter, spawnConfig.length);
+
+		Particles.push_back(Particle(pos, velocity));
+	}
+}
+
+
+ParticleSystem::ParticleSystem(int num_particles)
 	:Particles(), ComputeShader("res/Shaders/ParticleSystem/ParticleSystem.cs.shader"),
 	RenderShader("res/Shaders/ParticleSystem/Render.shader")
 
 {
 	for (int i = 0; i < num_particles; ++i)
-		Particles.push_back(Particle(pos, velocity));
+		Particles.push_back(Particle());
 }

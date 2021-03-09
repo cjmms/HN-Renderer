@@ -14,6 +14,7 @@ float gen_random(float min, float max);
 
 struct Particle
 {
+	Particle();
 	Particle(glm::vec2 position, glm::vec2 velocity);
 
 	glm::vec2 position;
@@ -22,15 +23,32 @@ struct Particle
 	float mass;		
 };
 
+enum AREA_MODE
+{
+	CIRCLE,
+	SQUARE
+};
 
+struct SpawnConfig
+{
+	SpawnConfig(glm::vec2 center, float length, AREA_MODE mode)
+		:areaCenter(center), length(length), mode(mode){}
+
+	glm::vec2 areaCenter;
+	float length;
+	AREA_MODE mode;
+};
 
 
 class ParticleSystem
 {
 
 public:
-	//ParticleSystem(int num_particles = 10);
-	ParticleSystem(glm::vec2 pos, glm::vec2 velocity, int num_particles = 10);
+	
+
+
+	ParticleSystem(int num_particles = 10);
+	ParticleSystem(SpawnConfig spawnConfig, glm::vec2 velocity, int num_particles = 10);
 
 	void Init();
 	void Draw();
