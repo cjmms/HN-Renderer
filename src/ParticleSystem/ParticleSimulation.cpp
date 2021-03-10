@@ -65,16 +65,21 @@ int runPariticleSimulation()
     ParticleSimulator simulator;
 
     // spawn in square, move in circular direction
-    //SpawnConfig sCon(glm::vec2(500.0f), 100.0f, AREA_MODE::SQUARE);
-    //MoveConfig mCon(glm::vec2(0.0, 1.0), 0.7f, DIR_MODE::CIRCULAR);
-    //ParticleSystem particleSystem(sCon, mCon, 100000);
+
+    // number of particles, size of particles
+    ParticleConfig pCon(1000, 160);     
+    // spawn center, spawn area size, spawn area shape
+    SpawnConfig sCon(glm::vec2(500.0f), 100.0f, AREA_MODE::SQUARE);   
+    // move direction, speed, move pattern
+    MoveConfig mCon(glm::vec2(0.0, 1.0), 1.7f, DIR_MODE::CIRCULAR);
+    ParticleSystem particleSystem(sCon, mCon, pCon);
 
     // spawn in circle, move in sector dir
-    SpawnConfig sCon(glm::vec2(500.0f), 10.0f, AREA_MODE::CIRCLE);
-    MoveConfig mCon(glm::vec2(0.00001f, 0.0), 3.1415f * 0.3f, 0.7f, DIR_MODE::CIRCULAR_SECTOR);
-    ParticleSystem particleSystem(sCon, mCon, 10000);
+    //SpawnConfig sCon(glm::vec2(500.0f), 10.0f, AREA_MODE::CIRCLE);
+    //MoveConfig mCon(glm::vec2(0.00001f, 0.0), 3.1415f * 0.3f, 0.7f, DIR_MODE::CIRCULAR_SECTOR);
+    //ParticleSystem particleSystem(sCon, mCon, 10000);
     
-    
+    //ParticleSystem particleSystem(1000000);
 
     particleSystem.Init();
     particleSystem.Print();

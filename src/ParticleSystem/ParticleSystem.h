@@ -15,7 +15,7 @@ float gen_random(float min, float max);
 struct Particle
 {
 	Particle();
-	Particle(glm::vec2 position, glm::vec2 velocity);
+	Particle(glm::vec2 position, glm::vec2 velocity, float scale);
 
 	glm::vec2 position;
 	glm::vec2 velocity;
@@ -35,6 +35,17 @@ enum DIR_MODE
 	LINEAR,
 	CIRCULAR_SECTOR
 };
+
+
+struct ParticleConfig
+{
+	ParticleConfig(float numOfParticles, float scale)
+	: numOfParticles(numOfParticles), scale(scale){}
+
+	float numOfParticles;
+	float scale;
+};
+
 
 struct SpawnConfig
 {
@@ -70,7 +81,7 @@ class ParticleSystem
 
 public:
 	ParticleSystem(int num_particles = 10);
-	ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, int num_particles = 10);
+	ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, ParticleConfig paConfig);
 
 	void Init();
 	void Draw();

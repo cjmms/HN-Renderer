@@ -130,17 +130,17 @@ float gen_random(float min, float max) {
 
 
 Particle::Particle()
-	:position(gen_random(0.0, 300.0), gen_random(0.0, 300.0)),
-	velocity(0.0, 0.7),
+	:position(gen_random(0.0, 1200.0), gen_random(0.0, 1000.0)),
+	velocity(0.0, 0.0),
 	scale(gen_random(1.0f, 16.0f)),
 	mass(scale)
 {}
 
 
-Particle::Particle(glm::vec2 position, glm::vec2 velocity)
+Particle::Particle(glm::vec2 position, glm::vec2 velocity, float scale)
 	:position(position),
 	velocity(velocity),
-	scale(gen_random(1.0f, 16.0f)),
+	scale(scale),
 	mass(scale)
 {}
 
@@ -186,12 +186,12 @@ float CalVecAngle(glm::vec2 vec)
 
 
 
-ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, int num_particles)
+ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, ParticleConfig paConfig)
 	:Particles(), ComputeShader("res/Shaders/ParticleSystem/ParticleSystem.cs.shader"),
 	RenderShader("res/Shaders/ParticleSystem/Render.shader")
 
 {
-	for (int i = 0; i < num_particles; ++i) {
+	for (int i = 0; i < paConfig.numOfParticles; ++i) {
 		glm::vec2 pos(0.0f);
 		glm::vec2 velocity(0.0f);
 
@@ -213,7 +213,7 @@ ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, i
 			velocity = GenRandomCircSectorDir(minAngle, maxAngle) * moveConfig.magnitude;
 		}
 
-		Particles.push_back(Particle(pos, velocity));
+		Particles.push_back(Particle(pos, velocity, paConfig.scale));
 	}
 }
 
