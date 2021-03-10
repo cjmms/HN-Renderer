@@ -4,10 +4,12 @@
 layout(location = 0) in vec2 position;
 layout(location = 1) in vec2 velocity;
 layout(location = 2) in float scale;
-layout(location = 3) in float mass;
+layout(location = 3) in float duration;
+
 
 out float vertex_scale;
 out float vertex_speed;
+out float vertex_duration;
 
 uniform float vertex_count;
 
@@ -16,6 +18,7 @@ void main() {
 
 	vertex_scale = scale;
 	vertex_speed = length(velocity);
+	vertex_duration = duration;
 };
 
 
@@ -31,9 +34,11 @@ uniform mat4 projection;
 
 in float vertex_scale[];
 in float vertex_speed[];
+in float vertex_duration[];
 
 out vec2 geom_uv;
 out float geom_speed;
+out float geom_duration;
 
 void main() {
 	const vec4 position = gl_in[0].gl_Position;
@@ -41,7 +46,7 @@ void main() {
 	const float size = vertex_scale[0] * 0.02;
 
 	geom_speed = speed;
-
+	geom_duration = vertex_duration[0];
 
 	geom_uv = vec2(0, 0);
 	gl_Position = projection * (position + vec4(-size, -size, 0.0, 0.0));
@@ -69,6 +74,7 @@ void main() {
 
 in vec2 geom_uv;
 in float geom_speed;
+in float geom_duration;
 
 out vec4 FragColor;
 
@@ -79,6 +85,5 @@ void main() {
 
 	FragColor = color;
 
-	// testing 
-	//FragColor = vec4(1.0, 0.0, 0.0, 1.0f);
+	if (geom_duration < 0.0) { discard; }
 };

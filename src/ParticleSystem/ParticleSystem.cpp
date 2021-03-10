@@ -6,11 +6,6 @@
 
 
 
-static time_point<steady_clock> start = steady_clock::now();
-
-
-
-
 
 void ParticleSystem::Init()
 {
@@ -29,10 +24,12 @@ void ParticleSystem::Init()
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
 
+
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), 0);	// position
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)(sizeof(float) * 2)); // velocity
-		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)(sizeof(float) * 4)); // mass
-		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)(sizeof(float) * 5)); // scale
+		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)(sizeof(float) * 4)); // scale
+		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)(sizeof(float) * 5)); // duration
+
 
 		glVertexAttribDivisor(0, 1);
 		glVertexAttribDivisor(1, 1);
@@ -45,7 +42,10 @@ void ParticleSystem::Init()
 
 	// compute shader unifroms
 	ComputeShader.Bind();
-	float time = duration_cast<duration<float>>(steady_clock::now() - start).count();
+	start = steady_clock::now();
+	lastFrameTime = start;
+
+	float time = duration_cast<duration<float>>(steady_clock::now() - lastFrameTime).count();
 	ComputeShader.setFloat("time", time);
 	ComputeShader.setVec2("resolution", glm::vec2(1200, 1000));	// pass screen resolution
 	ComputeShader.setVec2("attractor_radii", glm::vec2(300, 600));
@@ -53,7 +53,6 @@ void ParticleSystem::Init()
 	// render shader uniforms
 	RenderShader.Bind();
 	RenderShader.setInt("vertex_count", Particles.size());
-	//RenderShader.setMat4("projection", glm::ortho(0.0f, (float)1200, (float)1000, 0.0f, -1.0f, 1.0f));
 	RenderShader.setMat4("projection", glm::ortho(0.0f, 1200.0f, 0.0f, 1000.0f, 0.1f, 10.0f));
 
 	glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 1.0), glm::vec3(0, 0, 0), glm::vec3(0.0, 1.0, 0.0));
@@ -69,8 +68,11 @@ void ParticleSystem::Draw()
 	// Invoke Compute Shader and wait for all memory access to SSBO to safely finish
 	ComputeShader.Bind();	
 
-	float time = duration_cast<duration<float>>(steady_clock::now() - start).count();
-	ComputeShader.setFloat("time", time);
+	time_point<steady_clock> now = steady_clock::now();
+	float time = duration_cast<duration<float>>(now - lastFrameTime).count();
+	//std::cout << "delta time: " << time << std::endl;
+	//std::cout << "total time: " << duration_cast<duration<float>>(now - start).count() << std::endl;
+	ComputeShader.setFloat("time", time);	
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
 	glDispatchCompute((Particles.size() / 128) + 1, 1, 1);	// group size: 128
@@ -83,6 +85,7 @@ void ParticleSystem::Draw()
 	glDrawArraysInstanced(GL_POINTS, 0, 1, Particles.size());
 	glBindVertexArray(0);
 	
+	lastFrameTime = now;
 }
 
 
@@ -133,15 +136,15 @@ Particle::Particle()
 	:position(gen_random(0.0, 1200.0), gen_random(0.0, 1000.0)),
 	velocity(0.0, 0.0),
 	scale(gen_random(1.0f, 16.0f)),
-	mass(scale)
+	duration(scale)
 {}
 
 
-Particle::Particle(glm::vec2 position, glm::vec2 velocity, float scale)
+Particle::Particle(glm::vec2 position, glm::vec2 velocity, float scale, float time)
 	:position(position),
 	velocity(velocity),
 	scale(scale),
-	mass(scale)
+	duration(time)
 {}
 
 
@@ -204,6 +207,10 @@ ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, P
 			velocity = moveConfig.direction * moveConfig.magnitude;
 		else if (moveConfig.mode == CIRCULAR)
 			velocity = GenRandomCircDir() * moveConfig.magnitude;
+
+		// TODO
+		// this mode has some bugs
+		/*
 		else if (moveConfig.mode == CIRCULAR_SECTOR)
 		{
 			float angle = CalVecAngle(moveConfig.direction);
@@ -212,8 +219,10 @@ ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, P
 			float maxAngle = angle + moveConfig.angle / 2.0f;
 			velocity = GenRandomCircSectorDir(minAngle, maxAngle) * moveConfig.magnitude;
 		}
+		*/
 
-		Particles.push_back(Particle(pos, velocity, paConfig.scale));
+		//float time = gen_random(paConfig.time, paConfig.time + 0.5);
+		Particles.push_back(Particle(pos, velocity, paConfig.scale, paConfig.time));
 	}
 }
 

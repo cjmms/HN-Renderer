@@ -15,12 +15,12 @@ float gen_random(float min, float max);
 struct Particle
 {
 	Particle();
-	Particle(glm::vec2 position, glm::vec2 velocity, float scale);
+	Particle(glm::vec2 position, glm::vec2 velocity, float scale, float time);
 
 	glm::vec2 position;
 	glm::vec2 velocity;
 	float scale;
-	float mass;		
+	float duration;	
 };
 
 enum AREA_MODE
@@ -33,17 +33,18 @@ enum DIR_MODE
 {
 	CIRCULAR,
 	LINEAR,
-	CIRCULAR_SECTOR
+	//CIRCULAR_SECTOR		// have bug
 };
 
 
 struct ParticleConfig
 {
-	ParticleConfig(float numOfParticles, float scale)
-	: numOfParticles(numOfParticles), scale(scale){}
+	ParticleConfig(float numOfParticles, float scale, float time)
+	: numOfParticles(numOfParticles), scale(scale), time(time){}
 
 	float numOfParticles;
 	float scale;
+	float time;
 };
 
 
@@ -92,6 +93,9 @@ public:
 private:
 	unsigned int VAO;
 	unsigned int SSBO;
+
+	time_point<steady_clock> lastFrameTime;
+	time_point<steady_clock> start;
 
 	Shader RenderShader;
 	Shader ComputeShader;
