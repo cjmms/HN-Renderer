@@ -39,12 +39,12 @@ enum DIR_MODE
 
 struct ParticleConfig
 {
-	ParticleConfig(float numOfParticles, float scale, float time)
+	ParticleConfig(float numOfParticles, float scale, glm::vec2 time)
 	: numOfParticles(numOfParticles), scale(scale), time(time){}
 
 	float numOfParticles;
 	float scale;
-	float time;
+	glm::vec2 time;
 };
 
 

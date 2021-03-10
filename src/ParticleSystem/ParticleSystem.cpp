@@ -221,8 +221,8 @@ ParticleSystem::ParticleSystem(SpawnConfig spawnConfig, MoveConfig moveConfig, P
 		}
 		*/
 
-		//float time = gen_random(paConfig.time, paConfig.time + 0.5);
-		Particles.push_back(Particle(pos, velocity, paConfig.scale, paConfig.time));
+		float time = gen_random(paConfig.time[0], paConfig.time[1]);
+		Particles.push_back(Particle(pos, velocity, paConfig.scale, time));
 	}
 }
 

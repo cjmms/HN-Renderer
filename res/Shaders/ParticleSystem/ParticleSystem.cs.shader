@@ -45,7 +45,6 @@ void main() {
 	particles[gid].duration -= time;	// time is time passed between 2 frames
 
 	// Update position from velocity
-	//if (particles[gid].duration > 0.0001f) {
 	particles[gid].position += particles[gid].velocity;
 	
 }
