@@ -11,6 +11,7 @@ public:
 
 private:
     GLFWwindow* window;
+    VkInstance instance;
 
 private:
     void initVulkan();
@@ -20,4 +21,8 @@ private:
     void initWindow();
 
     void cleanup();
+
+    void createInstance();
+
+    void checkExtensions();
 };
