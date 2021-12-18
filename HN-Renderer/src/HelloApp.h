@@ -1,28 +1,20 @@
 #pragma once
 
 #include "pch.h"
+#include "window.hpp"
 
-
-
-class HelloTriangleApplication
+namespace HN
 {
-public:
-    void run();
 
-private:
-    GLFWwindow* window;
-    VkInstance instance;
+    class HelloTriangleApplication
+    {
+    public:
+        void run();
 
-private:
-    void initVulkan();
+    private:
+        Window Window{WIDTH, HEIGHT, "hello world"};
 
-    void mainLoop();
+    
+    };
 
-    void initWindow();
-
-    void cleanup();
-
-    void createInstance();
-
-    void checkExtensions();
-};
+}

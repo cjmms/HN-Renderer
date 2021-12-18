@@ -7,7 +7,7 @@
 
 int main()
 {
-    HelloTriangleApplication app;
+    HN::HelloTriangleApplication app;
 
     try
     {
