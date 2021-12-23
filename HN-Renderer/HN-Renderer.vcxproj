@@ -92,6 +92,7 @@
   <ItemGroup>
     <ClInclude Include="src\HelloApp.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\Pipeline.hpp" />
     <ClInclude Include="src\window.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -101,7 +102,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Pipeline.cpp" />
     <ClCompile Include="src\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="compile.bat" />
+    <None Include="src\Shaders\simple_shader.frag" />
+    <None Include="src\Shaders\simple_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
