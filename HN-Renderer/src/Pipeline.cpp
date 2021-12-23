@@ -211,4 +211,16 @@ namespace HN {
 		if (vkCreateShaderModule(device.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS)
 			throw std::runtime_error("Failed to create shader module.");
 	}
+
+
+
+	void Pipeline::Bind(VkCommandBuffer commandBuffer)
+	{
+		// There are 3 pipelines in vulkan
+		// Graphics Pipeline
+		// Compute Pipeline
+		// RayTracing Pipeline
+		// In this case, it's assumed command buffer always binds graphics pipeline
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+	}
 }

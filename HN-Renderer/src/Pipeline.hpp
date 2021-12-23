@@ -34,6 +34,8 @@ namespace HN {
 		Pipeline(const Pipeline&) = delete;	// delete copy constructor
 		void operator=(const Pipeline&) = delete;
 
+		void Bind(VkCommandBuffer commandBuffer);
+
 		// Input Assembler:
 		// Triangle List
 		// ViewPort:
