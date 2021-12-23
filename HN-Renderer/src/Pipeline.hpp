@@ -4,9 +4,19 @@
 
 namespace HN {
 
-	struct PipelineConfigInfo 
-	{
-
+	struct PipelineConfigInfo {
+		VkViewport viewport;
+		VkRect2D scissor;
+		VkPipelineViewportStateCreateInfo viewportInfo;
+		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
+		VkPipelineRasterizationStateCreateInfo rasterizationInfo;
+		VkPipelineMultisampleStateCreateInfo multisampleInfo;
+		VkPipelineColorBlendAttachmentState colorBlendAttachment;
+		VkPipelineColorBlendStateCreateInfo colorBlendInfo;
+		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+		VkPipelineLayout pipelineLayout = nullptr;
+		VkRenderPass renderPass = nullptr;
+		uint32_t subpass = 0;
 	};
 
 
@@ -24,6 +34,12 @@ namespace HN {
 		Pipeline(const Pipeline&) = delete;	// delete copy constructor
 		void operator=(const Pipeline&) = delete;
 
+		// Input Assembler:
+		// Triangle List
+		// ViewPort:
+		// using width, height. Depth[0, 1]
+		// Scissor: 
+		// Render the whole viewport
 		static PipelineConfigInfo DefaultPipelineConfigInfo(uint32_t width, uint32_t height);
 
 	private:
