@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "window.hpp"
 #include "Pipeline.hpp"
+#include "SwapChain.hpp"
 
 namespace HN
 {
@@ -10,16 +11,27 @@ namespace HN
     class HelloTriangleApplication
     {
     public:
+        HelloTriangleApplication();
+        ~HelloTriangleApplication();
         void run();
 
+        HelloTriangleApplication(const HelloTriangleApplication&) = delete;
+        void operator=(const HelloTriangleApplication&) = delete;
+
     private:
+        void CreatePipelineLayout();
+        void CreatePipeline();
+        void CreateCommandBuffers();
+        void DrawFrame();
+
         Window Window{WIDTH, HEIGHT, "hello world"};
         Device Device{ Window };
-        Pipeline Pipeline{
-            Device, 
-            "src/Shaders/simple_shader.vert.spv", 
-            "src/Shaders/simple_shader.frag.spv",
-            Pipeline::DefaultPipelineConfigInfo(WIDTH, HEIGHT) };
+        SwapChain SwapChain{ Device, Window.getExtent() };
+
+        std::unique_ptr<Pipeline> pipeline;
+
+        VkPipelineLayout pipelineLayout;
+        std::vector<VkCommandBuffer> commandBuffers;
     
     };
 

@@ -12,7 +12,12 @@ namespace HN
 		// terminate glfw
 		~Window();
 
+		Window(const Window&) = delete;
+		void operator=(const Window&) = delete;
+
 		inline bool ShouldClose() { return glfwWindowShouldClose(pWindow);  }
+
+		inline VkExtent2D getExtent() { return{ static_cast<uint32_t>(WIDTH), static_cast<uint32_t>(Height) }; }
 
 		void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 

@@ -3,6 +3,17 @@
 
 namespace HN
 {
+    HelloTriangleApplication::HelloTriangleApplication()
+    {
+        CreatePipelineLayout();
+        CreatePipeline();
+        CreateCommandBuffers();
+    }
+
+    HelloTriangleApplication::~HelloTriangleApplication()
+    {
+        vkDestroyPipelineLayout(Device.device(), pipelineLayout, nullptr);
+    }
 
     void HelloTriangleApplication::run()
     {
@@ -10,6 +21,45 @@ namespace HN
         {
             glfwPollEvents();
         }
+    }
+
+    void HelloTriangleApplication::CreatePipelineLayout()
+    {
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 0;
+        pipelineLayoutInfo.pSetLayouts = nullptr;
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+
+        if (vkCreatePipelineLayout(Device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+            throw std::runtime_error("Failed to create Pipeline layout.");
+    }
+
+
+    void HelloTriangleApplication::CreatePipeline()
+    {
+        auto pipelineConfig = Pipeline::DefaultPipelineConfigInfo(SwapChain.width(), SwapChain.height());
+        pipelineConfig.renderPass = SwapChain.getRenderPass();
+        pipelineConfig.pipelineLayout = pipelineLayout;
+
+        pipeline = std::make_unique<Pipeline>(
+            Device, 
+            "src/Shaders/simple_shader.vert.spv",
+            "src/Shaders/simple_shader.frag.spv",
+            pipelineConfig);
+    }
+
+
+    void HelloTriangleApplication::CreateCommandBuffers()
+    {
+
+    }
+
+
+    void HelloTriangleApplication::DrawFrame()
+    {
+
     }
 
     /*

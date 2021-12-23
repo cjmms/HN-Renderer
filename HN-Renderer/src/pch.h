@@ -18,16 +18,27 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
+#include <cstring>
+#include <set>
+#include <unordered_set>
+#include <array>
+#include <cstring>
+#include <limits>
+#include <vector>
+#include <algorithm>
+
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
 
-#include <cstring>
-#include <set>
-#include <unordered_set>
 
-#include <vector>
+
+#include <stdint.h>
 #include <fstream>
+#include <memory>
+
+// windows.h using macro for comparison which causes problems in this project
+#define NOMINMAX
 #include <windows.h>
 
 
