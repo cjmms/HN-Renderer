@@ -22,6 +22,10 @@
 #include <stdexcept>
 #include <cstdlib>
 
+#include <cstring>
+#include <set>
+#include <unordered_set>
+
 #include <vector>
 #include <fstream>
 #include <windows.h>

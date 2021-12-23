@@ -32,6 +32,10 @@ namespace HN
 	}
 
 
-
+	void Window::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+	{
+		if (glfwCreateWindowSurface(instance, pWindow, nullptr, surface) != VK_SUCCESS)
+			throw std::runtime_error("Failed to create window surface.");
+	}
 
 }

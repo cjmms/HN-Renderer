@@ -14,7 +14,12 @@ namespace HN
 
     private:
         Window Window{WIDTH, HEIGHT, "hello world"};
-        Pipeline Pipeline{"src/Shaders/simple_shader.vert.spv", "src/Shaders/simple_shader.frag.spv" };
+        Device Device{ Window };
+        Pipeline Pipeline{
+            Device, 
+            "src/Shaders/simple_shader.vert.spv", 
+            "src/Shaders/simple_shader.frag.spv",
+            Pipeline::DefaultPipelineConfigInfo(WIDTH, HEIGHT) };
     
     };
 

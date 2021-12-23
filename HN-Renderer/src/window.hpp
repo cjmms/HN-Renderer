@@ -14,6 +14,8 @@ namespace HN
 
 		inline bool ShouldClose() { return glfwWindowShouldClose(pWindow);  }
 
+		void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
+
 	private:
 		// init GLFW library
 		void InitWindow();

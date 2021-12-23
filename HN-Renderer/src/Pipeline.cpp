@@ -5,10 +5,17 @@
 
 namespace HN {
 
-	Pipeline::Pipeline(const std::string& vertFilePath, const std::string& fragFilePath)
+	Pipeline::Pipeline(
+		Device& device, 
+		const std::string& vertFilePath, 
+		const std::string& fragFilePath, 
+		const PipelineConfigInfo& configInfo)
+		: device{device}
 	{
-		createGraphicsPipeline(vertFilePath, fragFilePath);
+		createGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
 	}
+
+	Pipeline::~Pipeline(){}
 
 	std::vector<char> Pipeline::readFile(const std::string& filePath)
 	{
@@ -33,7 +40,7 @@ namespace HN {
 	}
 
 
-	void Pipeline::createGraphicsPipeline(const std::string& vertFilePath, const std::string& fragFilePath)
+	void Pipeline::createGraphicsPipeline(const std::string& vertFilePath, const std::string& fragFilePath, const PipelineConfigInfo& configInfo)
 	{
 		auto vertCode = readFile(vertFilePath);
 		auto fragCode = readFile(fragFilePath);
@@ -43,13 +50,26 @@ namespace HN {
 	}
 
 
+	PipelineConfigInfo Pipeline::DefaultPipelineConfigInfo(uint32_t width, uint32_t height)
+	{
+		PipelineConfigInfo configInfo{};
 
-	std::wstring ExePath() {
-		TCHAR buffer[MAX_PATH] = { 0 };
-		GetModuleFileName(NULL, buffer, MAX_PATH);
-		std::wstring::size_type pos = std::wstring(buffer).find_last_of(L"\\/");
-		return std::wstring(buffer).substr(0, pos);
+		return configInfo;
 	}
 
 
+	void Pipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
+	{
+		VkShaderModuleCreateInfo createInfo{};
+
+		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		createInfo.codeSize = code.size();
+
+		// Vulkan expects compiled shader info as uint32_t type
+		// this case is valid because code is a vector, so that alignment satisfies the requirment
+		createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());	
+
+		if (vkCreateShaderModule(device.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS)
+			throw std::runtime_error("Failed to create shader module.");
+	}
 }
