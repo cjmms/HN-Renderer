@@ -74,13 +74,15 @@ namespace HN {
 		shaderStages[1].pNext = nullptr;
 		shaderStages[1].pSpecializationInfo = nullptr;
 
+		auto bindingDescriptions = Model::Vertex::getBindingDesciptions();
+		auto attribDescriptions = Model::Vertex::getAttributeDesciptions();
 		// determines how to interperate vertex buffer data
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexAttributeDescriptionCount = 0;	// no attribute descriptor, hard code vertex info
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr;
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribDescriptions.size());	// no attribute descriptor, hard code vertex info
+		vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+		vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+		vertexInputInfo.pVertexAttributeDescriptions = attribDescriptions.data();
 
 		VkPipelineViewportStateCreateInfo viewportInfo{};
 		// Viewport Info (used to create viewport and scissor)

@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Device.hpp"
+#include "Model.hpp"
 
 namespace HN {
 

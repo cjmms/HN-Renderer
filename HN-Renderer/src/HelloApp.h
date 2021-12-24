@@ -5,6 +5,8 @@
 #include "Pipeline.hpp"
 #include "SwapChain.hpp"
 
+
+
 namespace HN
 {
 
@@ -19,6 +21,7 @@ namespace HN
         void operator=(const HelloTriangleApplication&) = delete;
 
     private:
+        void LoadModel();
         void CreatePipelineLayout();
         void CreatePipeline();
         void CreateCommandBuffers();
@@ -32,6 +35,7 @@ namespace HN
 
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
+        std::unique_ptr<Model> model;
     
     };
 

@@ -5,6 +5,7 @@ namespace HN
 {
     HelloTriangleApplication::HelloTriangleApplication()
     {
+        LoadModel();
         CreatePipelineLayout();
         CreatePipeline();
         CreateCommandBuffers();
@@ -45,7 +46,7 @@ namespace HN
         pipelineConfig.pipelineLayout = pipelineLayout;
 
         pipeline = std::make_unique<Pipeline>(
-            Device, 
+            Device,
             "src/Shaders/simple_shader.vert.spv",
             "src/Shaders/simple_shader.frag.spv",
             pipelineConfig);
@@ -82,12 +83,12 @@ namespace HN
             renderPassInfo.renderPass = SwapChain.getRenderPass();
             renderPassInfo.framebuffer = SwapChain.getFrameBuffer(i);
 
-            renderPassInfo.renderArea.offset = {0, 0};
+            renderPassInfo.renderArea.offset = { 0, 0 };
             renderPassInfo.renderArea.extent = SwapChain.getSwapChainExtent();
 
             // set clear value
             std::array<VkClearValue, 2> clearValues{};
-            clearValues[0].color = {0.1f, 0.1f, 0.1f, 1.0f};
+            clearValues[0].color = { 0.1f, 0.1f, 0.1f, 1.0f };
             clearValues[1].depthStencil = { 1.0f, 0 };
 
             renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -96,8 +97,8 @@ namespace HN
             vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             pipeline->Bind(commandBuffers[i]);
-            // 3 vertices, 1 instance, no offsets for the input data that's why 0, 0
-            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);   // record Draw Command
+            model->Bind(commandBuffers[i]);
+            model->Draw(commandBuffers[i]);
 
             vkCmdEndRenderPass(commandBuffers[i]);
             if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)
@@ -119,88 +120,15 @@ namespace HN
         if (result != VK_SUCCESS) throw std::runtime_error("Failed to present swap chain image");
     }
 
-    /*
-    void HelloTriangleApplication::initVulkan()
+
+    void HelloTriangleApplication::LoadModel()
     {
-        createInstance();
+        std::vector<Model::Vertex> vertices{
+            {{0.0f, -0.5f}},
+            {{0.5f, 0.5f}},
+            {{-0.5f, 0.5f}}
+        };
+
+        model = std::make_unique<Model>(Device, vertices);
     }
-
-
-    void HelloTriangleApplication::createInstance()
-    {
-        VkApplicationInfo appInfo{};
-        appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "Hello Triangle";
-        appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.pEngineName = "No Engine";
-        appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = VK_API_VERSION_1_0;
-
-        VkInstanceCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        createInfo.pApplicationInfo = &appInfo;
-
-        uint32_t glfwExtensionCount = 0;
-        const char** glfwExtensions;
-
-        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);    // get number of extensions
-
-        createInfo.enabledExtensionCount = glfwExtensionCount;
-        createInfo.ppEnabledExtensionNames = glfwExtensions;
-
-        createInfo.enabledLayerCount = 0;
-
-        if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to create vulkan instance!");
-        }
-    }
-
-
-    void HelloTriangleApplication::mainLoop()
-    {
-        while (!glfwWindowShouldClose(window))
-        {
-            glfwPollEvents();
-        }
-    }
-
-
-    void HelloTriangleApplication::initWindow()
-    {
-        glfwInit();
-
-        // Telling glfw that context is not created for OpenGL
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        // disable window resize
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-        window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan window", nullptr, nullptr);
-    }
-
-
-    void HelloTriangleApplication::cleanup()
-    {
-        vkDestroyInstance(instance, nullptr);
-
-        glfwDestroyWindow(window);
-        glfwTerminate();
-    }
-
-
-
-    void HelloTriangleApplication::checkExtensions()
-    {
-        uint32_t extensionCount = 0;
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-
-        std::vector<VkExtensionProperties> extensions(extensionCount);
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-
-        std::cout << "Available extensions:\n";
-
-        for (const auto& extension : extensions)
-            std::cout << "\t" << extension.extensionName << "\n";
-    }
-    */
 }
