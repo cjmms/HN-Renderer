@@ -26,9 +26,12 @@ namespace HN
 		// Telling glfw that context is not created for OpenGL
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		// disable window resize
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 		pWindow = glfwCreateWindow(Width, Height, WindowName.c_str(), nullptr, nullptr);
+		glfwSetWindowUserPointer(pWindow, this);
+		// whenever the window is resized, the resize call back function will excute
+		glfwSetFramebufferSizeCallback(pWindow, framebufferResizeCallback);
 	}
 
 
@@ -36,6 +39,15 @@ namespace HN
 	{
 		if (glfwCreateWindowSurface(instance, pWindow, nullptr, surface) != VK_SUCCESS)
 			throw std::runtime_error("Failed to create window surface.");
+	}
+
+
+	void Window::framebufferResizeCallback(GLFWwindow* window, int width, int height)
+	{
+		auto pWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+		pWindow->framebufferResized = true;
+		pWindow->Width = width;
+		pWindow->Height = height;
 	}
 
 }

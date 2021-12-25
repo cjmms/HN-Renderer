@@ -33,7 +33,7 @@ namespace HN {
 		~Pipeline();
 
 		Pipeline(const Pipeline&) = delete;	// delete copy constructor
-		void operator=(const Pipeline&) = delete;
+		Pipeline& operator=(const Pipeline&) = delete;
 
 		void Bind(VkCommandBuffer commandBuffer);
 

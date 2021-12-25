@@ -29,7 +29,7 @@ namespace HN
 		~Model();
 
 		Model(const Model&) = delete;
-		void operator=(const Model&) = delete;
+		Model& operator=(const Model&) = delete;
 
 		void Bind(VkCommandBuffer commandBuffer);
 		void Draw(VkCommandBuffer commandBuffer);

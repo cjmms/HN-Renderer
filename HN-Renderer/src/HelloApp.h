@@ -18,7 +18,7 @@ namespace HN
         void run();
 
         HelloTriangleApplication(const HelloTriangleApplication&) = delete;
-        void operator=(const HelloTriangleApplication&) = delete;
+        HelloTriangleApplication& operator=(const HelloTriangleApplication&) = delete;
 
     private:
         void LoadModel();
@@ -26,10 +26,12 @@ namespace HN
         void CreatePipeline();
         void CreateCommandBuffers();
         void DrawFrame();
+        void RecreateSwapChain();
+        void RecordCommandBuffer(int imageIndex);
 
         Window Window{WIDTH, HEIGHT, "hello world"};
         Device Device{ Window };
-        SwapChain SwapChain{ Device, Window.getExtent() };
+        std::unique_ptr<SwapChain> swapChain;
 
         std::unique_ptr<Pipeline> pipeline;
 
