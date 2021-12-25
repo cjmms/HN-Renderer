@@ -41,6 +41,9 @@ namespace HN
 
     void HelloTriangleApplication::CreatePipeline()
     {
+        assert(swapChain != nullptr && "Cannot create pipeline before swap chain");
+        assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
+
         PipelineConfigInfo pipelineConfig{};
         Pipeline::DefaultPipelineConfigInfo(pipelineConfig);
         pipelineConfig.renderPass = swapChain->getRenderPass();
@@ -125,14 +128,36 @@ namespace HN
         // make sure current swapchain is not being used, otherwise, wait
         vkDeviceWaitIdle(Device.device());
 
-        swapChain = nullptr;
+        if (swapChain == nullptr)
+        {
+            // since current swapchain is no longer being used, create the new swapchain
+            swapChain = std::make_unique<SwapChain>(Device, extent);
+        }
+        else
+        {
+            swapChain = std::make_unique<SwapChain>(Device, extent, std::move(swapChain));
 
-        // since current swapchain is no longer being used, create the new swapchain
-        swapChain = std::make_unique<SwapChain>(Device, extent);
+            if (swapChain->imageCount() != commandBuffers.size())
+            {
+                FreeCommandBuffers();
+                CreateCommandBuffers();
+            }
+        }
+
         CreatePipeline(); // pipeline need to be recreated since it depends on swapchain
     }
 
 
+    void HelloTriangleApplication::FreeCommandBuffers()
+    {
+        vkFreeCommandBuffers(
+            Device.device(), 
+            Device.getCommandPool(), 
+            static_cast<uint32_t>(commandBuffers.size()), 
+            commandBuffers.data());
+
+        commandBuffers.clear();
+    }
 
 
     void HelloTriangleApplication::RecordCommandBuffer(int imageIndex)

@@ -25,6 +25,7 @@ namespace HN
         void CreatePipelineLayout();
         void CreatePipeline();
         void CreateCommandBuffers();
+        void FreeCommandBuffers();
         void DrawFrame();
         void RecreateSwapChain();
         void RecordCommandBuffer(int imageIndex);

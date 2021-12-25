@@ -5,8 +5,13 @@
 
 namespace HN {
 
-    SwapChain::SwapChain(Device& deviceRef, VkExtent2D extent)
-        : device{ deviceRef }, windowExtent{ extent } {
+    SwapChain::SwapChain(Device& deviceRef, VkExtent2D windowExtent)
+        : device{ deviceRef }, windowExtent{ windowExtent } {
+        Init();
+    }
+
+    void SwapChain::Init()
+    {
         createSwapChain();
         createImageViews();
         createRenderPass();
@@ -14,6 +19,16 @@ namespace HN {
         createFramebuffers();
         createSyncObjects();
     }
+
+    SwapChain::SwapChain(Device& deviceRef, VkExtent2D windowExtent, std::shared_ptr<SwapChain> previous)
+        :device{ deviceRef }, windowExtent{ windowExtent }, oldSwapChain {previous}
+    {
+        Init();
+
+        // clean old swapchain
+        oldSwapChain = nullptr;
+    }
+
 
     SwapChain::~SwapChain() {
         for (auto imageView : swapChainImageViews) {
@@ -157,7 +172,7 @@ namespace HN {
         createInfo.presentMode = presentMode;
         createInfo.clipped = VK_TRUE;
 
-        createInfo.oldSwapchain = VK_NULL_HANDLE;
+        createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
         if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
             throw std::runtime_error("failed to create swap chain!");
@@ -410,4 +425,5 @@ namespace HN {
             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
     }
 
-}  // namespace lve
+
+}  // namespace HN
