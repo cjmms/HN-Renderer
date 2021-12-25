@@ -9,6 +9,9 @@
 
 namespace HN
 {
+   
+
+
 
     class HelloTriangleApplication
     {

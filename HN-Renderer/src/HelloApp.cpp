@@ -3,6 +3,12 @@
 
 namespace HN
 {
+    struct PushConstantData
+    {
+        glm::vec2 offset;
+        alignas(16) glm::vec3 color;
+    };
+
     HelloTriangleApplication::HelloTriangleApplication()
     {
         LoadModel();
@@ -27,12 +33,17 @@ namespace HN
 
     void HelloTriangleApplication::CreatePipelineLayout()
     {
+        VkPushConstantRange pushConstantRange{};
+        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        pushConstantRange.offset = 0;
+        pushConstantRange.size = sizeof(PushConstantData);
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 0;
         pipelineLayoutInfo.pSetLayouts = nullptr;
-        pipelineLayoutInfo.pushConstantRangeCount = 0;
-        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+        pipelineLayoutInfo.pushConstantRangeCount = 1;
+        pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
         if (vkCreatePipelineLayout(Device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
             throw std::runtime_error("Failed to create Pipeline layout.");
@@ -187,6 +198,7 @@ namespace HN
 
         vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+        // record new viewport and scissor
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
@@ -200,7 +212,26 @@ namespace HN
 
         pipeline->Bind(commandBuffers[imageIndex]);
         model->Bind(commandBuffers[imageIndex]);
-        model->Draw(commandBuffers[imageIndex]);
+
+        // record push constant data
+        for (unsigned int j = 0; j < 4; ++j)
+        {
+            PushConstantData pushConstant{};
+            pushConstant.offset = { 0.0, -0.4 + j * 0.25f };
+            pushConstant.color = { 0.0f, 0.0f, 0.2 + 0.2f * j };
+        
+            vkCmdPushConstants(
+                commandBuffers[imageIndex],
+                pipelineLayout,
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                0,
+                sizeof(PushConstantData),
+                &pushConstant);
+
+            model->Draw(commandBuffers[imageIndex]);    // draw 4 triangles
+        }
+
+        //model->Draw(commandBuffers[imageIndex]);
 
         vkCmdEndRenderPass(commandBuffers[imageIndex]);
         if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS)
