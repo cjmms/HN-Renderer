@@ -127,12 +127,14 @@ namespace HN
         // transform data
         Transform2dComponent transform{};
         transform.translation = {0.2f, 0.0f};
+        transform.scale = { 2.0, 0.6 };
 
         // put all data together
         auto triangle = GameObj::CreateGameObject();
         triangle.model = model;
         triangle.color = {0.1f, 0.8f, 0.1f};
         triangle.transform2d = transform;
+        
 
         gameObjs.push_back(std::move(triangle));      
     }
@@ -250,6 +252,7 @@ namespace HN
             PushConstantData pushConstant{};
             pushConstant.offset = obj.transform2d.translation;
             pushConstant.color = obj.color;
+            pushConstant.transform = obj.transform2d.mat2();
 
             vkCmdPushConstants(
                 cmdBuffer,

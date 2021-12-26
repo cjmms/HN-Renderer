@@ -12,8 +12,9 @@ namespace HN
 	struct Transform2dComponent
 	{
 		glm::vec2 translation;
+		glm::vec2 scale{1.0f, 1.0f};
 
-		inline glm::mat2 mat2() const { return glm::mat2(1.0f); }
+		glm::mat2 mat2() const;
 	};
 
 
