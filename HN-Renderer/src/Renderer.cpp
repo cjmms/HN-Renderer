@@ -147,11 +147,14 @@ namespace HN
         {
             window.ResetWindowResizedFlag();
             RecreateSwapChain();
+        } 
+        else if (result != VK_SUCCESS) 
+        {
+            throw std::runtime_error("Failed to present swap chain image");
         }
 
-        if (result != VK_SUCCESS) throw std::runtime_error("Failed to present swap chain image");
-
         isFrameStarted = false; // frame ends
+        currImgIndex = (currImgIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
     }
 
 
