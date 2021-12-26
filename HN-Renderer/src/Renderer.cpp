@@ -21,8 +21,8 @@ namespace HN
 
     void Renderer::CreateCommandBuffers()
     {
-        // at least 1 command buffer maps to 1 frambuffer
-        cmdBuffers.resize(swapChain->imageCount());
+        // 1 swapchain maps to MAX_FRAMES_IN_FLIGHT cmd buffers
+        cmdBuffers.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
         // allocate command buffer
         VkCommandBufferAllocateInfo allocInfo{};
@@ -59,16 +59,12 @@ namespace HN
         }
         else
         {
-            swapChain = std::make_unique<SwapChain>(device, extent, std::move(swapChain));
+            std::shared_ptr<SwapChain> oldSwapChain = std::move(swapChain);
+            swapChain = std::make_unique<SwapChain>(device, extent, oldSwapChain);
 
-            if (swapChain->imageCount() != cmdBuffers.size())
-            {
-                FreeCommandBuffers();
-                CreateCommandBuffers();
-            }
+            if (!oldSwapChain->compareSwapFormat(*swapChain.get()))
+                throw std::runtime_error("SwapChain image(or depth) format has changed!");
         }
-
-         // pipeline need to be recreated since it depends on swapchain
     }
 
 
@@ -89,7 +85,7 @@ namespace HN
 	VkCommandBuffer Renderer::GetCurrentCmdBuffer() const 
 	{
 		assert(IsFrameInProgress && "Cannot get command buffer when frame not in progress");
-		return cmdBuffers[currImgIndex]; 
+		return cmdBuffers[currFrameIndex]; 
 	}
 
 
@@ -154,7 +150,8 @@ namespace HN
         }
 
         isFrameStarted = false; // frame ends
-        currImgIndex = (currImgIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
+
+        currFrameIndex = (currFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
     }
 
 

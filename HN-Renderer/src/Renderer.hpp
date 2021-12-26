@@ -31,6 +31,7 @@ namespace HN
         VkCommandBuffer GetCurrentCmdBuffer() const;
         inline bool IsFrameInProgress() const { return isFrameStarted; }
         inline VkRenderPass GetSwapChainRenderPass() const { return swapChain->getRenderPass(); }
+        inline int GetFrameIndex() const { return currFrameIndex; }
 
     private:
         void CreateCommandBuffers();
@@ -44,6 +45,7 @@ namespace HN
         std::vector<VkCommandBuffer> cmdBuffers;
 
         uint32_t currImgIndex;
+        int currFrameIndex;     // used to keep track of frame index : [0, MAX_FRAMES_IN_FLIGHT]
         bool isFrameStarted = false;
     };
 }

@@ -80,6 +80,13 @@ namespace HN {
         return result;
     }
 
+    bool SwapChain::compareSwapFormat(const SwapChain& swapchain) const
+    {
+        return  swapchain.swapChainDepthFormat == swapChainDepthFormat &&
+                swapchain.swapChainImageFormat == swapChainImageFormat;
+    }
+
+
     VkResult SwapChain::submitCommandBuffers(
         const VkCommandBuffer* buffers, uint32_t* imageIndex) {
         if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
@@ -299,6 +306,7 @@ namespace HN {
 
     void SwapChain::createDepthResources() {
         VkFormat depthFormat = findDepthFormat();
+        swapChainDepthFormat = depthFormat;
         VkExtent2D swapChainExtent = getSwapChainExtent();
 
         depthImages.resize(imageCount());
