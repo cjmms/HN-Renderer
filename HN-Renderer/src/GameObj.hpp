@@ -9,12 +9,13 @@
 
 namespace HN 
 {
-	struct Transform2dComponent
+	struct TransformComponent
 	{
-		glm::vec2 translation;
-		glm::vec2 scale{1.0f, 1.0f};
+		glm::vec3 translation{};
+		glm::vec3 scale{1.0f, 1.0f, 1.0f};
 
-		glm::mat2 mat2() const;
+		glm::vec3 rotation{};
+		glm::mat4 mat4() const;
 	};
 
 
@@ -38,7 +39,7 @@ namespace HN
 	public:
 		std::shared_ptr<Model> model{};
 		glm::vec3 color;
-		Transform2dComponent transform2d{};
+		TransformComponent transform{};
 
 	private:
 		GameObj(id_t objId) : id{objId} {}

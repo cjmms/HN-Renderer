@@ -19,6 +19,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE		// glm expects depth buffer range from [0, 1], rather than [-1, 1]
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <cstring>
 #include <set>
