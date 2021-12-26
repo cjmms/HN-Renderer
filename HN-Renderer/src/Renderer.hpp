@@ -31,6 +31,7 @@ namespace HN
         VkCommandBuffer GetCurrentCmdBuffer() const;
         inline bool IsFrameInProgress() const { return isFrameStarted; }
         inline VkRenderPass GetSwapChainRenderPass() const { return swapChain->getRenderPass(); }
+        inline float GetAspectRatio() const { return swapChain->extentAspectRatio(); }
         inline int GetFrameIndex() const { return currFrameIndex; }
 
     private:

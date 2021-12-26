@@ -41,9 +41,7 @@
 #include <fstream>
 #include <memory>
 
-// windows.h using macro for comparison which causes problems in this project
-#define NOMINMAX
-#include <windows.h>
+
 
 
 

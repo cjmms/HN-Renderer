@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "HelloApp.h"
 #include "RenderSystem.hpp"
+#include "Camera.hpp"
 
 namespace HN
 {
@@ -21,16 +22,21 @@ namespace HN
     void HelloTriangleApplication::run()
     {
         RenderSystem renderSystem{ Device, renderer.GetSwapChainRenderPass() };
+        Camera camera{};
+        //camera.SetOrthProj(-1, 1, -1, 1, -1, 1);
 
         while (!Window.ShouldClose())
         {
             glfwPollEvents();
+            float aspect = renderer.GetAspectRatio();
+            //camera.SetOrthProj(-aspect, aspect, -1, 1, -1, 1);
+            camera.SetPerspectiveProj(glm::radians(60.0f), aspect, 0.1, 10);
             
             if (auto cmdBuffer = renderer.BeginFrame())
             {
                 renderer.BeginSwapChainRenderPass(cmdBuffer);
 
-                renderSystem.RenderGameObjs(cmdBuffer, gameObjs);
+                renderSystem.RenderGameObjs(cmdBuffer, gameObjs, camera);
 
                 renderer.EndSwapChainRenderPass(cmdBuffer);
                 renderer.EndFrame();
@@ -105,8 +111,8 @@ namespace HN
 
         auto cube = GameObj::CreateGameObject();
         cube.model = model;
-        cube.transform.translation = { 0.0, 0.0, 0.5f };
-        cube.transform.rotation = { 0, 0.1, 0 };
+        cube.transform.translation = { 0.0, 0.0, 2.5f };
+        cube.transform.rotation = { 0.2, 0.5, 0 };
         cube.transform.scale = { 0.5f , 0.5f, 0.5f};
 
         gameObjs.push_back(std::move(cube));

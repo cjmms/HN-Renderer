@@ -65,7 +65,7 @@ namespace HN
 
 
 
-    void RenderSystem::RenderGameObjs(VkCommandBuffer cmdBuffer, std::vector<GameObj>& gameObjs)
+    void RenderSystem::RenderGameObjs(VkCommandBuffer cmdBuffer, std::vector<GameObj>& gameObjs, const Camera& camera)
     {
         // bind pipeline
         pipeline->Bind(cmdBuffer);
@@ -77,7 +77,7 @@ namespace HN
         {
             PushConstantData pushConstant{};
             pushConstant.color = obj.color;
-            pushConstant.transform = obj.transform.mat4();
+            pushConstant.transform = camera.GetProjMat() * obj.transform.mat4();
 
             vkCmdPushConstants(
                 cmdBuffer,
