@@ -5,13 +5,14 @@ namespace HN
 {
     struct PushConstantData
     {
+        glm::mat2 transform{1.0f};
         glm::vec2 offset;
         alignas(16) glm::vec3 color;
     };
 
     HelloTriangleApplication::HelloTriangleApplication()
     {
-        LoadModel();
+        LoadGameObjs();
         CreatePipelineLayout();
         RecreateSwapChain();
         CreateCommandBuffers();
@@ -112,15 +113,28 @@ namespace HN
     }
 
 
-    void HelloTriangleApplication::LoadModel()
+    void HelloTriangleApplication::LoadGameObjs()
     {
+        // model data
         std::vector<Model::Vertex> vertices{
             {{0.0f, -0.5f}},
             {{0.5f, 0.5f}},
             {{-0.5f, 0.5f}}
         };
 
-        model = std::make_unique<Model>(Device, vertices);
+        auto model = std::make_shared<Model>(Device, vertices);
+
+        // transform data
+        Transform2dComponent transform{};
+        transform.translation = {0.2f, 0.0f};
+
+        // put all data together
+        auto triangle = GameObj::CreateGameObject();
+        triangle.model = model;
+        triangle.color = {0.1f, 0.8f, 0.1f};
+        triangle.transform2d = transform;
+
+        gameObjs.push_back(std::move(triangle));      
     }
 
 
@@ -210,31 +224,47 @@ namespace HN
         vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
         vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
 
-        pipeline->Bind(commandBuffers[imageIndex]);
-        model->Bind(commandBuffers[imageIndex]);
+        // render
+        RenderGameObjs(commandBuffers[imageIndex]);
 
-        // record push constant data
-        for (unsigned int j = 0; j < 4; ++j)
+        // end render pass
+        vkCmdEndRenderPass(commandBuffers[imageIndex]);
+        if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS)
+            throw std::runtime_error("Command Buffer failed to end recording.");
+    }
+
+
+
+
+
+    void HelloTriangleApplication::RenderGameObjs(VkCommandBuffer cmdBuffer)
+    {
+        // bind pipeline
+        pipeline->Bind(cmdBuffer);
+
+        // 1. push constants
+        // 2. bind model
+        // 3. draw
+        for (auto& obj : gameObjs)
         {
             PushConstantData pushConstant{};
-            pushConstant.offset = { 0.0, -0.4 + j * 0.25f };
-            pushConstant.color = { 0.0f, 0.0f, 0.2 + 0.2f * j };
-        
+            pushConstant.offset = obj.transform2d.translation;
+            pushConstant.color = obj.color;
+
             vkCmdPushConstants(
-                commandBuffers[imageIndex],
+                cmdBuffer,
                 pipelineLayout,
                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
                 0,
                 sizeof(PushConstantData),
                 &pushConstant);
 
-            model->Draw(commandBuffers[imageIndex]);    // draw 4 triangles
+            obj.model->Bind(cmdBuffer);
+            obj.model->Draw(cmdBuffer);
         }
-
-        //model->Draw(commandBuffers[imageIndex]);
-
-        vkCmdEndRenderPass(commandBuffers[imageIndex]);
-        if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS)
-            throw std::runtime_error("Command Buffer failed to end recording.");
     }
+
+
+
+
 }

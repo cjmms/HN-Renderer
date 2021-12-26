@@ -91,6 +91,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Device.hpp" />
+    <ClInclude Include="src\GameObj.hpp" />
     <ClInclude Include="src\HelloApp.h" />
     <ClInclude Include="src\Model.hpp" />
     <ClInclude Include="src\pch.h" />
@@ -100,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Device.cpp" />
+    <ClCompile Include="src\GameObj.cpp" />
     <ClCompile Include="src\HelloApp.cpp" />
     <ClCompile Include="src\HN-Renderer.cpp" />
     <ClCompile Include="src\Model.cpp" />

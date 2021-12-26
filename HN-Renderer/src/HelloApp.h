@@ -4,7 +4,7 @@
 #include "window.hpp"
 #include "Pipeline.hpp"
 #include "SwapChain.hpp"
-
+#include "GameObj.hpp"
 
 
 namespace HN
@@ -24,7 +24,7 @@ namespace HN
         HelloTriangleApplication& operator=(const HelloTriangleApplication&) = delete;
 
     private:
-        void LoadModel();
+        void LoadGameObjs();
         void CreatePipelineLayout();
         void CreatePipeline();
         void CreateCommandBuffers();
@@ -32,6 +32,8 @@ namespace HN
         void DrawFrame();
         void RecreateSwapChain();
         void RecordCommandBuffer(int imageIndex);
+
+        void RenderGameObjs(VkCommandBuffer commandBuffer);
 
         Window Window{WIDTH, HEIGHT, "hello world"};
         Device Device{ Window };
@@ -41,7 +43,8 @@ namespace HN
 
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
-        std::unique_ptr<Model> model;
+        //std::unique_ptr<Model> model;
+        std::vector<GameObj> gameObjs;
     
     };
 
