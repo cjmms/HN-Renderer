@@ -5,6 +5,7 @@
 #include "Pipeline.hpp"
 #include "SwapChain.hpp"
 #include "GameObj.hpp"
+#include "Renderer.hpp"
 
 
 namespace HN
@@ -27,25 +28,19 @@ namespace HN
         void LoadGameObjs();
         void CreatePipelineLayout();
         void CreatePipeline();
-        void CreateCommandBuffers();
-        void FreeCommandBuffers();
-        void DrawFrame();
-        void RecreateSwapChain();
-        void RecordCommandBuffer(int imageIndex);
+
 
         void RenderGameObjs(VkCommandBuffer commandBuffer);
 
         Window Window{WIDTH, HEIGHT, "hello world"};
         Device Device{ Window };
-        std::unique_ptr<SwapChain> swapChain;
+
+        Renderer renderer{ Device, Window };
 
         std::unique_ptr<Pipeline> pipeline;
-
         VkPipelineLayout pipelineLayout;
-        std::vector<VkCommandBuffer> commandBuffers;
-        //std::unique_ptr<Model> model;
+
         std::vector<GameObj> gameObjs;
-    
     };
 
 }

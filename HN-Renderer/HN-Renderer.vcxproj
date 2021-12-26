@@ -96,6 +96,7 @@
     <ClInclude Include="src\Model.hpp" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Pipeline.hpp" />
+    <ClInclude Include="src\Renderer.hpp" />
     <ClInclude Include="src\SwapChain.hpp" />
     <ClInclude Include="src\Window.hpp" />
   </ItemGroup>
@@ -110,6 +111,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Pipeline.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\SwapChain.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
