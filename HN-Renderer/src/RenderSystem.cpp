@@ -70,6 +70,8 @@ namespace HN
         // bind pipeline
         pipeline->Bind(cmdBuffer);
 
+
+        auto projectionView = camera.GetProjMat() * camera.GetViewMat();
         // 1. push constants
         // 2. bind model
         // 3. draw
@@ -77,7 +79,7 @@ namespace HN
         {
             PushConstantData pushConstant{};
             pushConstant.color = obj.color;
-            pushConstant.transform = camera.GetProjMat() * obj.transform.mat4();
+            pushConstant.transform = projectionView * obj.transform.mat4();
 
             vkCmdPushConstants(
                 cmdBuffer,

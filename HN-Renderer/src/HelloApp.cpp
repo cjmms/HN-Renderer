@@ -31,6 +31,7 @@ namespace HN
             float aspect = renderer.GetAspectRatio();
             //camera.SetOrthProj(-aspect, aspect, -1, 1, -1, 1);
             camera.SetPerspectiveProj(glm::radians(60.0f), aspect, 0.1, 10);
+            camera.SetViewDir(glm::vec3(0.0f), glm::vec3(0.5, 0.0, 1.0));
             
             if (auto cmdBuffer = renderer.BeginFrame())
             {
