@@ -18,6 +18,8 @@ namespace HN
 		{
 			glm::vec3 position;
 			glm::vec3 color;
+			glm::vec3 normal;
+			glm::vec2 texCoords;
 
 			static std::vector<VkVertexInputBindingDescription> getBindingDesciptions();
 			static std::vector<VkVertexInputAttributeDescription> getAttributeDesciptions();
@@ -27,6 +29,8 @@ namespace HN
 		{
 			std::vector<Vertex> vertices{};
 			std::vector<uint32_t> indices{};
+
+			void loadModel(const std::string& filepath);
 		};
 
 	public:
@@ -37,6 +41,8 @@ namespace HN
 
 		Model(const Model&) = delete;
 		Model& operator=(const Model&) = delete;
+	
+		static std::unique_ptr<Model> CreateModelFromFile(Device &device, const std::string& filepath);
 
 		void Bind(VkCommandBuffer commandBuffer);
 		void Draw(VkCommandBuffer commandBuffer);

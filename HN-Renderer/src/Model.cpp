@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Model.hpp"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
 
 namespace HN
 {
@@ -190,6 +192,79 @@ namespace HN
 		attribDesc[1].offset = offsetof(Vertex, color);
 
 		return attribDesc;
+	}
+
+
+	// 1. loader model
+	// 2. create model obj ( unique ptr )
+	std::unique_ptr<Model> Model::CreateModelFromFile(Device& device, const std::string& filepath)
+	{
+		Builder builder{};
+		builder.loadModel(filepath);
+
+		std::cout << "Model loaded: " << filepath << std::endl;
+		std::cout << "Model vertices count: " << builder.vertices.size() << std::endl;
+
+		return std::make_unique<Model>(device, builder);
+	}
+
+
+	void Model::Builder::loadModel(const std::string& filepath)
+	{
+		tinyobj::attrib_t attrib;
+
+		std::vector<tinyobj::shape_t> shapes;
+		std::vector<tinyobj::material_t> materials;
+
+		std::string warning;
+		std::string error;
+
+		// loading
+		if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warning, &error, filepath.c_str()))
+			throw std::runtime_error(warning + error);
+		
+
+		vertices.clear();
+		indices.clear();
+
+		for (const auto& shape : shapes)
+		{
+			for (const auto& index : shape.mesh.indices)
+			{
+				Vertex vertex{};
+
+				// position
+				if (index.vertex_index >= 0)
+				{
+					vertex.position = { 
+						attrib.vertices[3 * index.vertex_index + 0],
+						attrib.vertices[3 * index.vertex_index + 1],
+						attrib.vertices[3 * index.vertex_index + 2] 
+					};
+				}
+
+				// normal
+				if (index.vertex_index >= 0)
+				{
+					vertex.normal = {
+						attrib.normals[3 * index.normal_index + 0],
+						attrib.normals[3 * index.normal_index + 1],
+						attrib.normals[3 * index.normal_index + 2]
+					};
+				}
+
+				// texCoord
+				if (index.vertex_index >= 0)
+				{
+					vertex.texCoords = {
+						attrib.texcoords[3 * index.texcoord_index + 0],
+						attrib.texcoords[3 * index.texcoord_index + 1],
+					};
+				}
+
+				vertices.push_back(vertex);
+			}
+		}
 	}
 }
 
