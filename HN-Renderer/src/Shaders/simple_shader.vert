@@ -19,7 +19,9 @@ void main()
 {
 	
 	gl_Position = push.transform * vec4(position, 1.0f);
+
 	vec3 normalWorldSpace = normalize(mat3(push.modelMat) * normal);
+	
 
 	float lightIntensity = AMBIENT + max(0, dot(normalWorldSpace, lightDir));
 

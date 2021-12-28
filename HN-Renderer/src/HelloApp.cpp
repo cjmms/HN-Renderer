@@ -61,15 +61,23 @@ namespace HN
 
     void HelloTriangleApplication::LoadGameObjs()
     {
-        std::shared_ptr<Model> model = Model::CreateModelFromFile(Device, "Assets/models/flat_vase.obj");
+        std::shared_ptr<Model> flatVaseModel = Model::CreateModelFromFile(Device, "Assets/models/flat_vase.obj");
 
-        auto obj = GameObj::CreateGameObject();
-        obj.model = model;
-        obj.transform.translation = { 0.0, 0.5, 2.5f };
-        //obj.transform.rotation = { 0.2, 0.5, 0 };
-        obj.transform.scale = glm::vec3(3.0f);
+        auto flatVaseObj = GameObj::CreateGameObject();
+        flatVaseObj.model = flatVaseModel;
+        flatVaseObj.transform.translation = { -0.5, 0.5, 2.5f };
+        flatVaseObj.transform.scale = glm::vec3(3.0f);
 
-        gameObjs.push_back(std::move(obj));
+        gameObjs.push_back(std::move(flatVaseObj));
+
+        std::shared_ptr<Model> smoothVaseModel = Model::CreateModelFromFile(Device, "Assets/models/smooth_vase.obj");
+
+        auto smoothVaseObj = GameObj::CreateGameObject();
+        smoothVaseObj.model = smoothVaseModel;
+        smoothVaseObj.transform.translation = { 0.5, 0.5, 2.5f };
+        smoothVaseObj.transform.scale = glm::vec3(3.0f);
+
+        gameObjs.push_back(std::move(smoothVaseObj));
     }
 
 
