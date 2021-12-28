@@ -9,7 +9,7 @@ namespace HN
     struct PushConstantData
     {
         glm::mat4 transform{ 1.0f };
-        alignas(16) glm::vec3 color;
+        glm::mat4 modelMat{ 1.0f };
     };
 
 
@@ -78,8 +78,11 @@ namespace HN
         for (auto& obj : gameObjs)
         {
             PushConstantData pushConstant{};
-            pushConstant.color = obj.color;
-            pushConstant.transform = projectionView * obj.transform.mat4();
+
+            auto modelMat = obj.transform.mat4();
+
+            pushConstant.modelMat = modelMat;
+            pushConstant.transform = projectionView * modelMat;
 
             vkCmdPushConstants(
                 cmdBuffer,

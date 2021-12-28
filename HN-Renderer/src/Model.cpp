@@ -197,16 +197,11 @@ namespace HN
 
 	std::vector<VkVertexInputAttributeDescription> Model::Vertex::getAttributeDesciptions()
 	{
-		std::vector<VkVertexInputAttributeDescription> attribDesc(2);
-		attribDesc[0].binding = 0;
-		attribDesc[0].location = 0;							// location of position
-		attribDesc[0].format = VK_FORMAT_R32G32B32_SFLOAT;		// three floats
-		attribDesc[0].offset = 0;
+		std::vector<VkVertexInputAttributeDescription> attribDesc{};
 
-		attribDesc[1].binding = 0;
-		attribDesc[1].location = 1;
-		attribDesc[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attribDesc[1].offset = offsetof(Vertex, color);
+		attribDesc.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)});
+		attribDesc.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal) });
+		attribDesc.push_back({ 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoords) });
 
 		return attribDesc;
 	}

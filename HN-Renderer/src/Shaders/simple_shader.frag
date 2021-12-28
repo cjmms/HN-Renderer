@@ -1,16 +1,17 @@
 #version 450
 
-//layout(location = 0) in vec3 fragColor;
+
 layout(location = 0) out vec4 FragColor;
+layout(location = 0) in vec3 fragColor;
 
 layout(push_constant) uniform Push 
 {
 	mat4 transform;
-	vec3 color;
+	mat4 modelMat;
 } push;
 
 void main()
 {
-	FragColor = vec4(0, 1, 0, 1);
+	FragColor = vec4(fragColor, 1);
 }
   
