@@ -23,8 +23,14 @@ namespace HN
 			static std::vector<VkVertexInputAttributeDescription> getAttributeDesciptions();
 		};
 
+		struct Builder
+		{
+			std::vector<Vertex> vertices{};
+			std::vector<uint32_t> indices{};
+		};
+
 	public:
-		Model(Device& device, const std::vector<Vertex>& vertices);
+		Model(Device& device, const Builder& builder);
 
 		// destroy buffer, free memory 
 		~Model();
@@ -37,13 +43,18 @@ namespace HN
 
 	private:
 		void createVertexBuffers(const std::vector<Vertex> &vertices);
+		void createIndexBuffers(const std::vector<uint32_t>& indices);
 
 		Device& device;
 
 		// In vulkan memory managment, buffer and memory are 2 seperate objects
 		VkBuffer vertexBuffer;
 		VkDeviceMemory vertexBufferMemory;
-
 		uint32_t vertexCount;
+
+		bool hasIndexBuffer = false;
+		VkBuffer indexBuffer;
+		VkDeviceMemory indexBufferMemory;
+		uint32_t indexCount;
 	};
 }

@@ -4,10 +4,11 @@
 
 namespace HN
 {
-	Model::Model(Device& device, const std::vector<Vertex>& vertices)
+	Model::Model(Device& device, const Builder& builder)
 		:device{ device }
 	{
-		createVertexBuffers(vertices);
+		createVertexBuffers(builder.vertices);
+		createIndexBuffers(builder.indices);
 	}
 
 	
@@ -16,8 +17,16 @@ namespace HN
 
 	Model::~Model()
 	{
+		// clean vertices
 		vkDestroyBuffer(device.device(), vertexBuffer, nullptr);
 		vkFreeMemory(device.device(), vertexBufferMemory, nullptr);
+
+		if (hasIndexBuffer)
+		{
+			// clean indices
+			vkDestroyBuffer(device.device(), indexBuffer, nullptr);
+			vkFreeMemory(device.device(), indexBufferMemory, nullptr);
+		}
 	}
 
 
@@ -27,13 +36,18 @@ namespace HN
 		VkDeviceSize offsets[] = { 0 };		// vertex data starts from beginning, offset is 0 
 
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
-	}
 
+		if (hasIndexBuffer) vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+	}
+	 
 
 
 	void Model::Draw(VkCommandBuffer commandBuffer)
 	{
-		vkCmdDraw(commandBuffer, vertexCount, vertexCount / 3, 0, 0);
+		if (hasIndexBuffer)
+			vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+		else
+			vkCmdDraw(commandBuffer, vertexCount, vertexCount / 3, 0, 0);
 	}
 
 
@@ -71,6 +85,35 @@ namespace HN
 		vkUnmapMemory(device.device(), vertexBufferMemory);
 	}
 
+
+
+	void Model::createIndexBuffers(const std::vector<uint32_t>& indices)
+	{
+		indexCount = static_cast<uint32_t>(indices.size());
+		hasIndexBuffer = indexCount > 0;
+
+		if (!hasIndexBuffer) return; // no indices, no need to create index buffer
+
+		VkDeviceSize bufferSize = sizeof(uint32_t) * indexCount;
+
+		// VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT: we want allocated mem be accessable to CPU. That way, CPU can write to GPU mem
+		// VK_MEMORY_PROPERTY_HOST_COHERENT_BIT: keeps CPU mem consistent with GPU mem. 
+		device.createBuffer(
+			bufferSize,
+			VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			indexBuffer, indexBufferMemory);
+
+		void* hostData;
+		// maps CPU mem(data) to GPU mem(indexBufferMemory)
+		vkMapMemory(device.device(), indexBufferMemory, 0, bufferSize, 0, &hostData);
+
+		// copy vertex data into CPU mem
+		memcpy(hostData, indices.data(), static_cast<size_t>(bufferSize));
+
+		// unmap memory
+		vkUnmapMemory(device.device(), indexBufferMemory);
+	}
 
 
 
