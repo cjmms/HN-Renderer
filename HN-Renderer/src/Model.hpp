@@ -23,6 +23,8 @@ namespace HN
 
 			static std::vector<VkVertexInputBindingDescription> getBindingDesciptions();
 			static std::vector<VkVertexInputAttributeDescription> getAttributeDesciptions();
+
+			bool operator==(const Vertex& other) const;
 		};
 
 		struct Builder

@@ -21,9 +21,13 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
+
 #include <cstring>
 #include <set>
 #include <unordered_set>
+#include <unordered_map>
 #include <array>
 #include <cstring>
 #include <limits>
@@ -36,7 +40,7 @@
 #include <chrono>
 #include <cassert>
 
-
+#include <functional>
 
 #include <stdint.h>
 #include <fstream>

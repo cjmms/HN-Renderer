@@ -101,6 +101,7 @@
     <ClInclude Include="src\Renderer.hpp" />
     <ClInclude Include="src\RenderSystem.hpp" />
     <ClInclude Include="src\SwapChain.hpp" />
+    <ClInclude Include="src\Utils.hpp" />
     <ClInclude Include="src\Window.hpp" />
   </ItemGroup>
   <ItemGroup>

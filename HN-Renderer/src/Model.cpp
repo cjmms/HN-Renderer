@@ -1,8 +1,25 @@
 #include "pch.h"
 #include "Model.hpp"
+#include "Utils.hpp"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+
+
+namespace std
+{
+	template<>
+	struct hash<HN::Model::Vertex>
+	{
+		size_t operator()(HN::Model::Vertex const& vertex) const
+		{
+			size_t seed = 0;
+			HN::hashCombine(seed, vertex.position, vertex.normal, vertex.texCoords);
+			return seed;
+		}
+	};
+}
+
 
 namespace HN
 {
@@ -195,6 +212,13 @@ namespace HN
 	}
 
 
+	bool Model::Vertex::operator==(const Vertex& other) const
+	{
+		return position == other.position && normal == other.normal && texCoords == other.texCoords;
+	}
+
+
+
 	// 1. loader model
 	// 2. create model obj ( unique ptr )
 	std::unique_ptr<Model> Model::CreateModelFromFile(Device& device, const std::string& filepath)
@@ -227,6 +251,7 @@ namespace HN
 		vertices.clear();
 		indices.clear();
 
+		std::unordered_map<Vertex, uint32_t> uniqueVertices;
 		for (const auto& shape : shapes)
 		{
 			for (const auto& index : shape.mesh.indices)
@@ -262,7 +287,12 @@ namespace HN
 					};
 				}
 
-				vertices.push_back(vertex);
+				if (uniqueVertices.count(vertex) == 0) 
+				{
+					uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+					vertices.push_back(vertex);
+				}
+				indices.push_back(uniqueVertices[vertex]);
 			}
 		}
 	}
