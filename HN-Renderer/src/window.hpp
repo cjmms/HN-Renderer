@@ -23,6 +23,7 @@ namespace HN
 		inline void ResetWindowResizedFlag() { framebufferResized = false; }
 
 		void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
+		inline GLFWwindow* GetWindow(){ return pWindow; }
 
 	private:
 		// init GLFW library
