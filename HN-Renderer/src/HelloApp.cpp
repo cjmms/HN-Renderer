@@ -24,16 +24,19 @@ namespace HN
 
     void HelloTriangleApplication::run()
     {
-        // create UBO buffer
-        Buffer uboBuffer{
-            Device, sizeof(GlobalUbo),
-            SwapChain::MAX_FRAMES_IN_FLIGHT,        // UBO count depends on number of frames, so that no need to worry about synch problem
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,    // no coherent because we want selective flush
-            Device.properties.limits.minUniformBufferOffsetAlignment
-        }; 
+        std::vector<std::unique_ptr<Buffer>> uboBuffers(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
-        uboBuffer.map();
+        for (int i = 0; i < uboBuffers.size(); ++i)
+        {
+            uboBuffers[i] = std::make_unique<Buffer>(
+                Device, sizeof(GlobalUbo),
+                1,        
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+            );
+
+            uboBuffers[i]->map();
+        }
 
         RenderSystem renderSystem{ Device, renderer.GetSwapChainRenderPass() };
         Camera camera{};
@@ -72,8 +75,8 @@ namespace HN
                 //update 
                 GlobalUbo ubo{};
                 ubo.projectionView = camera.GetProjMat() * camera.GetViewMat(); // set ubo data
-                uboBuffer.writeToIndex(&ubo, frameIndex);   // write to ubo buffer with frame index
-                uboBuffer.flushIndex(frameIndex);           // since buffer is not coherent, manually flush
+                uboBuffers[frameIndex]->writeToBuffer(&ubo);   // write to ubo buffer
+                uboBuffers[frameIndex]->flush();           // since buffer is not coherent, manually flush
 
 
                 // render
