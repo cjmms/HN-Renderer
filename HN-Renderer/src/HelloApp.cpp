@@ -3,25 +3,38 @@
 #include "RenderSystem.hpp"
 #include "Camera.hpp"
 #include "KeyboardController.hpp"
+#include "Buffer.hpp"
 
 namespace HN
 {
-    HelloTriangleApplication::HelloTriangleApplication()
+    // uniform buffer object
+    struct GlobalUbo 
     {
-        LoadGameObjs();
-    }
+        glm::mat4 projectionView{ 1.f };
+        glm::vec3 lightDir = glm::normalize(glm::vec3(1, -3, -1));
+    };
 
 
+    HelloTriangleApplication::HelloTriangleApplication() { LoadGameObjs(); }
 
-    HelloTriangleApplication::~HelloTriangleApplication()
-    {
-        
-    }
+
+    HelloTriangleApplication::~HelloTriangleApplication() {}
 
 
 
     void HelloTriangleApplication::run()
     {
+        // create UBO buffer
+        Buffer uboBuffer{
+            Device, sizeof(GlobalUbo),
+            SwapChain::MAX_FRAMES_IN_FLIGHT,        // UBO count depends on number of frames, so that no need to worry about synch problem
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,    // no coherent because we want selective flush
+            Device.properties.limits.minUniformBufferOffsetAlignment
+        }; 
+
+        uboBuffer.map();
+
         RenderSystem renderSystem{ Device, renderer.GetSwapChainRenderPass() };
         Camera camera{};
         //camera.SetOrthProj(-1, 1, -1, 1, -1, 1);
@@ -47,9 +60,26 @@ namespace HN
             
             if (auto cmdBuffer = renderer.BeginFrame())
             {
+                int frameIndex = renderer.GetFrameIndex();
+                // frame info
+                FrameInfo frameInfo{
+                    frameIndex,
+                    frameTime,
+                    cmdBuffer,
+                    camera
+                };
+
+                //update 
+                GlobalUbo ubo{};
+                ubo.projectionView = camera.GetProjMat() * camera.GetViewMat(); // set ubo data
+                uboBuffer.writeToIndex(&ubo, frameIndex);   // write to ubo buffer with frame index
+                uboBuffer.flushIndex(frameIndex);           // since buffer is not coherent, manually flush
+
+
+                // render
                 renderer.BeginSwapChainRenderPass(cmdBuffer);
 
-                renderSystem.RenderGameObjs(cmdBuffer, gameObjs, camera);
+                renderSystem.RenderGameObjs(frameInfo, gameObjs);
 
                 renderer.EndSwapChainRenderPass(cmdBuffer);
                 renderer.EndFrame();

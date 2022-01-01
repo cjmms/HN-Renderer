@@ -93,6 +93,7 @@
     <ClInclude Include="src\Buffer.hpp" />
     <ClInclude Include="src\Camera.hpp" />
     <ClInclude Include="src\Device.hpp" />
+    <ClInclude Include="src\FrameInfo.hpp" />
     <ClInclude Include="src\GameObj.hpp" />
     <ClInclude Include="src\HelloApp.h" />
     <ClInclude Include="src\KeyboardController.hpp" />

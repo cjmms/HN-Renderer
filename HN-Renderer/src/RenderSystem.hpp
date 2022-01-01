@@ -4,8 +4,7 @@
 #include "Device.hpp"
 #include "Pipeline.hpp"
 #include "GameObj.hpp"
-#include "Camera.hpp"
-
+#include "FrameInfo.hpp"
 
 namespace HN
 {
@@ -20,7 +19,7 @@ namespace HN
         RenderSystem(const RenderSystem&) = delete;
         RenderSystem& operator=(const RenderSystem&) = delete;
 
-        void RenderGameObjs(VkCommandBuffer commandBuffer, std::vector<GameObj>& gameObjs, const Camera& camera);
+        void RenderGameObjs(FrameInfo &frameInfo, std::vector<GameObj>& gameObjs);
 
     private:
 

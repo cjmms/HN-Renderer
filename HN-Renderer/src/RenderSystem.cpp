@@ -65,13 +65,13 @@ namespace HN
 
 
 
-    void RenderSystem::RenderGameObjs(VkCommandBuffer cmdBuffer, std::vector<GameObj>& gameObjs, const Camera& camera)
+    void RenderSystem::RenderGameObjs(FrameInfo &frameInfo, std::vector<GameObj>& gameObjs)
     {
         // bind pipeline
-        pipeline->Bind(cmdBuffer);
+        pipeline->Bind(frameInfo.cmdBuffer);
 
 
-        auto projectionView = camera.GetProjMat() * camera.GetViewMat();
+        auto projectionView = frameInfo.camera.GetProjMat() * frameInfo.camera.GetViewMat();
         // 1. push constants
         // 2. bind model
         // 3. draw
@@ -85,15 +85,15 @@ namespace HN
             pushConstant.transform = projectionView * modelMat;
 
             vkCmdPushConstants(
-                cmdBuffer,
+                frameInfo.cmdBuffer,
                 pipelineLayout,
                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
                 0,
                 sizeof(PushConstantData),
                 &pushConstant);
 
-            obj.model->Bind(cmdBuffer);
-            obj.model->Draw(cmdBuffer);
+            obj.model->Bind(frameInfo.cmdBuffer);
+            obj.model->Draw(frameInfo.cmdBuffer);
         }
     }
 }
