@@ -34,29 +34,17 @@ namespace HN
 
 
 
-	Model::~Model()
-	{
-		// clean vertices
-		vkDestroyBuffer(device.device(), vertexBuffer, nullptr);
-		vkFreeMemory(device.device(), vertexBufferMemory, nullptr);
-
-		if (hasIndexBuffer)
-		{
-			// clean indices
-			vkDestroyBuffer(device.device(), indexBuffer, nullptr);
-			vkFreeMemory(device.device(), indexBufferMemory, nullptr);
-		}
-	}
+	Model::~Model(){}
 
 
 	void Model::Bind(VkCommandBuffer commandBuffer)
 	{
-		VkBuffer buffers[] = { vertexBuffer };
+		VkBuffer buffers[] = { vertexBuffer->getBuffer() };
 		VkDeviceSize offsets[] = { 0 };		// vertex data starts from beginning, offset is 0 
 
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 
-		if (hasIndexBuffer) vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+		if (hasIndexBuffer) vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 	}
 	 
 
@@ -79,50 +67,33 @@ namespace HN
 
 		//VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
 		VkDeviceSize bufferSize = sizeof(Vertex) * vertexCount;
+		uint32_t vertexSize = sizeof(vertices[0]);
 
 		// staging buffer
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingBufferMemory;
-		// VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT: we want allocated mem be accessable to CPU. That way, CPU can write to GPU mem
-		// VK_MEMORY_PROPERTY_HOST_COHERENT_BIT: keeps CPU mem consistent with GPU mem. 
-		device.createBuffer(
-			bufferSize,
+		Buffer stagingBuffer{ device, vertexSize, vertexCount, 
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			stagingBuffer, stagingBufferMemory);
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT };
 
 
-		void* hostData;
 		// maps CPU mem(data) to GPU mem(vertexBufferMemory)
-		vkMapMemory(device.device(), stagingBufferMemory, 0, bufferSize, 0, &hostData);
+		stagingBuffer.map();
 
 		// copy vertex data into CPU mem
-		memcpy(hostData, vertices.data(), static_cast<size_t>(bufferSize));
+		stagingBuffer.writeToBuffer((void*)vertices.data());
 
 		// since GPU mem is mapped to CPU mem and
 		// GPU mem is coherent to CPU mem
 		// when vertices.data() get copied into hostData
 		// the same data also get flushed to GPU mem automatically
 
-		// unmap memory
-		vkUnmapMemory(device.device(), stagingBufferMemory);
-
-
-
-		// VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT: we want allocated mem be accessable to CPU. That way, CPU can write to GPU mem
-		// VK_MEMORY_PROPERTY_HOST_COHERENT_BIT: keeps CPU mem consistent with GPU mem. 
-		device.createBuffer(
-			bufferSize,
+		// vertex buffer
+		vertexBuffer = std::make_unique<Buffer>(device, vertexSize, vertexCount,
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,	
-			vertexBuffer, vertexBufferMemory);
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
 
 		// copy staging buffer to vertex buffer
-		device.copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
-
-		// destroy staging buffer
-		vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
-		vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
+		device.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 	}
 
 
@@ -135,49 +106,24 @@ namespace HN
 		if (!hasIndexBuffer) return; // no indices, no need to create index buffer
 
 		VkDeviceSize bufferSize = sizeof(uint32_t) * indexCount;
+		uint32_t indexSize = sizeof(indices[0]);
 
-		// staging buffer
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingBufferMemory;
-		// VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT: we want allocated mem be accessable to CPU. That way, CPU can write to GPU mem
-		// VK_MEMORY_PROPERTY_HOST_COHERENT_BIT: keeps CPU mem consistent with GPU mem. 
-		device.createBuffer(
-			bufferSize,
+		Buffer stagingBuffer{ device, indexSize, indexCount,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			stagingBuffer, stagingBufferMemory);
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT };
 
-
-		void* hostData;
 		// maps CPU mem(data) to GPU mem(vertexBufferMemory)
-		vkMapMemory(device.device(), stagingBufferMemory, 0, bufferSize, 0, &hostData);
+		stagingBuffer.map();
 
 		// copy vertex data into CPU mem
-		memcpy(hostData, indices.data(), static_cast<size_t>(bufferSize));
+		stagingBuffer.writeToBuffer((void*)indices.data());
 
-		// since GPU mem is mapped to CPU mem and
-		// GPU mem is coherent to CPU mem
-		// when vertices.data() get copied into hostData
-		// the same data also get flushed to GPU mem automatically
-
-		// unmap memory
-		vkUnmapMemory(device.device(), stagingBufferMemory);
-
-
-		// VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT: we want allocated mem be accessable to CPU. That way, CPU can write to GPU mem
-		// VK_MEMORY_PROPERTY_HOST_COHERENT_BIT: keeps CPU mem consistent with GPU mem. 
-		device.createBuffer(
-			bufferSize,
+		indexBuffer = std::make_unique<Buffer>(device, indexSize, indexCount, 
 			VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			indexBuffer, indexBufferMemory);
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 
 		// copy staging buffer to vertex buffer
-		device.copyBuffer(stagingBuffer, indexBuffer, bufferSize);
-
-		// destroy staging buffer
-		vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
-		vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
+		device.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 	}
 
 

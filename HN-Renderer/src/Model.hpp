@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "Device.hpp"
+#include "Buffer.hpp"
 
 
 namespace HN
@@ -55,14 +56,11 @@ namespace HN
 
 		Device& device;
 
-		// In vulkan memory managment, buffer and memory are 2 seperate objects
-		VkBuffer vertexBuffer;
-		VkDeviceMemory vertexBufferMemory;
+		std::unique_ptr<Buffer> vertexBuffer;
 		uint32_t vertexCount;
 
 		bool hasIndexBuffer = false;
-		VkBuffer indexBuffer;
-		VkDeviceMemory indexBufferMemory;
+		std::unique_ptr<Buffer> indexBuffer;
 		uint32_t indexCount;
 	};
 }
