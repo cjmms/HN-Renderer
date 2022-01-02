@@ -17,6 +17,7 @@ namespace HN
 		float frameTime;
 		VkCommandBuffer cmdBuffer;
 		Camera& camera;
+		VkDescriptorSet globalDescriptorSet;
 	};
 
 

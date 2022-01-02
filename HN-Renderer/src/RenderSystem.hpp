@@ -12,7 +12,7 @@ namespace HN
     class RenderSystem
     {
     public:
-        RenderSystem(Device& device, VkRenderPass renderPass);
+        RenderSystem(Device& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
         ~RenderSystem();
 
 
@@ -23,7 +23,7 @@ namespace HN
 
     private:
 
-        void CreatePipelineLayout();
+        void CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void CreatePipeline(VkRenderPass renderPass);
 
 

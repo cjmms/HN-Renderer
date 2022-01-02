@@ -92,6 +92,7 @@
   <ItemGroup>
     <ClInclude Include="src\Buffer.hpp" />
     <ClInclude Include="src\Camera.hpp" />
+    <ClInclude Include="src\Descriptors.hpp" />
     <ClInclude Include="src\Device.hpp" />
     <ClInclude Include="src\FrameInfo.hpp" />
     <ClInclude Include="src\GameObj.hpp" />
@@ -109,6 +110,7 @@
   <ItemGroup>
     <ClCompile Include="src\Buffer.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Descriptor.cpp" />
     <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\GameObj.cpp" />
     <ClCompile Include="src\HelloApp.cpp" />

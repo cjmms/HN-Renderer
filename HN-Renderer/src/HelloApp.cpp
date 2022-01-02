@@ -15,7 +15,14 @@ namespace HN
     };
 
 
-    HelloTriangleApplication::HelloTriangleApplication() { LoadGameObjs(); }
+    HelloTriangleApplication::HelloTriangleApplication() { 
+        globalPool = DescriptorPool::Builder(Device)
+            .setMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
+            .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT)
+            .build();
+
+        LoadGameObjs(); 
+    }
 
 
     HelloTriangleApplication::~HelloTriangleApplication() {}
@@ -26,6 +33,7 @@ namespace HN
     {
         std::vector<std::unique_ptr<Buffer>> uboBuffers(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
+        // create UBO and map them to the device mem
         for (int i = 0; i < uboBuffers.size(); ++i)
         {
             uboBuffers[i] = std::make_unique<Buffer>(
@@ -38,7 +46,24 @@ namespace HN
             uboBuffers[i]->map();
         }
 
-        RenderSystem renderSystem{ Device, renderer.GetSwapChainRenderPass() };
+        
+        // Descriptor Sets layout
+        // only 1 buffer for vertex shader
+        auto globalSetLayout = DescriptorSetLayout::Builder(Device)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+            .build();
+
+        
+        // create Descriptor Sets, bind ubo to Descriptor Set
+        std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (unsigned int i = 0; i < globalDescriptorSets.size(); ++i)
+        {
+            auto bufferInfo = uboBuffers[i]->descriptorInfo();
+            DescriptorWriter(*globalSetLayout, *globalPool).writeBuffer(0, &bufferInfo).build(globalDescriptorSets[i]);
+        }
+        
+
+        RenderSystem renderSystem{ Device, renderer.GetSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
         Camera camera{};
         //camera.SetOrthProj(-1, 1, -1, 1, -1, 1);
 
@@ -69,7 +94,8 @@ namespace HN
                     frameIndex,
                     frameTime,
                     cmdBuffer,
-                    camera
+                    camera,
+                    globalDescriptorSets[frameIndex]
                 };
 
                 //update 

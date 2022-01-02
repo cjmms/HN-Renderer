@@ -4,6 +4,7 @@
 #include "window.hpp"
 #include "GameObj.hpp"
 #include "Renderer.hpp"
+#include "Descriptors.hpp"
 
 
 namespace HN
@@ -27,6 +28,7 @@ namespace HN
 
         Renderer renderer{ Device, Window };
 
+        std::unique_ptr<DescriptorPool> globalPool{};
         std::vector<GameObj> gameObjs;
     };
 

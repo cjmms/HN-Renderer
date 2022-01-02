@@ -8,14 +8,13 @@ namespace HN
 {
     struct PushConstantData
     {
-        glm::mat4 transform{ 1.0f };
         glm::mat4 modelMat{ 1.0f };
     };
 
 
-    RenderSystem::RenderSystem(Device& device, VkRenderPass renderPass) : device{device}
+    RenderSystem::RenderSystem(Device& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout) : device{device}
     {
-        CreatePipelineLayout();
+        CreatePipelineLayout(globalSetLayout);
         CreatePipeline(renderPass);
     }
 
@@ -27,17 +26,19 @@ namespace HN
 
 
 
-    void RenderSystem::CreatePipelineLayout()
+    void RenderSystem::CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout)
     {
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         pushConstantRange.offset = 0;
         pushConstantRange.size = sizeof(PushConstantData);
 
+        std::vector<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0;
-        pipelineLayoutInfo.pSetLayouts = nullptr;
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
         pipelineLayoutInfo.pushConstantRangeCount = 1;
         pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
@@ -70,8 +71,16 @@ namespace HN
         // bind pipeline
         pipeline->Bind(frameInfo.cmdBuffer);
 
+        // bind descriptor to the pipeline
+        vkCmdBindDescriptorSets(
+            frameInfo.cmdBuffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            pipelineLayout,
+            0, 1, &frameInfo.globalDescriptorSet,
+            0, nullptr
+        );
 
-        auto projectionView = frameInfo.camera.GetProjMat() * frameInfo.camera.GetViewMat();
+        
         // 1. push constants
         // 2. bind model
         // 3. draw
@@ -79,10 +88,7 @@ namespace HN
         {
             PushConstantData pushConstant{};
 
-            auto modelMat = obj.transform.mat4();
-
-            pushConstant.modelMat = modelMat;
-            pushConstant.transform = projectionView * modelMat;
+            pushConstant.modelMat = obj.transform.mat4();   // model matrix
 
             vkCmdPushConstants(
                 frameInfo.cmdBuffer,
