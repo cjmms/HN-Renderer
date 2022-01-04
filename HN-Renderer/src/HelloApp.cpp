@@ -11,7 +11,9 @@ namespace HN
     struct GlobalUbo 
     {
         glm::mat4 projectionView{ 1.f };
-        glm::vec3 lightDir = glm::normalize(glm::vec3(1, -3, -1));
+        glm::vec4 ambientLightColor{1.f, 1.f, 1.f, 0.02f};
+        glm::vec3 lightPos = glm::vec3(1, -1, 1);
+        alignas(16) glm::vec4 lightColor{ 1.0 };
     };
 
 

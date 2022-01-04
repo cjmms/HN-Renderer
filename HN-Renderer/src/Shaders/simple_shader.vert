@@ -14,20 +14,26 @@ layout(push_constant) uniform Push
 layout(set = 0, binding = 0) uniform GlobalUbo
 {
 	mat4 projViewMat;
-	vec3 lightDir;
+	vec4 ambientLightColor;
+	vec3 lightPos;
+	vec4 lightColor;
 } ubo;
 
 
-const float AMBIENT = 0.02;
 
 void main()
 {
-	
-	gl_Position = ubo.projViewMat * push.modelMat * vec4(position, 1.0f);
+	vec4 positionWorld = push.modelMat * vec4(position, 1.0f);
+
+	gl_Position = ubo.projViewMat * positionWorld;
 	vec3 normalWorldSpace = normalize(mat3(push.modelMat) * normal);
 	
+	vec3 directionToLight = normalize(ubo.lightPos - positionWorld.rgb);
+	float attenuation = 1.0f / dot(ubo.lightPos - positionWorld.rgb, ubo.lightPos - positionWorld.rgb);	// atenuation
 
-	float lightIntensity = AMBIENT + max(0, dot(normalWorldSpace, ubo.lightDir));
+	vec3 lightColor = ubo.lightColor.xyz * ubo.lightColor.w * attenuation;	// point light color
+	vec3 ambientColor = ubo.ambientLightColor.xyz * ubo.ambientLightColor.w;	// ambient light color
+	vec3 diffuseLight = lightColor * max(0, dot(normalWorldSpace, directionToLight));
 
-	fragColor = lightIntensity * vec3(1.0, 1.0, 1.0);
+	fragColor = diffuseLight + ambientColor;
 }
