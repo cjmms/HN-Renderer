@@ -12,7 +12,7 @@ namespace HN
     {
         glm::mat4 projectionView{ 1.f };
         glm::vec4 ambientLightColor{1.f, 1.f, 1.f, 0.02f};
-        glm::vec3 lightPos = glm::vec3(1, -1, 1);
+        glm::vec3 lightPos = glm::vec3(-1);
         alignas(16) glm::vec4 lightColor{ 1.0 };
     };
 
@@ -67,9 +67,10 @@ namespace HN
 
         RenderSystem renderSystem{ Device, renderer.GetSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
         Camera camera{};
-        //camera.SetOrthProj(-1, 1, -1, 1, -1, 1);
+
 
         auto viewer = GameObj::CreateGameObject();
+        viewer.transform.translation.z = -2.5f;
         KeyboardController CameraController{};
 
         auto currTime = std::chrono::high_resolution_clock::now();
@@ -86,7 +87,7 @@ namespace HN
             camera.setViewYXZ(viewer.transform.translation, viewer.transform.rotation);
 
             float aspect = renderer.GetAspectRatio();
-            camera.SetPerspectiveProj(glm::radians(50.0f), aspect, 0.1, 10);
+            camera.SetPerspectiveProj(glm::radians(50.0f), aspect, 0.1, 100);
             
             if (auto cmdBuffer = renderer.BeginFrame())
             {
@@ -126,7 +127,7 @@ namespace HN
 
         auto flatVaseObj = GameObj::CreateGameObject();
         flatVaseObj.model = flatVaseModel;
-        flatVaseObj.transform.translation = { -0.5, 0.5, 2.5f };
+        flatVaseObj.transform.translation = { -0.5, 0.5, 0.f };
         flatVaseObj.transform.scale = glm::vec3(3.0f);
 
         gameObjs.push_back(std::move(flatVaseObj));
@@ -135,10 +136,20 @@ namespace HN
 
         auto smoothVaseObj = GameObj::CreateGameObject();
         smoothVaseObj.model = smoothVaseModel;
-        smoothVaseObj.transform.translation = { 0.5, 0.5, 2.5f };
+        smoothVaseObj.transform.translation = { 0.5, 0.5, 0.f };
         smoothVaseObj.transform.scale = glm::vec3(3.0f);
 
         gameObjs.push_back(std::move(smoothVaseObj));
+
+        // floor
+        std::shared_ptr<Model> QuadModel = Model::CreateModelFromFile(Device, "Assets/models/Quad.obj");
+
+        auto QuadObj = GameObj::CreateGameObject();
+        QuadObj.model = QuadModel;
+        QuadObj.transform.translation = { 0.0, 0.5, 0.0f };
+        QuadObj.transform.scale = glm::vec3(3.0f, 1.f, 3.0f);
+
+        gameObjs.push_back(std::move(QuadObj));
     }
 
 
