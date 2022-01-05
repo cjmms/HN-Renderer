@@ -5,8 +5,7 @@ layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 texCoords;
 
 
-layout(location = 0) out vec3 fragPosWorld;
-layout(location = 1) out vec3 fragNormalWorld;
+layout(location = 0) out vec3 worldNormal;
 
 layout(push_constant) uniform Push 
 {
@@ -25,9 +24,6 @@ layout(set = 0, binding = 0) uniform GlobalUbo
 
 void main()
 {
-	fragPosWorld = vec3(push.modelMat * vec4(position, 1.0f));
-
-	gl_Position = ubo.projViewMat * vec4(fragPosWorld, 1.0f);
-	fragNormalWorld = normalize(mat3(push.modelMat) * normal);
-
+	gl_Position = push.modelMat * vec4(position, 1.0f);
+	worldNormal = normalize(vec3(push.modelMat * vec4(normal, 0)));
 }

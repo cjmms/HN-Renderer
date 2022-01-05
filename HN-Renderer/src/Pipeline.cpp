@@ -15,6 +15,17 @@ namespace HN {
 		createGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
 	}
 
+	Pipeline::Pipeline(
+		Device& device,
+		const std::string& vertFilePath,
+		const std::string& geomFilePath,
+		const std::string& fragFilePath,
+		const PipelineConfigInfo& configInfo)
+		: device{ device }
+	{
+		createGraphicsPipeline(vertFilePath, geomFilePath, fragFilePath, configInfo);
+	}
+
 	Pipeline::~Pipeline()
 	{
 		for (VkShaderModule &shaderModule : shaderModules)
@@ -81,6 +92,7 @@ namespace HN {
 		std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages;
 		shaderStages[0] = LoadShader(vertFilePath, VK_SHADER_STAGE_VERTEX_BIT);
 		shaderStages[1] = LoadShader(fragFilePath, VK_SHADER_STAGE_FRAGMENT_BIT);
+		
 
 		auto bindingDescriptions = Model::Vertex::getBindingDesciptions();
 		auto attribDescriptions = Model::Vertex::getAttributeDesciptions();
@@ -117,6 +129,56 @@ namespace HN {
 		if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
 			throw std::runtime_error("Failed to create Graphics Pipeline.");
 	}
+
+
+
+
+
+	void Pipeline::createGraphicsPipeline(const std::string& vertFilePath, const std::string& geomFilePath, const std::string& fragFilePath, const PipelineConfigInfo& configInfo)
+	{
+		std::array<VkPipelineShaderStageCreateInfo, 3> shaderStages;
+		shaderStages[0] = LoadShader(vertFilePath, VK_SHADER_STAGE_VERTEX_BIT);
+		shaderStages[1] = LoadShader(fragFilePath, VK_SHADER_STAGE_FRAGMENT_BIT);
+		shaderStages[2] = LoadShader(geomFilePath, VK_SHADER_STAGE_GEOMETRY_BIT);
+
+
+		auto bindingDescriptions = Model::Vertex::getBindingDesciptions();
+		auto attribDescriptions = Model::Vertex::getAttributeDesciptions();
+
+		// determines how to interperate vertex buffer data
+		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribDescriptions.size());	// no attribute descriptor, hard code vertex info
+		vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+		vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+		vertexInputInfo.pVertexAttributeDescriptions = attribDescriptions.data();
+
+		VkGraphicsPipelineCreateInfo pipelineInfo{};
+
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineInfo.stageCount = shaderStages.size();
+		pipelineInfo.pStages = shaderStages.data();
+		pipelineInfo.pVertexInputState = &vertexInputInfo;
+		pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
+		pipelineInfo.pViewportState = &configInfo.viewportInfo;
+		pipelineInfo.pRasterizationState = &configInfo.rasterizationInfo;
+		pipelineInfo.pMultisampleState = &configInfo.multisampleInfo;
+		pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
+		pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
+		pipelineInfo.pDynamicState = &configInfo.dynamicStateInfo;
+
+		pipelineInfo.layout = configInfo.pipelineLayout;
+		pipelineInfo.renderPass = configInfo.renderPass;
+		pipelineInfo.subpass = configInfo.subpass;
+
+		pipelineInfo.basePipelineIndex = -1;
+		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+		if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
+			throw std::runtime_error("Failed to create Graphics Pipeline.");
+	}
+
+
 
 
 	void Pipeline::DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo)

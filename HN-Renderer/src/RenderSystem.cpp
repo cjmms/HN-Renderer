@@ -59,6 +59,7 @@ namespace HN
         pipeline = std::make_unique<Pipeline>(
             device,
             "src/Shaders/simple_shader.vert.spv",
+            "src/Shaders/simple_shader.geom.spv",
             "src/Shaders/simple_shader.frag.spv",
             pipelineConfig);
     }

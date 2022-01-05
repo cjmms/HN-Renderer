@@ -130,6 +130,7 @@
   <ItemGroup>
     <None Include="compile.bat" />
     <None Include="src\Shaders\simple_shader.frag" />
+    <None Include="src\Shaders\simple_shader.geom" />
     <None Include="src\Shaders\simple_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

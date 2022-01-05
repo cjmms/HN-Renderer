@@ -34,6 +34,13 @@ namespace HN {
 			const std::string& fragFilePath, 
 			const PipelineConfigInfo& configInfo);
 
+		Pipeline(
+			Device& device,
+			const std::string& vertFilePath,
+			const std::string& geomFilePath,
+			const std::string& fragFilePath,
+			const PipelineConfigInfo& configInfo);
+
 		~Pipeline();
 
 		Pipeline(const Pipeline&) = delete;	// delete copy constructor
@@ -55,6 +62,12 @@ namespace HN {
 		void createGraphicsPipeline(
 			const std::string& vertFilePath, 
 			const std::string& fragFilePath, 
+			const PipelineConfigInfo& configInfo);
+
+		void createGraphicsPipeline(
+			const std::string& vertFilePath,
+			const std::string& geomFilePath,
+			const std::string& fragFilePath,
 			const PipelineConfigInfo& configInfo);
 
 		void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);

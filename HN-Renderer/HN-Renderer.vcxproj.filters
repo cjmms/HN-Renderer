@@ -122,5 +122,8 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="compile.bat" />
+    <None Include="src\Shaders\simple_shader.geom">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
