@@ -59,10 +59,14 @@ namespace HN {
 
 		void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 
+		// 1. load shader
+		// 2. create shader module
+		// 3. create shader stage create info
+		VkPipelineShaderStageCreateInfo LoadShader(const std::string& shaderFilePath, VkShaderStageFlagBits shaderStage);
+
 		Device& device;
 		VkPipeline graphicsPipeline;
-		VkShaderModule vertShaderModule;
-		VkShaderModule fragShaderModule;
+		std::vector<VkShaderModule> shaderModules;
 	};
 
 	
