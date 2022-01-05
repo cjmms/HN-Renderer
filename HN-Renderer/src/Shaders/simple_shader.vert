@@ -26,5 +26,5 @@ layout(set = 0, binding = 0) uniform GlobalUbo
 void main()
 {
 	gl_Position = push.modelMat * vec4(position, 1.0f);
-	worldNormal = normalize(vec3(push.modelMat * vec4(normal, 0)));
+	worldNormal = normalize(mat3(push.modelMat) * normal);
 }

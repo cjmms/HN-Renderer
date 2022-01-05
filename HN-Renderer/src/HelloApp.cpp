@@ -71,7 +71,8 @@ namespace HN
 
 
         auto viewer = GameObj::CreateGameObject();
-        viewer.transform.translation.z = -2.5f;
+        viewer.transform.translation.z = -10.5f;
+        viewer.transform.translation.y = -2.5;
         KeyboardController CameraController{};
 
         auto currTime = std::chrono::high_resolution_clock::now();
@@ -126,6 +127,7 @@ namespace HN
 
     void HelloTriangleApplication::LoadGameObjs()
     {
+        /*
         std::shared_ptr<Model> flatVaseModel = Model::CreateModelFromFile(Device, "Assets/models/flat_vase.obj");
 
         auto flatVaseObj = GameObj::CreateGameObject();
@@ -143,7 +145,7 @@ namespace HN
         smoothVaseObj.transform.scale = glm::vec3(3.0f);
 
         gameObjs.push_back(std::move(smoothVaseObj));
-
+        */
         // floor
         std::shared_ptr<Model> QuadModel = Model::CreateModelFromFile(Device, "Assets/models/Quad.obj");
 
