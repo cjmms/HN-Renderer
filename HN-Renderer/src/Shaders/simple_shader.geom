@@ -13,7 +13,8 @@ layout(location = 0) in vec3 worldNormal[];
 
 layout(set = 0, binding = 0) uniform GlobalUbo
 {
-	mat4 projViewMat;
+	mat4 projection;
+	mat4 view;
 	vec4 ambientLightColor;
 	vec3 lightPos;
 	vec4 lightColor;
@@ -28,10 +29,10 @@ void main(void)
 		vec3 pos = gl_in[i].gl_Position.xyz;
 		vec3 normal = worldNormal[i].xyz;
 
-		gl_Position = ubo.projViewMat *  vec4(pos, 1.0);
+		gl_Position = ubo.projection * ubo.view *  vec4(pos, 1.0);
 		EmitVertex();
 
-		gl_Position = ubo.projViewMat * ( vec4(pos + normal * normalLength, 1.0));		
+		gl_Position = ubo.projection * ubo.view * ( vec4(pos + normal * normalLength, 1.0));		
 		EmitVertex();
 
 		EndPrimitive();
