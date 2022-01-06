@@ -18,6 +18,7 @@ layout(set = 0, binding = 0) uniform GlobalUbo
 	vec4 lightColor;
 	float height;
     float width;
+	float orienFactor;
 } ubo;
 
 
@@ -62,7 +63,16 @@ void main(void)
 		outColor[i] = darkGreen;
 		EmitVertex();
 
-		gl_Position = ubo.projection * ubo.view *  vec4(worldPos + normal * grassHeight, 1.0);		
+
+		// generate random number from -1.0 to 1.0
+		float randOrienX = (Rand(gl_in[0].gl_Position.xz) - 0.5f) * 2.0f;
+		float randOrienY = (Rand(gl_in[0].gl_Position.yz) - 0.5f) * 2.0f;
+
+		vec3 orienOffset = vec3(randOrienX * ubo.orienFactor, randOrienY * ubo.orienFactor, 0);
+
+
+		gl_Position = ubo.projection * ubo.view *  vec4(worldPos + normal * grassHeight + orienOffset, 1.0);	
+			
 		outColor[i] = brightGreen;
 		EmitVertex();
 

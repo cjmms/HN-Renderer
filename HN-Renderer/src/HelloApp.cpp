@@ -19,6 +19,7 @@ namespace HN
         glm::vec4 lightColor{ 1.0 };
         float height;
         float width;
+        float orienFactor;
     };
 
 
@@ -115,6 +116,7 @@ namespace HN
                 ubo.tessellationLevel = 10;
                 ubo.height = 2;
                 ubo.width = 0.2;
+                ubo.orienFactor = 0.8;
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);   // write to ubo buffer
                 uboBuffers[frameIndex]->flush();           // since buffer is not coherent, manually flush
 
