@@ -8,12 +8,21 @@ layout(set = 0, binding = 0) uniform GlobalUbo
 	mat4 view;
 	vec4 ambientLightColor;
 	vec3 lightPos;
+	int tessellationLevel;
 	vec4 lightColor;
+	float height;
+    float width;
 } ubo;
 
 
 layout(location = 0) in vec3 inNormal[];
 layout(location = 0) out vec3 outNormal;
+
+
+vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
+{
+    return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
+} 
 
 
 void main()

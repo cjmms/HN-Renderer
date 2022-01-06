@@ -14,7 +14,11 @@ namespace HN
         glm::mat4 view{1.f};
         glm::vec4 ambientLightColor{1.f, 1.f, 1.f, 0.02f};
         glm::vec3 lightPos = glm::vec3(-1);
-        alignas(16) glm::vec4 lightColor{ 1.0 };
+        int tessellationLevel;
+        //alignas(16) glm::vec4 lightColor{ 1.0 };
+        glm::vec4 lightColor{ 1.0 };
+        float height;
+        float width;
     };
 
 
@@ -108,6 +112,9 @@ namespace HN
                 GlobalUbo ubo{};
                 ubo.projection = camera.GetProjMat();       // set ubo data
                 ubo.view = camera.GetViewMat();             // set ubo data
+                ubo.tessellationLevel = 10;
+                ubo.height = 1.0;
+                ubo.width = 0.1;
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);   // write to ubo buffer
                 uboBuffers[frameIndex]->flush();           // since buffer is not coherent, manually flush
 

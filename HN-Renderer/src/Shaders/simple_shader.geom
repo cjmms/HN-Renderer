@@ -13,7 +13,10 @@ layout(set = 0, binding = 0) uniform GlobalUbo
 	mat4 view;
 	vec4 ambientLightColor;
 	vec3 lightPos;
+	int tessellationLevel;
 	vec4 lightColor;
+	float height;
+    float width;
 } ubo;
 
 
@@ -25,8 +28,6 @@ layout(push_constant) uniform Push
 
 void main(void)
 {
-	float normalLength = 0.5;
-	float width = 0.1;
 	for(int i=0; i<gl_in.length(); i++)
 	{
 		vec3 worldPos = vec3(push.modelMat * gl_in[i].gl_Position);
@@ -35,13 +36,13 @@ void main(void)
 
 		vec4 viewPos = ubo.view * vec4(worldPos, 1.0);
 
-		gl_Position = ubo.projection * (viewPos - vec4(width / 2, 0, 0, 0));	// happens inside view space
+		gl_Position = ubo.projection * (viewPos - vec4(ubo.width / 2, 0, 0, 0));	// happens inside view space
 		EmitVertex();
 
-		gl_Position = ubo.projection * (viewPos + vec4(width / 2, 0, 0, 0));
+		gl_Position = ubo.projection * (viewPos + vec4(ubo.width / 2, 0, 0, 0));
 		EmitVertex();
 
-		gl_Position = ubo.projection * ubo.view *  vec4(worldPos + normal * normalLength, 1.0);		
+		gl_Position = ubo.projection * ubo.view *  vec4(worldPos + normal * ubo.height, 1.0);		
 		EmitVertex();
 
 		EndPrimitive();

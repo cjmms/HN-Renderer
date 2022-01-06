@@ -15,7 +15,10 @@ layout(set = 0, binding = 0) uniform GlobalUbo
 	mat4 view;
 	vec4 ambientLightColor;
 	vec3 lightPos;
+	int tessellationLevel;
 	vec4 lightColor;
+	float height;
+    float width;
 } ubo;
 
 
