@@ -39,7 +39,7 @@ void main()
 	//vec3 result = diffuseLight + ambientColor;
 
 	//FragColor = vec4(result, 1);
-	FragColor = vec4(1, 0, 0, 1);
+	FragColor = vec4(0, 1, 0, 1);
 
 }
   

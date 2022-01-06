@@ -125,5 +125,11 @@
     <None Include="src\Shaders\simple_shader.geom">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="src\Shaders\simple_shader.tese">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="src\Shaders\simple_shader.tesc">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

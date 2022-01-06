@@ -1,14 +1,10 @@
 #version 450
 
-layout (points) in;
+layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
 
-//layout(location = 0) out vec3 fragPosWorld;
-//layout(location = 1) out vec3 fragNormalWorld;
-
-
-layout(location = 0) in vec3 worldNormal[];
+layout(location = 0) in vec3 outNormal[];
 
 
 layout(set = 0, binding = 0) uniform GlobalUbo
@@ -21,16 +17,23 @@ layout(set = 0, binding = 0) uniform GlobalUbo
 } ubo;
 
 
+layout(push_constant) uniform Push 
+{
+	mat4 modelMat;
+} push;
+
+
 void main(void)
 {
 	float normalLength = 0.5;
 	float width = 0.1;
 	for(int i=0; i<gl_in.length(); i++)
 	{
-		vec3 pos = gl_in[i].gl_Position.xyz;
-		vec3 normal = worldNormal[i].xyz;
+		vec3 worldPos = vec3(push.modelMat * gl_in[i].gl_Position);
+		vec3 normal = normalize(mat3(push.modelMat) * outNormal[i]);
 
-		vec4 viewPos = ubo.view *  vec4(pos, 1.0);
+
+		vec4 viewPos = ubo.view * vec4(worldPos, 1.0);
 
 		gl_Position = ubo.projection * (viewPos - vec4(width / 2, 0, 0, 0));	// happens inside view space
 		EmitVertex();
@@ -38,15 +41,9 @@ void main(void)
 		gl_Position = ubo.projection * (viewPos + vec4(width / 2, 0, 0, 0));
 		EmitVertex();
 
-		//gl_Position = ubo.projection * ubo.view *  vec4(pos, 1.0);
-		//EmitVertex();
-
-		gl_Position = ubo.projection * ubo.view *  vec4(pos + normal * normalLength, 1.0);		
+		gl_Position = ubo.projection * ubo.view *  vec4(worldPos + normal * normalLength, 1.0);		
 		EmitVertex();
 
 		EndPrimitive();
 	}
-
-
-
 }

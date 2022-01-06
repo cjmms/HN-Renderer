@@ -37,6 +37,8 @@ namespace HN {
 		Pipeline(
 			Device& device,
 			const std::string& vertFilePath,
+			const std::string& tescFilePath,
+			const std::string& teseFilePath,
 			const std::string& geomFilePath,
 			const std::string& fragFilePath,
 			const PipelineConfigInfo& configInfo);
@@ -66,6 +68,8 @@ namespace HN {
 
 		void createGraphicsPipeline(
 			const std::string& vertFilePath,
+			const std::string& tescFilePath,
+			const std::string& teseFilePath,
 			const std::string& geomFilePath,
 			const std::string& fragFilePath,
 			const PipelineConfigInfo& configInfo);

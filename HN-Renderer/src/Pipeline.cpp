@@ -18,12 +18,14 @@ namespace HN {
 	Pipeline::Pipeline(
 		Device& device,
 		const std::string& vertFilePath,
+		const std::string& tescFilePath,
+		const std::string& teseFilePath,
 		const std::string& geomFilePath,
 		const std::string& fragFilePath,
 		const PipelineConfigInfo& configInfo)
 		: device{ device }
 	{
-		createGraphicsPipeline(vertFilePath, geomFilePath, fragFilePath, configInfo);
+		createGraphicsPipeline(vertFilePath, tescFilePath, teseFilePath, geomFilePath, fragFilePath, configInfo);
 	}
 
 	Pipeline::~Pipeline()
@@ -134,12 +136,20 @@ namespace HN {
 
 
 
-	void Pipeline::createGraphicsPipeline(const std::string& vertFilePath, const std::string& geomFilePath, const std::string& fragFilePath, const PipelineConfigInfo& configInfo)
+	void Pipeline::createGraphicsPipeline(
+		const std::string& vertFilePath,
+		const std::string& tescFilePath,
+		const std::string& teseFilePath,
+		const std::string& geomFilePath,
+		const std::string& fragFilePath,
+		const PipelineConfigInfo& configInfo)
 	{
-		std::array<VkPipelineShaderStageCreateInfo, 3> shaderStages;
+		std::array<VkPipelineShaderStageCreateInfo, 5> shaderStages;
 		shaderStages[0] = LoadShader(vertFilePath, VK_SHADER_STAGE_VERTEX_BIT);
 		shaderStages[1] = LoadShader(fragFilePath, VK_SHADER_STAGE_FRAGMENT_BIT);
-		shaderStages[2] = LoadShader(geomFilePath, VK_SHADER_STAGE_GEOMETRY_BIT);
+		shaderStages[2] = LoadShader(tescFilePath, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+		shaderStages[3] = LoadShader(teseFilePath, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		shaderStages[4] = LoadShader(geomFilePath, VK_SHADER_STAGE_GEOMETRY_BIT);
 
 
 		auto bindingDescriptions = Model::Vertex::getBindingDesciptions();
@@ -152,6 +162,13 @@ namespace HN {
 		vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
 		vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 		vertexInputInfo.pVertexAttributeDescriptions = attribDescriptions.data();
+
+
+		// tessellation create info is required since I'm using tessellation
+		VkPipelineTessellationStateCreateInfo tessCreateInfo{};
+		tessCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+		// patch control points is 3, because each patch is a triangle and triangle has 3 vertices(control points)
+		tessCreateInfo.patchControlPoints = 3;			
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 
@@ -166,6 +183,8 @@ namespace HN {
 		pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
 		pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
 		pipelineInfo.pDynamicState = &configInfo.dynamicStateInfo;
+		// tessellation state
+		pipelineInfo.pTessellationState = &tessCreateInfo;
 
 		pipelineInfo.layout = configInfo.pipelineLayout;
 		pipelineInfo.renderPass = configInfo.renderPass;
@@ -187,7 +206,7 @@ namespace HN {
 
 		// Input Assembly 
 		configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+		configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;	// input is patch, required for tessellation
 		configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
 
 		configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
