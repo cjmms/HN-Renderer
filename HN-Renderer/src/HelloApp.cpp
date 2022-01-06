@@ -113,8 +113,8 @@ namespace HN
                 ubo.projection = camera.GetProjMat();       // set ubo data
                 ubo.view = camera.GetViewMat();             // set ubo data
                 ubo.tessellationLevel = 10;
-                ubo.height = 1.0;
-                ubo.width = 0.1;
+                ubo.height = 2;
+                ubo.width = 0.2;
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);   // write to ubo buffer
                 uboBuffers[frameIndex]->flush();           // since buffer is not coherent, manually flush
 
@@ -153,13 +153,24 @@ namespace HN
 
         gameObjs.push_back(std::move(smoothVaseObj));
         */
+        /*
+        std::shared_ptr<Model> bunnyModel = Model::CreateModelFromFile(Device, "Assets/models/bunny.obj");
+
+        auto bunnyObj = GameObj::CreateGameObject();
+        bunnyObj.model = bunnyModel;
+        bunnyObj.transform.translation = { -0.5, 0.5, 0.f };
+        bunnyObj.transform.scale = glm::vec3(1, -1, 1);
+
+        gameObjs.push_back(std::move(bunnyObj));
+        */
+
         // floor
         std::shared_ptr<Model> QuadModel = Model::CreateModelFromFile(Device, "Assets/models/Quad.obj");
 
         auto QuadObj = GameObj::CreateGameObject();
         QuadObj.model = QuadModel;
         QuadObj.transform.translation = { 0.0, 0.5, 0.0f };
-        QuadObj.transform.scale = glm::vec3(3.0f, 1.f, 3.0f);
+        QuadObj.transform.scale = glm::vec3(5.0f, 1.f, 5.0f);
 
         gameObjs.push_back(std::move(QuadObj));
     }

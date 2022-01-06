@@ -7,6 +7,7 @@ layout(location = 0) out vec4 FragColor;
 //layout(location = 0) in vec3 fragPosWorld;
 //layout(location = 1) in vec3 fragNormalWorld;
 
+layout (location = 0) in vec3 color;
 
 
 layout(set = 0, binding = 0) uniform GlobalUbo
@@ -42,7 +43,7 @@ void main()
 	//vec3 result = diffuseLight + ambientColor;
 
 	//FragColor = vec4(result, 1);
-	FragColor = vec4(0, 1, 0, 1);
+	FragColor = vec4(color, 1);
 
 }
   
