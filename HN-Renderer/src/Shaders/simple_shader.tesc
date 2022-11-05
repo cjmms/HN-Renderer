@@ -22,7 +22,7 @@ layout(set = 0, binding = 0) uniform GlobalUbo
 
 void main()
 {
-	float tessL = 5;
+	float tessL = 1;
 
 	if (gl_InvocationID == 0)
 	{

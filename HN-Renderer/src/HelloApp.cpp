@@ -113,9 +113,9 @@ namespace HN
                 GlobalUbo ubo{};
                 ubo.projection = camera.GetProjMat();       // set ubo data
                 ubo.view = camera.GetViewMat();             // set ubo data
-                ubo.tessellationLevel = 10;
+                ubo.tessellationLevel = 20;
                 ubo.height = 2;
-                ubo.width = 0.2;
+                ubo.width = 0.1;
                 ubo.orienFactor = 0.8;
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);   // write to ubo buffer
                 uboBuffers[frameIndex]->flush();           // since buffer is not coherent, manually flush
